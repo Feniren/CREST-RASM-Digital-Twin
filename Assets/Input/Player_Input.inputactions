@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "Player_Input",
     "maps": [
         {
@@ -9,7 +10,7 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "83eee1f4-403d-4349-8104-3fcba6eb827e",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

@@ -90,10 +90,15 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: bc2e45027d63aa3449d0a45cfa492f83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,9 +116,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &3519397263864940957
 BoxCollider:
@@ -183,7 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7d421d612b81004d9da40b6b42cb5b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutomaticActivation: 0
   Owner: {fileID: 8446741400686687044}
+  Pickup: 0
+  Quantity: 0
+  Name: 
+  ID: 
   ProjectilePrefab: {fileID: 4610076021856063648, guid: ff5afa457e0128e49a3f07df57da4f11, type: 3}
   SpawnPoint: {fileID: 1901853157267830688}
   Cooldown: 0
