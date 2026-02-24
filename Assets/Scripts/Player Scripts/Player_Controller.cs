@@ -19,11 +19,7 @@ public class Player_Controller : Controller{
     bool IsFirstPerson;
     Vector3 ThirdPersonCameraLocation;
 
-    int JumpCount;
     bool Throw = false;
-
-    const string MouseX = "Mouse X";
-    const string MouseY = "Mouse Y";
 
     private void Awake(){
         RigidBodyReference = GetComponent<Rigidbody>();
@@ -63,16 +59,6 @@ public class Player_Controller : Controller{
     }
 
     void Update(){
-        ControlRotation.x = (Input.GetAxis(MouseX) * PlayerReference.PlayerSettings.LookSpeedX);
-        ControlRotation.y -= (Input.GetAxis(MouseY) * PlayerReference.PlayerSettings.LookSpeedY);
-        ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
-
-        //Quaternion XQuaternion = Quaternion.AngleAxis(ControlRotation.x, Vector3.up);
-        Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
-
-        gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
-        PlayerReference.CameraReference.transform.localRotation = XQuaternion;
-
         if (Input.GetKeyDown("l")){
             PlayerReference.LevelUp();
         }
@@ -89,8 +75,6 @@ public class Player_Controller : Controller{
     }
 
     private void FixedUpdate(){
-        //PlayerInput.Player.Look.ReadValue<Vector2>();
-
         Vector3 Movement = ((PlayerReference.CameraReference.transform.right * MovementVelocity.x) + (PlayerReference.CameraReference.transform.forward * MovementVelocity.y));
 
         Movement.y = RigidBodyReference.linearVelocity.y;
@@ -122,6 +106,18 @@ public class Player_Controller : Controller{
     }
 
     public void Look(InputAction.CallbackContext Context){
+        Vector2 MouseLook = PlayerInput.Player.Look.ReadValue<Vector2>();
+
+        ControlRotation.x = (MouseLook.x * PlayerReference.PlayerSettings.LookSpeedX);
+        ControlRotation.y -= (MouseLook.y * PlayerReference.PlayerSettings.LookSpeedY);
+        ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
+
+        //Quaternion XQuaternion = Quaternion.AngleAxis(ControlRotation.x, Vector3.up);
+        Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
+
+        gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+        PlayerReference.CameraReference.transform.localRotation = XQuaternion;
+
         //PlayerReference.CameraReference.transform.localEulerAngles += 
         //PlayerReference.CameraReference.transform.localEulerAngles += Vector3.right;
     }

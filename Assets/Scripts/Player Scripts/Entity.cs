@@ -21,7 +21,7 @@ public class Entity : MonoBehaviour{
 
         EntityStatistics.HealthCurrent = EntityStatistics.HealthMax;
         EntityStatistics.HealthNormalized = 1.0f;
-        EntityStatistics.MovementSpeed = 15.0f;
+        EntityStatistics.MovementSpeed = 8.0f;
     }
 
     void OnCollisionEnter(Collision CollisionEvent){

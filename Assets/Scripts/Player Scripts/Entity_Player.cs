@@ -11,8 +11,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
     void Awake(){
         PlayerSettings = new Player_Settings();
 
-        PlayerSettings.LookSpeedX = 3.0f;
-        PlayerSettings.LookSpeedY = 3.0f;
+        PlayerSettings.LookSpeedX = 0.5f;
+        PlayerSettings.LookSpeedY = 0.5f;
     }
 
     public override void Start(){
