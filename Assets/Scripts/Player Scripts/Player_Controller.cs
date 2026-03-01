@@ -22,9 +22,6 @@ public class Player_Controller : Controller{
     bool Throw = false;
 
     private void Awake(){
-        RigidBodyReference = GetComponent<Rigidbody>();
-        PlayerReference = GetComponent<Entity_Player>();
-
         PlayerInput = new Player_Input();
 
         PlayerInput.Player.Enable();
@@ -46,6 +43,8 @@ public class Player_Controller : Controller{
 
     void Start(){
         RigidBodyReference = GetComponent<Rigidbody>();
+        PlayerReference = GetComponent<Entity_Player>();
+
         MovementVelocity = new Vector2(0.0f, 0.0f);
         ControlRotation = new Vector2(0.0f, 0.0f);
     }
@@ -59,7 +58,7 @@ public class Player_Controller : Controller{
     }
 
     void Update(){
-        if (Input.GetKeyDown("l")){
+        /*if (Input.GetKeyDown("l")){
             PlayerReference.LevelUp();
         }
 
@@ -71,7 +70,7 @@ public class Player_Controller : Controller{
         if (Input.GetKeyDown("m"))
         {
             Throw = !Throw;
-        }
+        }*/
     }
 
     private void FixedUpdate(){
