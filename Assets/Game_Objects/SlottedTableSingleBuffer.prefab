@@ -83,6 +83,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SlottedTableSingleBuffer
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
+      propertyPath: m_TagString
+      value: Slotted Table
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -95,10 +99,10 @@ PrefabInstance:
       addedObject: {fileID: -3882083859030463547}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -4580584551581236019}
+      addedObject: {fileID: 941791499567811077}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 941791499567811077}
+      addedObject: {fileID: 3876046896611053542}
   m_SourcePrefab: {fileID: 100100000, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
 --- !u!4 &4023227236405009823 stripped
 Transform:
@@ -132,29 +136,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6349136982846018081, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
---- !u!114 &-4580584551581236019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4368086432513296165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29a074d529cf945029ef7cf40540c9df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Splines::UnityEngine.Splines.SplineAnimate
-  m_Target: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_LoopMode: 1
-  m_Method: 0
-  m_Duration: 10
-  m_MaxSpeed: 10
-  m_EasingMode: 0
-  m_AlignmentMode: 1
-  m_ObjectForwardAxis: 1
-  m_ObjectUpAxis: 2
-  m_StartOffset: 0
 --- !u!114 &941791499567811077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,3 +156,26 @@ MonoBehaviour:
   ID: 
   Item: {fileID: 0}
   AnchorPoint: {fileID: 3077442194134756337}
+--- !u!114 &3876046896611053542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4368086432513296165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38653b0d351c361489cec55b8881afa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Spline_Animate
+  m_Target: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_LoopMode: 1
+  m_Method: 1
+  m_Duration: 1
+  m_MaxSpeed: 0.325
+  m_EasingMode: 0
+  m_AlignmentMode: 1
+  m_ObjectForwardAxis: 1
+  m_ObjectUpAxis: 2
+  m_StartOffset: 0

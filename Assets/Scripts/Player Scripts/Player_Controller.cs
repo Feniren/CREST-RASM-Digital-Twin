@@ -87,6 +87,8 @@ public class Player_Controller : Controller{
     public void DropItem(InputAction.CallbackContext Context){
         GameObject DroppedItem;
 
+        Debug.Log("Item dropped");
+
         if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
             DroppedItem = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[0].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
 
