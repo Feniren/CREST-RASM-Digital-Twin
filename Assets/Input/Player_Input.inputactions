@@ -61,10 +61,10 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DropItem",
+                    "name": "EquipItem",
                     "type": "Button",
                     "id": "442103bb-29da-4155-8a9d-dae87a05e3a9",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -82,7 +82,7 @@
                     "name": "CreateItem",
                     "type": "Button",
                     "id": "ccf85387-218c-445e-acbc-f96b91357473",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -204,7 +204,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "DropItem",
+                    "action": "EquipItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -249,6 +249,54 @@
                     "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "ItemEquipped",
+            "id": "8dfc7832-4836-4945-b6cc-6ffb8ac1998a",
+            "actions": [
+                {
+                    "name": "ThrowItem",
+                    "type": "Button",
+                    "id": "e626e21a-64b6-4ce7-9f76-3bffb7709299",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PlaceItem",
+                    "type": "Button",
+                    "id": "5c1e8469-dc02-42be-92e9-3b24ce543762",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "01ec070f-2a8f-4f63-86b5-f6a7a9fc0ab4",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ThrowItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3f94cabd-6217-4221-bc59-522d922b89a4",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

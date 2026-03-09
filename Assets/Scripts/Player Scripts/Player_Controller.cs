@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,8 +11,9 @@ public class Player_Controller : Controller{
 
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
+	GameObject ItemInstance = null;
 
-    Player_Input PlayerInput;
+	Player_Input PlayerInput;
 
     Vector3 MovementVelocity;
     Vector2 ControlRotation;
@@ -25,7 +27,7 @@ public class Player_Controller : Controller{
         PlayerInput = new Player_Input();
 
         PlayerInput.Player.Enable();
-        PlayerInput.Player.DropItem.performed += DropItem;
+        PlayerInput.Player.EquipItem.performed += EquipItem;
         PlayerInput.Player.Interact.performed += Interact;
         PlayerInput.Player.AlternateInteract.performed += AlternateInteract;
         PlayerInput.Player.Jump.performed += Jump;
@@ -35,6 +37,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
         PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
+		PlayerInput.ItemEquipped.ThrowItem.performed += ThrowItem;
 
         FirstPersonCameraLocation = new Vector3(0.0f, 0.433f, 0.328f);
         IsFirstPerson = true;
@@ -84,23 +87,56 @@ public class Player_Controller : Controller{
         RigidBodyReference.linearVelocity = Movement;
     }
 
-    public void DropItem(InputAction.CallbackContext Context){
-        GameObject DroppedItem;
+    public void EquipItem(InputAction.CallbackContext Context){
+		if (Context.performed){
+			//PlayerReference.ToggleEquippedItem();
 
-        Debug.Log("Item dropped");
+			if (ItemInstance){
+				Item_Parent Item = ItemInstance.GetComponent<Item_Parent>();
 
-        if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-            DroppedItem = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[0].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
+				Debug.Log("Item exists. Adding to inventory");
 
-            PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[0].Key, 1);
+				PlayerReference.InventoryReference.AddToInventory(Item.Name, 1);
 
-            if (Throw){
-                DroppedItem.GetComponent<Rigidbody>().AddForce(PlayerReference.CameraReference.transform.forward * 30.0f, ForceMode.Impulse);
-            }
-        }
+				Destroy(ItemInstance);
+
+				PlayerInput.ItemEquipped.Disable();
+			}
+			else{
+				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
+					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
+
+					PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
+
+					ItemInstance.GetComponent<Rigidbody>().isKinematic = true;
+
+					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, false);
+
+					ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
+
+					if (Throw){
+						ItemInstance.GetComponent<Rigidbody>().AddForce(PlayerReference.CameraReference.transform.forward * 30.0f, ForceMode.Impulse);
+					}
+
+					Debug.Log("Item created at " + ItemInstance.transform.position);
+
+					PlayerInput.ItemEquipped.Enable();
+				}
+			}
+		}
     }
 
-    public void GrabEnd(InputAction.CallbackContext Context){
+	public void ThrowItem(InputAction.CallbackContext Context){
+		if (Context.performed){
+			ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
+
+			ItemInstance.transform.SetParent(null, true);
+
+			ItemInstance = null;
+		}
+	}
+
+	public void GrabEnd(InputAction.CallbackContext Context){
         if (Context.canceled){
             //Debug.Log("Grab End");
         }
@@ -113,14 +149,10 @@ public class Player_Controller : Controller{
         ControlRotation.y -= (MouseLook.y * PlayerReference.PlayerSettings.LookSpeedY);
         ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
 
-        //Quaternion XQuaternion = Quaternion.AngleAxis(ControlRotation.x, Vector3.up);
         Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
 
         gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
         PlayerReference.CameraReference.transform.localRotation = XQuaternion;
-
-        //PlayerReference.CameraReference.transform.localEulerAngles += 
-        //PlayerReference.CameraReference.transform.localEulerAngles += Vector3.right;
     }
 
     public void Interact(InputAction.CallbackContext Context){
@@ -146,7 +178,7 @@ public class Player_Controller : Controller{
     public void Jump(InputAction.CallbackContext Context){
         if (Context.performed){
             if (PlayerReference.EntityStatistics.JumpCurrent < PlayerReference.EntityStatistics.JumpMax){
-                RigidBodyReference.AddForce(new Vector3(0.0f, 80.0f, 0.0f), ForceMode.Impulse);
+                RigidBodyReference.AddForce(new Vector3(0.0f, PlayerReference.EntityStatistics.JumpForce, 0.0f), ForceMode.Impulse);
 
                 PlayerReference.EntityStatistics.JumpCurrent++;
             }
@@ -163,12 +195,6 @@ public class Player_Controller : Controller{
 
     public void Move(InputAction.CallbackContext Context){
         MovementVelocity = Context.ReadValue<Vector2>();
-    }
-
-    public void EquipItem(InputAction.CallbackContext Context){
-        if (Context.performed){
-            PlayerReference.ToggleEquippedItem();
-        }
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){

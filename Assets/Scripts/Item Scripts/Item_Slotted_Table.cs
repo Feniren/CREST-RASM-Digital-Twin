@@ -1,9 +1,15 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Slotted_Table : Item_Parent{
+public class Item_Slotted_Table : Item_Parent{
     public GameObject Item;
     public GameObject AnchorPoint;
+
+    public Item_Slotted_Table(){
+        Name = "Slotted Table";
+        Pickup = false;
+        Quantity = 1;
+    }
 
     public override void Start(){
         base.Start();

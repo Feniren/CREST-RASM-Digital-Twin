@@ -12,6 +12,7 @@ public class Entity_Statistics{
         HealthMax = 0.0f;
         HealthNormalized = 0.0f;
         JumpCurrent = 0;
+        JumpForce = 0.0f;
         JumpMax = 0;
         Level = 0;
         MovementSpeed = 0.0f;
@@ -26,6 +27,7 @@ public class Entity_Statistics{
     public float HealthMax;
     public float HealthNormalized;
     public int JumpCurrent;
+    public float JumpForce;
     public int JumpMax;
     public int Level;
     public float MovementSpeed;

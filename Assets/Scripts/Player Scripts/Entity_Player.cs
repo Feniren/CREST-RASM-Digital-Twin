@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Entity_Player : Entity, Save_Data_Interface{
+    public GameObject HUDReference;
+	public GameObject ItemAnchor;
+
     public Camera CameraReference;
     public Health_Bar HealthBarReference;
     public Item_Library ItemLibraryReference;
@@ -22,6 +25,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        Instantiate(HUDReference);
     }
 
     void Update(){
@@ -49,7 +54,9 @@ public class Entity_Player : Entity, Save_Data_Interface{
     }
 
     public void ToggleEquippedItem(){
-        if (true){
+
+
+        /*if (true){
             if (InventoryReference.InstancedInventory.Count != 0){
                 GameObject ItemReference = InventoryReference.InstancedInventory[0];
 
@@ -63,7 +70,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
             else{
                 Debug.Log("No Items in inventory");
             }
-        }
+        }*/
     }
 
     public override void TakeDamage(Damage_Event DamageEvent){

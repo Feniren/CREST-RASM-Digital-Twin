@@ -147,10 +147,10 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""DropItem"",
+                    ""name"": ""EquipItem"",
                     ""type"": ""Button"",
                     ""id"": ""442103bb-29da-4155-8a9d-dae87a05e3a9"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -168,7 +168,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""CreateItem"",
                     ""type"": ""Button"",
                     ""id"": ""ccf85387-218c-445e-acbc-f96b91357473"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -290,7 +290,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""DropItem"",
+                    ""action"": ""EquipItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -339,6 +339,54 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""ItemEquipped"",
+            ""id"": ""8dfc7832-4836-4945-b6cc-6ffb8ac1998a"",
+            ""actions"": [
+                {
+                    ""name"": ""ThrowItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""e626e21a-64b6-4ce7-9f76-3bffb7709299"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlaceItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c1e8469-dc02-42be-92e9-3b24ce543762"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""01ec070f-2a8f-4f63-86b5-f6a7a9fc0ab4"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ThrowItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3f94cabd-6217-4221-bc59-522d922b89a4"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PlaceItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -351,15 +399,20 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_ShootPhysical = m_Player.FindAction("ShootPhysical", throwIfNotFound: true);
         m_Player_ShootSpell = m_Player.FindAction("ShootSpell", throwIfNotFound: true);
-        m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
+        m_Player_EquipItem = m_Player.FindAction("EquipItem", throwIfNotFound: true);
         m_Player_SwitchCameraPerspective = m_Player.FindAction("SwitchCameraPerspective", throwIfNotFound: true);
         m_Player_CreateItem = m_Player.FindAction("CreateItem", throwIfNotFound: true);
         m_Player_AlternateInteract = m_Player.FindAction("AlternateInteract", throwIfNotFound: true);
+        // ItemEquipped
+        m_ItemEquipped = asset.FindActionMap("ItemEquipped", throwIfNotFound: true);
+        m_ItemEquipped_ThrowItem = m_ItemEquipped.FindAction("ThrowItem", throwIfNotFound: true);
+        m_ItemEquipped_PlaceItem = m_ItemEquipped.FindAction("PlaceItem", throwIfNotFound: true);
     }
 
     ~@Player_Input()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, Player_Input.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_ItemEquipped.enabled, "This will cause a leak and performance issues, Player_Input.ItemEquipped.Disable() has not been called.");
     }
 
     /// <summary>
@@ -441,7 +494,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_ShootPhysical;
     private readonly InputAction m_Player_ShootSpell;
-    private readonly InputAction m_Player_DropItem;
+    private readonly InputAction m_Player_EquipItem;
     private readonly InputAction m_Player_SwitchCameraPerspective;
     private readonly InputAction m_Player_CreateItem;
     private readonly InputAction m_Player_AlternateInteract;
@@ -481,9 +534,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ShootSpell => m_Wrapper.m_Player_ShootSpell;
         /// <summary>
-        /// Provides access to the underlying input action "Player/DropItem".
+        /// Provides access to the underlying input action "Player/EquipItem".
         /// </summary>
-        public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
+        public InputAction @EquipItem => m_Wrapper.m_Player_EquipItem;
         /// <summary>
         /// Provides access to the underlying input action "Player/SwitchCameraPerspective".
         /// </summary>
@@ -540,9 +593,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @ShootSpell.started += instance.OnShootSpell;
             @ShootSpell.performed += instance.OnShootSpell;
             @ShootSpell.canceled += instance.OnShootSpell;
-            @DropItem.started += instance.OnDropItem;
-            @DropItem.performed += instance.OnDropItem;
-            @DropItem.canceled += instance.OnDropItem;
+            @EquipItem.started += instance.OnEquipItem;
+            @EquipItem.performed += instance.OnEquipItem;
+            @EquipItem.canceled += instance.OnEquipItem;
             @SwitchCameraPerspective.started += instance.OnSwitchCameraPerspective;
             @SwitchCameraPerspective.performed += instance.OnSwitchCameraPerspective;
             @SwitchCameraPerspective.canceled += instance.OnSwitchCameraPerspective;
@@ -581,9 +634,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @ShootSpell.started -= instance.OnShootSpell;
             @ShootSpell.performed -= instance.OnShootSpell;
             @ShootSpell.canceled -= instance.OnShootSpell;
-            @DropItem.started -= instance.OnDropItem;
-            @DropItem.performed -= instance.OnDropItem;
-            @DropItem.canceled -= instance.OnDropItem;
+            @EquipItem.started -= instance.OnEquipItem;
+            @EquipItem.performed -= instance.OnEquipItem;
+            @EquipItem.canceled -= instance.OnEquipItem;
             @SwitchCameraPerspective.started -= instance.OnSwitchCameraPerspective;
             @SwitchCameraPerspective.performed -= instance.OnSwitchCameraPerspective;
             @SwitchCameraPerspective.canceled -= instance.OnSwitchCameraPerspective;
@@ -626,6 +679,113 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // ItemEquipped
+    private readonly InputActionMap m_ItemEquipped;
+    private List<IItemEquippedActions> m_ItemEquippedActionsCallbackInterfaces = new List<IItemEquippedActions>();
+    private readonly InputAction m_ItemEquipped_ThrowItem;
+    private readonly InputAction m_ItemEquipped_PlaceItem;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ItemEquipped".
+    /// </summary>
+    public struct ItemEquippedActions
+    {
+        private @Player_Input m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ItemEquippedActions(@Player_Input wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ItemEquipped/ThrowItem".
+        /// </summary>
+        public InputAction @ThrowItem => m_Wrapper.m_ItemEquipped_ThrowItem;
+        /// <summary>
+        /// Provides access to the underlying input action "ItemEquipped/PlaceItem".
+        /// </summary>
+        public InputAction @PlaceItem => m_Wrapper.m_ItemEquipped_PlaceItem;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ItemEquipped; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ItemEquippedActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ItemEquippedActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ItemEquippedActions" />
+        public void AddCallbacks(IItemEquippedActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ItemEquippedActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ItemEquippedActionsCallbackInterfaces.Add(instance);
+            @ThrowItem.started += instance.OnThrowItem;
+            @ThrowItem.performed += instance.OnThrowItem;
+            @ThrowItem.canceled += instance.OnThrowItem;
+            @PlaceItem.started += instance.OnPlaceItem;
+            @PlaceItem.performed += instance.OnPlaceItem;
+            @PlaceItem.canceled += instance.OnPlaceItem;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ItemEquippedActions" />
+        private void UnregisterCallbacks(IItemEquippedActions instance)
+        {
+            @ThrowItem.started -= instance.OnThrowItem;
+            @ThrowItem.performed -= instance.OnThrowItem;
+            @ThrowItem.canceled -= instance.OnThrowItem;
+            @PlaceItem.started -= instance.OnPlaceItem;
+            @PlaceItem.performed -= instance.OnPlaceItem;
+            @PlaceItem.canceled -= instance.OnPlaceItem;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ItemEquippedActions.UnregisterCallbacks(IItemEquippedActions)" />.
+        /// </summary>
+        /// <seealso cref="ItemEquippedActions.UnregisterCallbacks(IItemEquippedActions)" />
+        public void RemoveCallbacks(IItemEquippedActions instance)
+        {
+            if (m_Wrapper.m_ItemEquippedActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ItemEquippedActions.AddCallbacks(IItemEquippedActions)" />
+        /// <seealso cref="ItemEquippedActions.RemoveCallbacks(IItemEquippedActions)" />
+        /// <seealso cref="ItemEquippedActions.UnregisterCallbacks(IItemEquippedActions)" />
+        public void SetCallbacks(IItemEquippedActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ItemEquippedActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ItemEquippedActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ItemEquippedActions" /> instance referencing this action map.
+    /// </summary>
+    public ItemEquippedActions @ItemEquipped => new ItemEquippedActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -676,12 +836,12 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShootSpell(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "DropItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "EquipItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDropItem(InputAction.CallbackContext context);
+        void OnEquipItem(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "SwitchCameraPerspective" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -703,5 +863,27 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlternateInteract(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemEquipped" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ItemEquippedActions.AddCallbacks(IItemEquippedActions)" />
+    /// <seealso cref="ItemEquippedActions.RemoveCallbacks(IItemEquippedActions)" />
+    public interface IItemEquippedActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ThrowItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnThrowItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PlaceItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPlaceItem(InputAction.CallbackContext context);
     }
 }
