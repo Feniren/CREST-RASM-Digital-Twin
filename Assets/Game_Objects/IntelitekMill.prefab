@@ -63,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f238b2db6fdbe0c47b529bc14849c788, type: 3}
       insertIndex: -1
       addedObject: {fileID: -7049831354228194650}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f238b2db6fdbe0c47b529bc14849c788, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7651206504734608833}
   m_SourcePrefab: {fileID: 100100000, guid: f238b2db6fdbe0c47b529bc14849c788, type: 3}
 --- !u!1 &603170600745493062 stripped
 GameObject:
@@ -91,3 +94,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5495902117074765545, guid: f238b2db6fdbe0c47b529bc14849c788, type: 3}
+--- !u!114 &7651206504734608833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603170600745493062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f52678db4c685b43ba0cf18ca4ce8da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Mill
+  AutomaticActivation: 0
+  Owner: {fileID: 0}
+  Pickup: 0
+  Quantity: 1
+  Name: Mill
+  ID: 

@@ -59,6 +59,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3581906349914705389}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7246053333255475695}
   m_SourcePrefab: {fileID: 100100000, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
 --- !u!1 &867347346344986926 stripped
 GameObject:
@@ -87,3 +90,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4611597914461366019, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+--- !u!114 &7246053333255475695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 867347346344986926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e475db19debbf4fa69cd62b3f9f69c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_ASRS
+  AutomaticActivation: 0
+  Owner: {fileID: 0}
+  Pickup: 0
+  Quantity: 1
+  Name: ASRS
+  ID: 

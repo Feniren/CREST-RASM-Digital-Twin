@@ -1,6 +1,8 @@
 using UnityEngine;
 
 public class Item_Lathe : Item_Parent{
+	public Item_Slotted_Table ActiveTable;
+
 	public Item_Lathe(){
 		Name = "Lathe";
 		Pickup = false;

@@ -67,6 +67,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
       insertIndex: -1
       addedObject: {fileID: -7961649717158232891}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6253495840110350541}
   m_SourcePrefab: {fileID: 100100000, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
 --- !u!1 &1794902835283116828 stripped
 GameObject:
@@ -95,3 +98,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &6253495840110350541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794902835283116828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68e4c35975877a54688603d6ec1d2ca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Laser_Engraver
+  AutomaticActivation: 0
+  Owner: {fileID: 0}
+  Pickup: 0
+  Quantity: 1
+  Name: Laser Engraver
+  ID: 
