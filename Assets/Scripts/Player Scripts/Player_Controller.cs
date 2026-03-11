@@ -11,7 +11,7 @@ public class Player_Controller : Controller{
 
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
-	GameObject ItemInstance = null;
+	public GameObject ItemInstance = null;
 
 	Player_Input PlayerInput;
 
