@@ -24,4 +24,18 @@ public class Item_Slotted_Table : Item_Parent{
             Item.transform.position = AnchorPoint.transform.position;
         }
     }
+
+    public override void AlternateInteract(Entity_Player PlayerReference){
+        if (Item == null){
+            if (PlayerReference.gameObject.GetComponent<Player_Controller>().ItemInstance){
+                Item = PlayerReference.gameObject.GetComponent<Player_Controller>().ItemInstance;
+
+                PlayerReference.gameObject.GetComponent<Player_Controller>().ItemInstance = null;
+
+                Item.transform.SetParent(AnchorPoint.transform, false);
+                Item.transform.position = AnchorPoint.transform.position;
+                Item.transform.rotation = AnchorPoint.transform.rotation;
+            }
+        }
+    }
 }
