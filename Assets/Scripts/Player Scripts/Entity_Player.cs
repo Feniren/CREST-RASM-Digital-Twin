@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class Entity_Player : Entity, Save_Data_Interface{
     public GameObject HUDReference;
