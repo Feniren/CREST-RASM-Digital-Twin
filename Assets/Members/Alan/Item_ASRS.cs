@@ -1,20 +1,19 @@
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
-public enum rack_task
-{
-	RETRIEVE , INSERT
-}
+
 
 
 
 public class Item_ASRS : Item_Parent{
-	public List<Machine_Job> Jobs = new List<Machine_Job>();
-	public rack_task task;
+	// public List<Machine_Job> Jobs = new List<Machine_Job>();
+	public RACK_TASK task;
 	public Item_Slotted_Table item = null;
 	public Item_Epoxy_Block material = null;
 	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
@@ -40,31 +39,61 @@ public class Item_ASRS : Item_Parent{
 
     
 
-
-
-	// this 
-	public GameObject Retreive(string table_id)
+	public GameObject Retrieve(string table_id)
 	{
-		int id = int.Parse(table_id);
-        Item_Slotted_Table occupied = TableList[(id % 1000) * 6 + (id % 10)];
+    
+        if (string.IsNullOrWhiteSpace(table_id))
+            throw new ArgumentException("Table ID cannot be null or empty.");
 
-        if (occupied != null)
-        {
-			TableList[(id % 1000) * 6 + (id % 10)] = null;
-             return occupied.Item;
-        }
-		return null;
+        int id = int.Parse(table_id);
+        int table_index = GetIndex(id);
+
+        if (table_index < 0 || table_index >= TableList.Count)
+            throw new IndexOutOfRangeException($"Computed index {table_index} is out of bounds.");
+
+        Item_Slotted_Table occupied = TableList[table_index];
+
+        if (occupied == null)
+            throw new InvalidOperationException("No item exists in the requested slot.");
+
+        TableList[table_index] = null;
+        return occupied.Item;
 	}
 
-	public void Insert (Item_Slotted_Table table)
+	public void Insert(Item_Slotted_Table table)
 	{
-		int id = int.Parse(table.TableID);
-		Item_Slotted_Table occupied = TableList[(id % 1000) * 6 + (id % 10)];
+        if (table == null)
+            throw new ArgumentNullException(nameof(table), "Table object cannot be null.");
 
-        if ( occupied == null)
-		{
-			TableList[(id % 1000) * 6 + (id % 10)] = table;
-		}
-		throw new System.InvalidOperationException("Slot is occupied.");
-    }
+        if (string.IsNullOrWhiteSpace(table.TableID))
+            throw new ArgumentException("Table ID cannot be null or empty.");
+
+        int id = int.Parse(table.TableID);
+        int table_index = GetIndex(id);
+
+        if (table_index < 0 || table_index >= TableList.Count)
+            throw new IndexOutOfRangeException($"Computed index {table_index} is out of bounds.");
+
+        Item_Slotted_Table occupied = TableList[table_index];
+
+        if (occupied != null)
+            throw new InvalidOperationException("Slot is occupied.");
+
+        TableList[table_index] = table; 
+	}
+
+	public int GetIndex(int table_id)
+	{
+		int row = table_id / 10000;
+		int col = table_id % 10;
+
+		if (row < 1 || row > 12)
+			throw new ArgumentOutOfRangeException(nameof(table_id), $"Row value {row} is out of range. Must be 1-12.");
+
+		if (col < 1 || col > 6)
+			throw new ArgumentOutOfRangeException(nameof(table_id), $"Column value {col} is out of range. Must be 1-6.");
+
+		return (row - 1) * 6 + (col - 1);
+	}
+
 }
