@@ -652,6 +652,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: e_IntelitekLaser
       objectReference: {fileID: 0}
+    - target: {fileID: 5089634143045701848, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
+      propertyPath: _target
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6227486138970689809, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.37025255
+      objectReference: {fileID: 0}
+    - target: {fileID: 6253495840110350541, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
+      propertyPath: ActiveTable
+      value: 
+      objectReference: {fileID: 2033895328}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1847,6 +1859,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
   m_PrefabInstance: {fileID: 1028121120}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2033895328 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3759616066053975348, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
+  m_PrefabInstance: {fileID: 1028121120}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
 --- !u!1 &2098765044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7641843955062889096, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
