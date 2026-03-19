@@ -22,6 +22,7 @@ public class Item_Slotted_Table : Item_Parent{
         if (Item){
             Item.transform.SetParent(AnchorPoint.transform, true);
             Item.transform.position = AnchorPoint.transform.position;
+            Item.transform.rotation = AnchorPoint.transform.localRotation;
         }
     }
 

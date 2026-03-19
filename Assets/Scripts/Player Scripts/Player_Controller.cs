@@ -101,7 +101,8 @@ public class Player_Controller : Controller{
 				Destroy(ItemInstance);
 
 				PlayerInput.ItemEquipped.Disable();
-			}
+                PlayerInput.Player.ShootPhysical.Enable();
+            }
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
 					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
@@ -121,6 +122,7 @@ public class Player_Controller : Controller{
 					Debug.Log("Item created at " + ItemInstance.transform.position);
 
 					PlayerInput.ItemEquipped.Enable();
+                    PlayerInput.Player.ShootPhysical.Disable();
 				}
 			}
 		}
