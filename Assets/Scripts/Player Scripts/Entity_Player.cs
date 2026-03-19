@@ -23,8 +23,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         PlayerSettings.LookSpeedX = 0.5f;
         PlayerSettings.LookSpeedY = 0.5f;
-
-        XRGeneralSettings.Instance.Manager.DeinitializeLoader();
     }
 
     public override void Start(){
@@ -35,10 +33,17 @@ public class Entity_Player : Entity, Save_Data_Interface{
         for (int i = 0; i < XRList.Count; i++){
             if (XRList[i].running){
                 Debug.Log("XR Device running");
+
+                PlayerSettings.XREnabled = true;
+
                 CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
                 LeftHandAnchor.SetActive(true);
                 RightHandAnchor.SetActive(true);
             }
+        }
+
+        if (!PlayerSettings.XREnabled){
+            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
         }
 
         ItemLibraryReference = GetComponent<Item_Library>();
