@@ -110,11 +110,11 @@ public class Player_Controller : Controller{
 
 					ItemInstance.GetComponent<Rigidbody>().isKinematic = true;
 
-					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, false);
+					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, true);
 
-					ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
+                    ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
 
-					if (Throw){
+                    if (Throw){
 						ItemInstance.GetComponent<Rigidbody>().AddForce(PlayerReference.CameraReference.transform.forward * 30.0f, ForceMode.Impulse);
 					}
 
