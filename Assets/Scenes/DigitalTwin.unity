@@ -1017,6 +1017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96145ee3300c6fe499d32f9e8544742f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  rack: {fileID: 786521137}
 --- !u!54 &741969135
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1039,8 +1040,8 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -1059,7 +1060,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1137,6 +1138,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
+--- !u!114 &786521137 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7246053333255475695, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
+  m_PrefabInstance: {fileID: 4188038907497068796}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e475db19debbf4fa69cd62b3f9f69c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_ASRS
 --- !u!1 &814723533
 GameObject:
   m_ObjectHideFlags: 0
@@ -3260,3 +3272,4 @@ SceneRoots:
   - {fileID: 147853573}
   - {fileID: 5080863831809980041}
   - {fileID: 3893269345404338493}
+  - {fileID: 741969137}
