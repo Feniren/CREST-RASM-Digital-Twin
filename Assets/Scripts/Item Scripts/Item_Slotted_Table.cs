@@ -22,6 +22,7 @@ public class Item_Slotted_Table : Item_Parent{
         if (Item){
             Item.transform.SetParent(AnchorPoint.transform, true);
             Item.transform.position = AnchorPoint.transform.position;
+            Item.transform.rotation = AnchorPoint.transform.localRotation;
         }
     }
 
@@ -35,6 +36,8 @@ public class Item_Slotted_Table : Item_Parent{
                 Item.transform.SetParent(AnchorPoint.transform, false);
                 Item.transform.position = AnchorPoint.transform.position;
                 Item.transform.rotation = AnchorPoint.transform.rotation;
+                //Item.transform.rotation = Quaternion.AngleAxis(270, Vector3.right);
+                //Item.transform.rotation = Quaternion.
             }
         }
     }

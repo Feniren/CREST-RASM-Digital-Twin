@@ -132,7 +132,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""ShootPhysical"",
                     ""type"": ""Button"",
                     ""id"": ""819febe4-3670-402e-b1c3-7d13c9dececc"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -141,7 +141,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""ShootSpell"",
                     ""type"": ""Button"",
                     ""id"": ""a8465fb8-132b-469a-9dbf-8410dd18a39e"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -178,6 +178,15 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""0f30c64a-4f2b-4390-9c48-659518dbd12e"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XRControllerPosition"",
+                    ""type"": ""Button"",
+                    ""id"": ""65041af2-887e-4a7e-b0e7-558966591108"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -243,6 +252,61 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""right"",
                     ""id"": ""508d8550-25cc-476f-ac3b-3c5a0daa4853"",
                     ""path"": ""<Keyboard>/#(D)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""a4827286-ccbd-47ab-8de2-a2765b6e3cff"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""805e6f1b-df47-4a65-9ed1-ff09d4f25fc6"",
+                    ""path"": ""<QuestProTouchController>{LeftHand}/thumbstick/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""12b7f805-a377-4866-9907-b519304b73f7"",
+                    ""path"": ""<QuestTouchPlusController>/thumbstick/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""9ccffd30-444c-45e0-b8d7-bd43727a931a"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""093ac5ce-9580-4a85-98d7-155021425d49"",
+                    ""path"": """",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -337,6 +401,39 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""8e3e7290-df50-416f-828f-b7a8e59f2f1c"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerPosition"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""17215b1b-286e-43e5-a84c-e0370d45ff06"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""173965e1-7121-4606-b23a-74daa92bc6ea"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -403,6 +500,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_SwitchCameraPerspective = m_Player.FindAction("SwitchCameraPerspective", throwIfNotFound: true);
         m_Player_CreateItem = m_Player.FindAction("CreateItem", throwIfNotFound: true);
         m_Player_AlternateInteract = m_Player.FindAction("AlternateInteract", throwIfNotFound: true);
+        m_Player_XRControllerPosition = m_Player.FindAction("XRControllerPosition", throwIfNotFound: true);
         // ItemEquipped
         m_ItemEquipped = asset.FindActionMap("ItemEquipped", throwIfNotFound: true);
         m_ItemEquipped_ThrowItem = m_ItemEquipped.FindAction("ThrowItem", throwIfNotFound: true);
@@ -498,6 +596,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwitchCameraPerspective;
     private readonly InputAction m_Player_CreateItem;
     private readonly InputAction m_Player_AlternateInteract;
+    private readonly InputAction m_Player_XRControllerPosition;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -549,6 +648,10 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/AlternateInteract".
         /// </summary>
         public InputAction @AlternateInteract => m_Wrapper.m_Player_AlternateInteract;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerPosition".
+        /// </summary>
+        public InputAction @XRControllerPosition => m_Wrapper.m_Player_XRControllerPosition;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -605,6 +708,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started += instance.OnAlternateInteract;
             @AlternateInteract.performed += instance.OnAlternateInteract;
             @AlternateInteract.canceled += instance.OnAlternateInteract;
+            @XRControllerPosition.started += instance.OnXRControllerPosition;
+            @XRControllerPosition.performed += instance.OnXRControllerPosition;
+            @XRControllerPosition.canceled += instance.OnXRControllerPosition;
         }
 
         /// <summary>
@@ -646,6 +752,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started -= instance.OnAlternateInteract;
             @AlternateInteract.performed -= instance.OnAlternateInteract;
             @AlternateInteract.canceled -= instance.OnAlternateInteract;
+            @XRControllerPosition.started -= instance.OnXRControllerPosition;
+            @XRControllerPosition.performed -= instance.OnXRControllerPosition;
+            @XRControllerPosition.canceled -= instance.OnXRControllerPosition;
         }
 
         /// <summary>
@@ -863,6 +972,13 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlternateInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerPosition(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemEquipped" which allows adding and removing callbacks.

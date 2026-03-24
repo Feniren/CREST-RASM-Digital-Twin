@@ -101,7 +101,8 @@ public class Player_Controller : Controller{
 				Destroy(ItemInstance);
 
 				PlayerInput.ItemEquipped.Disable();
-			}
+                PlayerInput.Player.ShootPhysical.Enable();
+            }
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
 					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
@@ -110,17 +111,18 @@ public class Player_Controller : Controller{
 
 					ItemInstance.GetComponent<Rigidbody>().isKinematic = true;
 
-					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, false);
+					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, true);
 
-					ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
+                    ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
 
-					if (Throw){
+                    if (Throw){
 						ItemInstance.GetComponent<Rigidbody>().AddForce(PlayerReference.CameraReference.transform.forward * 30.0f, ForceMode.Impulse);
 					}
 
 					Debug.Log("Item created at " + ItemInstance.transform.position);
 
 					PlayerInput.ItemEquipped.Enable();
+                    PlayerInput.Player.ShootPhysical.Disable();
 				}
 			}
 		}
