@@ -67,5 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "CREST-RASM-Digital-Twin.slnx"
+    "dotnet.defaultSolution": "CREST-RASM-Digital-Twin.slnx",
+    "dotnet.preferCSharpExtension": true
 }
