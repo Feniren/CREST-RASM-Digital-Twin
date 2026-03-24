@@ -1,14 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using ProMill8000;
 
 public class Item_Mill : Item_Parent{
 	public Item_Slotted_Table ActiveTable;
 	public Transform ProcessPoint;
-	public Material ProcessingMaterial;
-	public float ProcessingTime = 3f;
+	[SerializeField] private MillingAnimation millingAnimation;
 
-	private Material _originalMaterial;
-	private MeshRenderer _renderer;
 	private bool _isProcessing;
 
 	public bool IsProcessing => _isProcessing;
@@ -21,9 +19,6 @@ public class Item_Mill : Item_Parent{
 
 	public override void Start(){
 		base.Start();
-		_renderer = GetComponent<MeshRenderer>();
-		if (_renderer != null)
-			_originalMaterial = _renderer.sharedMaterial;
 	}
 
 	public void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
@@ -43,18 +38,27 @@ public class Item_Mill : Item_Parent{
 			yield break;
 		}
 
-		// Take item from table into mill
+		// Take item from table and clamp to worktable X
 		table.Item = null;
-		if (ProcessPoint != null){
-			item.transform.SetParent(ProcessPoint, false);
+		var itemCollider = item.GetComponent<Collider>();
+		if (itemCollider != null)
+			itemCollider.enabled = false;
+
+		Transform clamp = ProcessPoint != null ? ProcessPoint : (millingAnimation != null ? millingAnimation.WorktableXTransform : null);
+		if (clamp != null){
+			item.transform.SetParent(clamp, false);
 			item.transform.localPosition = Vector3.zero;
 		}
 
-		// Visual change on mill
-		if (ProcessingMaterial != null && _renderer != null)
-			_renderer.material = ProcessingMaterial;
+		// Play milling animation and wait for it to finish
+		if (millingAnimation != null){
+			millingAnimation.Play();
+			yield return new WaitWhile(() => millingAnimation.IsPlaying);
+		}
 
-		yield return new WaitForSeconds(ProcessingTime);
+		// Re-enable item collider before returning
+		if (itemCollider != null)
+			itemCollider.enabled = true;
 
 		// Return item to table
 		if (table.AnchorPoint != null){
@@ -62,10 +66,6 @@ public class Item_Mill : Item_Parent{
 			item.transform.localPosition = Vector3.zero;
 			table.Item = item;
 		}
-
-		// Restore material
-		if (_originalMaterial != null && _renderer != null)
-			_renderer.material = _originalMaterial;
 
 		// Remove job and resume belt
 		queue.jobPop();
