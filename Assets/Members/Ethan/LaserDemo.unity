@@ -124,6 +124,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3077442194134756337, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
   m_PrefabInstance: {fileID: 576434720}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &107104056 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8338902953670966236, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+  m_PrefabInstance: {fileID: 1532291103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &107551769
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,6 +514,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 2.369, y: 1.154, z: -0.62}
+--- !u!4 &289232691 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1945824336356249752, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+  m_PrefabInstance: {fileID: 1532291103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &298211910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1481,6 +1491,8 @@ GameObject:
   - component: {fileID: 1284791692}
   - component: {fileID: 1284791691}
   - component: {fileID: 1284791695}
+  - component: {fileID: 1284791696}
+  - component: {fileID: 1284791697}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -1601,6 +1613,54 @@ MonoBehaviour:
   Name: Epoxy Block
   ID: 
   brushRadius: 5
+--- !u!65 &1284791696
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284791690}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.99999994, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &1284791697
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284791690}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1285538723 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7641843955062889096, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
@@ -1767,6 +1827,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 842041963}
     m_Modifications:
+    - target: {fileID: 6784529460807903099, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8338902953670966236, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
       propertyPath: m_Name
       value: RobotArm (2)
@@ -1817,7 +1881,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8715147674249273702, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
       insertIndex: -1
       addedObject: {fileID: 416374563}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8338902953670966236, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1885589191}
   m_SourcePrefab: {fileID: 100100000, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
 --- !u!1001 &1541006018
 PrefabInstance:
@@ -2038,6 +2105,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8715147674249273702, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
   m_PrefabInstance: {fileID: 1532291103}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1885589191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107104056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ffed1e4fad294c4ab084484313e5b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Laser_Tender_Arm
+  attachmentPoint: {fileID: 289232691}
 --- !u!4 &1961080408 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7633692461447985311, guid: 4eb8ba8780e4096479ba58185a11989a, type: 3}
