@@ -8,9 +8,9 @@ public class e_Item_Slotted_Table : Item_Parent{
     public GameObject Text;
     public string TableID;
 
-	private Engraving OwnEngraving = new Engraving();
+    private Engraving OwnEngraving;
 
-	public e_Item_Slotted_Table(){
+    public e_Item_Slotted_Table(){
         Name = "Slotted Table";
         Pickup = false;
         Quantity = 1;
@@ -18,6 +18,10 @@ public class e_Item_Slotted_Table : Item_Parent{
 
     public override void Start(){
         base.Start();
+
+
+
+        OwnEngraving = gameObject.AddComponent<Engraving>();
 
         Text.GetComponent<TextMeshPro>().SetText(TableID);
 
