@@ -34,8 +34,8 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Look.performed += Look;
         PlayerInput.Player.Move.performed += Move;
         PlayerInput.Player.Move.canceled += StopMoving;
-        PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
-        PlayerInput.Player.ShootSpell.performed += ShootSpell;
+        //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
+        //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
 		PlayerInput.ItemEquipped.ThrowItem.performed += ThrowItem;
 
@@ -165,7 +165,7 @@ public class Player_Controller : Controller{
                 Hit.collider.gameObject.GetComponent<Item_Parent>().Interact(PlayerReference);
             }
         }
-    }
+    }   
 
     public void AlternateInteract(InputAction.CallbackContext Context){
         RaycastHit Hit;
