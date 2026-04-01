@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 using TMPro;
 
 public class Item_Slotted_Table : Item_Parent{
@@ -22,7 +23,17 @@ public class Item_Slotted_Table : Item_Parent{
         if (Item){
             Item.transform.SetParent(AnchorPoint.transform, true);
             Item.transform.position = AnchorPoint.transform.position;
-            Item.transform.rotation = AnchorPoint.transform.localRotation;
+            Item.transform.rotation = Quaternion.LookRotation(AnchorPoint.transform.forward);
+        }
+
+        StartCoroutine(DrawLine());
+    }
+    
+    IEnumerator DrawLine(){
+        while (true){
+            Debug.DrawLine(AnchorPoint.transform.position, AnchorPoint.transform.position + (AnchorPoint.transform.forward * 0.5f), Color.aliceBlue, 3.0f, false);
+
+            yield return new WaitForSeconds(3.0f);
         }
     }
 
@@ -35,9 +46,7 @@ public class Item_Slotted_Table : Item_Parent{
 
                 Item.transform.SetParent(AnchorPoint.transform, false);
                 Item.transform.position = AnchorPoint.transform.position;
-                Item.transform.rotation = AnchorPoint.transform.rotation;
-                //Item.transform.rotation = Quaternion.AngleAxis(270, Vector3.right);
-                //Item.transform.rotation = Quaternion.
+                Item.transform.rotation = Quaternion.LookRotation(AnchorPoint.transform.forward);
             }
         }
     }
