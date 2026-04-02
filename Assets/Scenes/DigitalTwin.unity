@@ -804,6 +804,93 @@ MonoBehaviour:
   leftDoor: {fileID: 311936338}
   rightDoor: {fileID: 219878632}
   slideDistance: 0.25
+--- !u!114 &269073074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269073069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a35f6cfbfba9b548aaa00d52cfe8a50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable
+  m_InteractionManager: {fileID: 0}
+  m_Colliders:
+  - {fileID: 269073071}
+  m_InteractionLayers:
+    m_Bits: 1
+  m_DistanceCalculationMode: 1
+  m_SelectMode: 0
+  m_FocusMode: 1
+  m_CustomReticle: {fileID: 0}
+  m_AllowGazeInteraction: 0
+  m_AllowGazeSelect: 0
+  m_OverrideGazeTimeToSelect: 0
+  m_GazeTimeToSelect: 0.5
+  m_OverrideTimeToAutoDeselectGaze: 0
+  m_TimeToAutoDeselectGaze: 3
+  m_AllowGazeAssistance: 0
+  m_FirstHoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastHoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_HoverExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstSelectEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastSelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_SelectEntered:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 269073072}
+        m_TargetAssemblyTypeName: Item_Mill_Doors, Assembly-CSharp
+        m_MethodName: AlternateInteract
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: Entity_Player, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_SelectExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FirstFocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_LastFocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusEntered:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FocusExited:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
+  m_StartingInteractionStrengthFilters: []
+  m_AutoFindParentInteractableInHierarchy: 0
+  m_ParentInteractableObject: {fileID: 0}
 --- !u!4 &272836337 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
@@ -1352,6 +1439,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1146287210693540390, guid: 7e0ad75c0dd51df4c9e7611ac571dd93, type: 3}
       insertIndex: -1
       addedObject: {fileID: 269073071}
+    - targetCorrespondingSourceObject: {fileID: 1146287210693540390, guid: 7e0ad75c0dd51df4c9e7611ac571dd93, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 269073074}
     - targetCorrespondingSourceObject: {fileID: 8696271605170408332, guid: 7e0ad75c0dd51df4c9e7611ac571dd93, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219878632}
@@ -1614,6 +1704,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Job_Queue
   Jobs: []
   TestMode_AddMillJob: 1
+--- !u!114 &901145440 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3732691426717446640, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+  m_PrefabInstance: {fileID: 1824045448}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b039f9d3a483104e9778cc4c36018a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Robot_Arm
 --- !u!1001 &989112521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1766,6 +1867,7 @@ MonoBehaviour:
   ActiveTable: {fileID: 0}
   ProcessPoint: {fileID: 638627353}
   millingAnimation: {fileID: 1293672958}
+  RobotArm: {fileID: 901145440}
 --- !u!4 &1099273984 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
@@ -2626,7 +2728,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8715147674249273702, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1977544578}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
 --- !u!1001 &1608543598
@@ -2921,6 +3026,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 1470667640}
+    - target: {fileID: 3732691426717446640, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+      propertyPath: GripPoint
+      value: 
+      objectReference: {fileID: 2040807038}
     - target: {fileID: 8338902953670966236, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
       propertyPath: m_Name
       value: RobotArm
@@ -2967,7 +3076,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4804091009895250641, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2040807038}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
 --- !u!1 &1833803386
@@ -3005,6 +3117,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8715147674249273702, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
   m_PrefabInstance: {fileID: 1532291103}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1940418952 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4804091009895250641, guid: 79c33231c663bc140ba3bb8260938cfe, type: 3}
+  m_PrefabInstance: {fileID: 1824045448}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1946471089
 PrefabInstance:
@@ -3131,6 +3248,42 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+--- !u!4 &1977544578 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7633692461447985311, guid: 4eb8ba8780e4096479ba58185a11989a, type: 3}
+  m_PrefabInstance: {fileID: 1148272890}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2040807037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2040807038}
+  m_Layer: 0
+  m_Name: GripPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2040807038
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040807037}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00008, y: -0, z: -0.00086}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1940418952}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!134 &2112006819
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -4186,6 +4339,5 @@ SceneRoots:
   - {fileID: 5080863831809980041}
   - {fileID: 3893269345404338493}
   - {fileID: 1700787714}
-  - {fileID: 1148272890}
   - {fileID: 8076955363913649879}
   - {fileID: 828892438}

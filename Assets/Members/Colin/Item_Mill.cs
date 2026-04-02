@@ -6,6 +6,7 @@ public class Item_Mill : Item_Parent{
 	public Item_Slotted_Table ActiveTable;
 	public Transform ProcessPoint;
 	[SerializeField] private MillingAnimation millingAnimation;
+	public Item_Robot_Arm RobotArm;
 
 	private bool _isProcessing;
 
@@ -38,16 +39,24 @@ public class Item_Mill : Item_Parent{
 			yield break;
 		}
 
-		// Take item from table and clamp to worktable X
+		// Take item from table
 		table.Item = null;
 		var itemCollider = item.GetComponent<Collider>();
 		if (itemCollider != null)
 			itemCollider.enabled = false;
 
 		Transform clamp = ProcessPoint != null ? ProcessPoint : (millingAnimation != null ? millingAnimation.WorktableXTransform : null);
-		if (clamp != null){
-			item.transform.SetParent(clamp, false);
-			item.transform.localPosition = Vector3.zero;
+
+		// Forward: Table → Gripper → ProcessPoint
+		if (RobotArm != null){
+			yield return RobotArm.StartCoroutine(RobotArm.GrabItem(item));
+			if (clamp != null)
+				yield return RobotArm.StartCoroutine(RobotArm.ReleaseItem(clamp));
+		} else {
+			if (clamp != null){
+				item.transform.SetParent(clamp, false);
+				item.transform.localPosition = Vector3.zero;
+			}
 		}
 
 		// Play milling animation and wait for it to finish
@@ -60,11 +69,19 @@ public class Item_Mill : Item_Parent{
 		if (itemCollider != null)
 			itemCollider.enabled = true;
 
-		// Return item to table
-		if (table.AnchorPoint != null){
-			item.transform.SetParent(table.AnchorPoint.transform, false);
-			item.transform.localPosition = Vector3.zero;
-			table.Item = item;
+		// Reverse: ProcessPoint → Gripper → Table
+		if (RobotArm != null){
+			yield return RobotArm.StartCoroutine(RobotArm.GrabItem(item));
+			if (table.AnchorPoint != null){
+				yield return RobotArm.StartCoroutine(RobotArm.ReleaseItem(table.AnchorPoint.transform));
+				table.Item = item;
+			}
+		} else {
+			if (table.AnchorPoint != null){
+				item.transform.SetParent(table.AnchorPoint.transform, false);
+				item.transform.localPosition = Vector3.zero;
+				table.Item = item;
+			}
 		}
 
 		// Remove job and resume belt
