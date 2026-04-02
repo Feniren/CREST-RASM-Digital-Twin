@@ -11,6 +11,8 @@ public class Item_Robot_Arm : Item_Parent{
     private bool _isBusy;
     public bool IsBusy => _isBusy;
 
+    private float _animationLength;
+
     public Item_Robot_Arm(){
         Name = "Robot Arm";
         Pickup = false;
@@ -22,42 +24,51 @@ public class Item_Robot_Arm : Item_Parent{
 
         AnimatorReference = GetComponent<Animator>();
 
-        AnimatorReference.Play("PickUpItem");
-    }
-
-    public IEnumerator GrabItem(GameObject item){
-        _isBusy = true;
-        float halfDuration = GetAnimationLength() * 0.5f;
+        var clips = AnimatorReference.runtimeAnimatorController.animationClips;
+        _animationLength = clips.Length > 0 ? clips[0].length : 1f;
 
         AnimatorReference.Play("PickUpItem", 0, 0f);
-        yield return new WaitForSeconds(halfDuration);
+        AnimatorReference.speed = 0;
+    }
 
-        item.transform.SetParent(GripPoint, false);
+    public IEnumerator TransferForward(GameObject item, Transform destination){
+        _isBusy = true;
+        float halfDuration = _animationLength * 0.5f;
+
+        item.transform.SetParent(GripPoint, true);
         item.transform.localPosition = Vector3.zero;
         HeldItem = item;
 
-        yield return new WaitForSeconds(halfDuration);
-        _isBusy = false;
-    }
-
-    public IEnumerator ReleaseItem(Transform destination){
-        _isBusy = true;
-        float halfDuration = GetAnimationLength() * 0.5f;
-
+        AnimatorReference.speed = 1;
         AnimatorReference.Play("PickUpItem", 0, 0f);
         yield return new WaitForSeconds(halfDuration);
+        AnimatorReference.speed = 0;
 
-        HeldItem.transform.SetParent(destination, false);
+        HeldItem.transform.SetParent(destination, true);
         HeldItem.transform.localPosition = Vector3.zero;
         HeldItem = null;
 
-        yield return new WaitForSeconds(halfDuration);
         _isBusy = false;
     }
 
-    private float GetAnimationLength(){
-        var clips = AnimatorReference.GetCurrentAnimatorClipInfo(0);
-        return clips.Length > 0 ? clips[0].clip.length : 1f;
+    public IEnumerator TransferReverse(GameObject item, Transform destination){
+        _isBusy = true;
+        float halfDuration = _animationLength * 0.5f;
+
+        item.transform.SetParent(GripPoint, true);
+        item.transform.localPosition = Vector3.zero;
+        HeldItem = item;
+
+        AnimatorReference.speed = 1;
+        AnimatorReference.Play("PickUpItem", 0, 0.5f);
+        yield return new WaitForSeconds(halfDuration);
+        AnimatorReference.speed = 0;
+
+        HeldItem.transform.SetParent(destination, true);
+        HeldItem.transform.localPosition = Vector3.zero;
+        HeldItem = null;
+
+        _isBusy = false;
     }
 
     public override void AlternateInteract(Entity_Player PlayerReference){
