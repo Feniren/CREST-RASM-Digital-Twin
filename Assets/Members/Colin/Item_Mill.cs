@@ -32,7 +32,7 @@ public class Item_Mill : Item_Parent{
 
 		GameObject item = table.Item;
 
-		// No item — skip processing, keep job, resume belt
+		// if no item, skip processing, keep job, resume spline
 		if (item == null){
 			spline.Play();
 			_isProcessing = false;
@@ -47,11 +47,9 @@ public class Item_Mill : Item_Parent{
 
 		Transform clamp = ProcessPoint != null ? ProcessPoint : (millingAnimation != null ? millingAnimation.WorktableXTransform : null);
 
-		// Forward: Table → Gripper → ProcessPoint
-		if (RobotArm != null){
-			yield return RobotArm.StartCoroutine(RobotArm.GrabItem(item));
-			if (clamp != null)
-				yield return RobotArm.StartCoroutine(RobotArm.ReleaseItem(clamp));
+		// slotted table, robot arm, to process point (first half of animation)
+		if (RobotArm != null && clamp != null){
+			yield return RobotArm.StartCoroutine(RobotArm.TransferForward(item, clamp));
 		} else {
 			if (clamp != null){
 				item.transform.SetParent(clamp, false);
@@ -69,13 +67,10 @@ public class Item_Mill : Item_Parent{
 		if (itemCollider != null)
 			itemCollider.enabled = true;
 
-		// Reverse: ProcessPoint → Gripper → Table
-		if (RobotArm != null){
-			yield return RobotArm.StartCoroutine(RobotArm.GrabItem(item));
-			if (table.AnchorPoint != null){
-				yield return RobotArm.StartCoroutine(RobotArm.ReleaseItem(table.AnchorPoint.transform));
-				table.Item = item;
-			}
+		// process point, to robot arm, to slotted table (second half of animation)
+		if (RobotArm != null && table.AnchorPoint != null){
+			yield return RobotArm.StartCoroutine(RobotArm.TransferReverse(item, table.AnchorPoint.transform));
+			table.Item = item;
 		} else {
 			if (table.AnchorPoint != null){
 				item.transform.SetParent(table.AnchorPoint.transform, false);
