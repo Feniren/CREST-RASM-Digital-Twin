@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Item_ASRS : Item_Parent{
-	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
+public class Item_ASRS : Item_Station{
+
+    private bool _isProcessing;
+
+    public override bool IsProcessing => _isProcessing;
+
+    public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
 
 	public Item_ASRS(){
 		Name = "ASRS";
@@ -14,7 +19,12 @@ public class Item_ASRS : Item_Parent{
 		base.Start();
 	}
 
-	public override void Interact(Entity_Player PlayerReference){
+    public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline)
+    {
+        // TODO: implement lathe processing
+    }
+
+    public override void Interact(Entity_Player PlayerReference){
 		base.Interact(PlayerReference);
 	}
 

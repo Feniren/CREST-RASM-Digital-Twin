@@ -2,15 +2,14 @@ using System.Collections;
 using UnityEngine;
 using ProMill8000;
 
-public class Item_Mill : Item_Parent{
-	public Item_Slotted_Table ActiveTable;
+public class Item_Mill : Item_Station{
 	public Transform ProcessPoint;
 	[SerializeField] private MillingAnimation millingAnimation;
 	public Item_Robot_Arm RobotArm;
 
 	private bool _isProcessing;
 
-	public bool IsProcessing => _isProcessing;
+	public override bool IsProcessing => _isProcessing;
 
 	public Item_Mill(){
 		Name = "Mill";
@@ -22,7 +21,7 @@ public class Item_Mill : Item_Parent{
 		base.Start();
 	}
 
-	public void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
+	public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
 		if (_isProcessing) return;
 		StartCoroutine(ProcessCoroutine(table, queue, spline));
 	}
@@ -41,7 +40,7 @@ public class Item_Mill : Item_Parent{
 
 		// Take item from table
 		table.Item = null;
-		var itemCollider = item.GetComponent<Collider>();
+		var itemCollider = item.GetComponent<Collider>(); //might not need to disable collider when transferring
 		if (itemCollider != null)
 			itemCollider.enabled = false;
 
@@ -59,6 +58,9 @@ public class Item_Mill : Item_Parent{
 
 		// Play milling animation and wait for it to finish
 		if (millingAnimation != null){
+
+			//add the capabilities to modify the item in the mill here
+
 			millingAnimation.Play();
 			yield return new WaitWhile(() => millingAnimation.IsPlaying);
 		}
