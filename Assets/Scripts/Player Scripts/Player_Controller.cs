@@ -36,6 +36,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Look.performed += Look;
         PlayerInput.Player.Move.performed += Move;
         PlayerInput.Player.Move.canceled += StopMoving;
+        PlayerInput.Player.ResetPosition.performed += ResetPosition;
         //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
@@ -211,6 +212,10 @@ public class Player_Controller : Controller{
 
     public void Move(InputAction.CallbackContext Context){
         MovementVelocity = Context.ReadValue<Vector2>();
+    }
+
+    public void ResetPosition(InputAction.CallbackContext Context){
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){

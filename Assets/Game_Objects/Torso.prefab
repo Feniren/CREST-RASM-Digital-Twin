@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3799829338004408837}
   - component: {fileID: 9068630884526898232}
   m_Layer: 0
-  m_Name: RightHand
+  m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,12 +26,12 @@ Transform:
   m_GameObject: {fileID: 708017444173431688}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.447, y: -0.494, z: 0.57289}
+  m_LocalPosition: {x: -0.447, y: -0.06099999, z: 0.90089}
   m_LocalScale: {x: 1, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4261190945030846701}
-  m_Father: {fileID: 4572791897677235375}
+  m_Father: {fileID: 3682051730524054333}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9068630884526898232
 MonoBehaviour:
@@ -59,7 +59,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -3326005586356538449, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 3247727847030794200, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_RotationInput:
     m_UseReference: 1
     m_Action:
@@ -71,7 +71,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 5101698808175986029, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: -8624406795353835285, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_TrackingStateInput:
     m_UseReference: 1
     m_Action:
@@ -83,7 +83,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -1277054153949319361, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 4658117924137867839, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_PositionAction:
     m_Name: 
     m_Type: 0
@@ -127,7 +127,7 @@ Transform:
   m_GameObject: {fileID: 1893447284138201125}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.438, z: 0}
+  m_LocalPosition: {x: 0, y: -1.4380001, z: 0}
   m_LocalScale: {x: 1, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -255,9 +255,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.433, z: 0.328}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3533289942452518337}
-  - {fileID: 3799829338004408837}
+  m_Children: []
   m_Father: {fileID: 3682051730524054333}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4771338484410660247
@@ -291,7 +289,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -370,7 +368,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3739309842971812640}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
   m_Name: 
@@ -491,12 +489,14 @@ Transform:
   m_GameObject: {fileID: 4042314620155725101}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.61, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4572791897677235375}
   - {fileID: 6076874706259991732}
+  - {fileID: 3533289942452518337}
+  - {fileID: 3799829338004408837}
   - {fileID: 6982511827151396504}
   - {fileID: 8462727787401567561}
   - {fileID: 3065021691011289864}
@@ -519,7 +519,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4042314620155725101}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -740,9 +740,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.XR.CoreUtils::Unity.XR.CoreUtils.XROrigin
   m_Camera: {fileID: 4771338484410660247}
   m_OriginBaseGameObject: {fileID: 4042314620155725101}
-  m_CameraFloorOffsetObject: {fileID: 1893447284138201125}
-  m_RequestedTrackingOriginMode: 0
-  m_CameraYOffset: 1.1176
+  m_CameraFloorOffsetObject: {fileID: 0}
+  m_RequestedTrackingOriginMode: 2
+  m_CameraYOffset: 0
 --- !u!1 &4085109177247283198
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +756,7 @@ GameObject:
   - component: {fileID: 9115649977232283583}
   - component: {fileID: 351181043974663649}
   m_Layer: 0
-  m_Name: LeftHand
+  m_Name: RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -868,7 +868,7 @@ GameObject:
   - component: {fileID: 4717383777684238494}
   - component: {fileID: 5276303178890650024}
   m_Layer: 0
-  m_Name: RightHand
+  m_Name: LeftHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1068,7 +1068,7 @@ GameObject:
   - component: {fileID: 3533289942452518337}
   - component: {fileID: 101266227358858250}
   m_Layer: 0
-  m_Name: LeftHand
+  m_Name: RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1083,12 +1083,12 @@ Transform:
   m_GameObject: {fileID: 5723858274441386849}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.702, y: -0.441, z: 0.57289}
+  m_LocalPosition: {x: 0.702, y: -0.007999986, z: 0.90089}
   m_LocalScale: {x: 1, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 606593854771821431}
-  m_Father: {fileID: 4572791897677235375}
+  m_Father: {fileID: 3682051730524054333}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &101266227358858250
 MonoBehaviour:
@@ -1116,7 +1116,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -2024308242397127297, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 8878543481309922870, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_RotationInput:
     m_UseReference: 1
     m_Action:
@@ -1128,7 +1128,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 8248158260566104461, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 5404576614549674593, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_TrackingStateInput:
     m_UseReference: 1
     m_Action:
@@ -1140,7 +1140,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 684395432459739428, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 497848789481628938, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
   m_PositionAction:
     m_Name: 
     m_Type: 0
@@ -1389,7 +1389,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6076874706259991732
 Transform:
   m_ObjectHideFlags: 0
