@@ -158,6 +158,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "XRLeftGrab",
+                    "type": "Button",
+                    "id": "51aeffb3-7794-4813-bb4f-972a63a3d653",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "XRRightGrab",
+                    "type": "Button",
+                    "id": "eefd5889-fe61-45fb-aa3b-42ba3d02cf5f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -620,6 +638,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "ResetPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "42991a2b-cfd3-4b39-b472-5feb715be36f",
+                    "path": "<XRController>{LeftHand}/{GripButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "XRLeftGrab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d9e3c6e7-de00-4e6e-b6b7-cb01f3523429",
+                    "path": "<XRController>{RightHand}/{GripButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "XRRightGrab",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

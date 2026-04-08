@@ -244,6 +244,24 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XRLeftGrab"",
+                    ""type"": ""Button"",
+                    ""id"": ""51aeffb3-7794-4813-bb4f-972a63a3d653"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XRRightGrab"",
+                    ""type"": ""Button"",
+                    ""id"": ""eefd5889-fe61-45fb-aa3b-42ba3d02cf5f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -708,6 +726,28 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""action"": ""ResetPosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""42991a2b-cfd3-4b39-b472-5feb715be36f"",
+                    ""path"": ""<XRController>{LeftHand}/{GripButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRLeftGrab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d9e3c6e7-de00-4e6e-b6b7-cb01f3523429"",
+                    ""path"": ""<XRController>{RightHand}/{GripButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRRightGrab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -781,6 +821,8 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_XRControllerRightRotation = m_Player.FindAction("XRControllerRightRotation", throwIfNotFound: true);
         m_Player_XRControllerRightTrackingState = m_Player.FindAction("XRControllerRightTrackingState", throwIfNotFound: true);
         m_Player_ResetPosition = m_Player.FindAction("ResetPosition", throwIfNotFound: true);
+        m_Player_XRLeftGrab = m_Player.FindAction("XRLeftGrab", throwIfNotFound: true);
+        m_Player_XRRightGrab = m_Player.FindAction("XRRightGrab", throwIfNotFound: true);
         // ItemEquipped
         m_ItemEquipped = asset.FindActionMap("ItemEquipped", throwIfNotFound: true);
         m_ItemEquipped_ThrowItem = m_ItemEquipped.FindAction("ThrowItem", throwIfNotFound: true);
@@ -883,6 +925,8 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_XRControllerRightRotation;
     private readonly InputAction m_Player_XRControllerRightTrackingState;
     private readonly InputAction m_Player_ResetPosition;
+    private readonly InputAction m_Player_XRLeftGrab;
+    private readonly InputAction m_Player_XRRightGrab;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -963,6 +1007,14 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ResetPosition => m_Wrapper.m_Player_ResetPosition;
         /// <summary>
+        /// Provides access to the underlying input action "Player/XRLeftGrab".
+        /// </summary>
+        public InputAction @XRLeftGrab => m_Wrapper.m_Player_XRLeftGrab;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRRightGrab".
+        /// </summary>
+        public InputAction @XRRightGrab => m_Wrapper.m_Player_XRRightGrab;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1039,6 +1091,12 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @ResetPosition.started += instance.OnResetPosition;
             @ResetPosition.performed += instance.OnResetPosition;
             @ResetPosition.canceled += instance.OnResetPosition;
+            @XRLeftGrab.started += instance.OnXRLeftGrab;
+            @XRLeftGrab.performed += instance.OnXRLeftGrab;
+            @XRLeftGrab.canceled += instance.OnXRLeftGrab;
+            @XRRightGrab.started += instance.OnXRRightGrab;
+            @XRRightGrab.performed += instance.OnXRRightGrab;
+            @XRRightGrab.canceled += instance.OnXRRightGrab;
         }
 
         /// <summary>
@@ -1101,6 +1159,12 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @ResetPosition.started -= instance.OnResetPosition;
             @ResetPosition.performed -= instance.OnResetPosition;
             @ResetPosition.canceled -= instance.OnResetPosition;
+            @XRLeftGrab.started -= instance.OnXRLeftGrab;
+            @XRLeftGrab.performed -= instance.OnXRLeftGrab;
+            @XRLeftGrab.canceled -= instance.OnXRLeftGrab;
+            @XRRightGrab.started -= instance.OnXRRightGrab;
+            @XRRightGrab.performed -= instance.OnXRRightGrab;
+            @XRRightGrab.canceled -= instance.OnXRRightGrab;
         }
 
         /// <summary>
@@ -1367,6 +1431,20 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnResetPosition(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRLeftGrab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRLeftGrab(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRRightGrab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRRightGrab(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemEquipped" which allows adding and removing callbacks.

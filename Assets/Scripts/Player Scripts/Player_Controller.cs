@@ -12,6 +12,8 @@ public class Player_Controller : Controller{
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
 	public GameObject ItemInstance = null;
+    public GameObject LeftHand;
+    public GameObject RightHand;
 
 	Player_Input PlayerInput;
 
@@ -42,6 +44,8 @@ public class Player_Controller : Controller{
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
         PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
 		PlayerInput.ItemEquipped.ThrowItem.canceled += ThrowItem;
+        PlayerInput.Player.XRLeftGrab.started += GrabStart;
+        PlayerInput.Player.XRLeftGrab.canceled += GrabEnd;
 
         FirstPersonCameraLocation = new Vector3(0.0f, 0.433f, 0.328f);
         IsFirstPerson = true;
@@ -54,6 +58,8 @@ public class Player_Controller : Controller{
 
         MovementVelocity = new Vector2(0.0f, 0.0f);
         ControlRotation = new Vector2(0.0f, 0.0f);
+
+        LeftHand.GetComponent<Collider>().enabled = false;
     }
 
     private void OnEnable(){
@@ -151,14 +157,22 @@ public class Player_Controller : Controller{
 		}
 	}
 
-	public void GrabEnd(InputAction.CallbackContext Context){
+    public void GrabStart(InputAction.CallbackContext Context){
+        if (Context.started){
+            Debug.Log(Context.control.name);
+
+            LeftHand.GetComponent<Collider>().enabled = true;
+        }
+    }
+
+    public void GrabEnd(InputAction.CallbackContext Context){
         if (Context.canceled){
-            //Debug.Log("Grab End");
+            LeftHand.GetComponent<Collider>().enabled = false;
         }
     }
 
     public void Look(InputAction.CallbackContext Context){
-        if (!Cursor.visible){
+        if (true){
             Vector2 MouseLook = PlayerInput.Player.Look.ReadValue<Vector2>();
 
             ControlRotation.x = (MouseLook.x * PlayerReference.PlayerSettings.LookSpeedX);
@@ -199,14 +213,6 @@ public class Player_Controller : Controller{
 
                 PlayerReference.EntityStatistics.JumpCurrent++;
             }
-        }
-    }
-
-    public void GrabStart(InputAction.CallbackContext Context){
-        if (Context.performed){
-            //Debug.Log("Grab");
-
-            PlayerReference.SetItemEquipped(true);
         }
     }
 
