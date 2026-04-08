@@ -12,6 +12,8 @@ public class Player_Controller : Controller{
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
 	public GameObject ItemInstance = null;
+    public GameObject LeftHand;
+    public GameObject RightHand;
 
 	Player_Input PlayerInput;
 
@@ -20,6 +22,8 @@ public class Player_Controller : Controller{
     Vector3 FirstPersonCameraLocation;
     bool IsFirstPerson;
     Vector3 ThirdPersonCameraLocation;
+    float ThrowStartTime;
+    float ThrowEndTime;
 
     bool Throw = false;
 
@@ -34,10 +38,14 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Look.performed += Look;
         PlayerInput.Player.Move.performed += Move;
         PlayerInput.Player.Move.canceled += StopMoving;
+        PlayerInput.Player.ResetPosition.performed += ResetPosition;
         //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
-		PlayerInput.ItemEquipped.ThrowItem.performed += ThrowItem;
+        PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
+		PlayerInput.ItemEquipped.ThrowItem.canceled += ThrowItem;
+        PlayerInput.Player.XRLeftGrab.started += GrabStart;
+        PlayerInput.Player.XRLeftGrab.canceled += GrabEnd;
 
         FirstPersonCameraLocation = new Vector3(0.0f, 0.433f, 0.328f);
         IsFirstPerson = true;
@@ -50,6 +58,8 @@ public class Player_Controller : Controller{
 
         MovementVelocity = new Vector2(0.0f, 0.0f);
         ControlRotation = new Vector2(0.0f, 0.0f);
+
+        LeftHand.GetComponent<Collider>().enabled = false;
     }
 
     private void OnEnable(){
@@ -58,22 +68,6 @@ public class Player_Controller : Controller{
 
     private void OnDisable(){
         //InputSystem.Disable();
-    }
-
-    void Update(){
-        /*if (Input.GetKeyDown("l")){
-            PlayerReference.LevelUp();
-        }
-
-        if (Input.GetKeyDown("r"))
-        {
-            gameObject.transform.position = new Vector3(0.0f, 5.0f, 0.0f);
-        }
-
-        if (Input.GetKeyDown("m"))
-        {
-            Throw = !Throw;
-        }*/
     }
 
     private void FixedUpdate(){
@@ -128,33 +122,68 @@ public class Player_Controller : Controller{
 		}
     }
 
+    public void StartThrow(InputAction.CallbackContext Context){
+        if (Context.started){
+            if (ItemInstance){
+                ThrowStartTime = Time.time;
+            }
+        }
+    }
+
 	public void ThrowItem(InputAction.CallbackContext Context){
-		if (Context.performed){
+        float ElapsedThrowTime;
+        float ThrowForce = 0.0f;
+
+		if (Context.canceled){
+            ThrowEndTime = Time.time;
+
+            ElapsedThrowTime = (ThrowEndTime - ThrowStartTime);
+
+            if (ElapsedThrowTime > 3.0f){
+                ElapsedThrowTime = 3.0f;
+            }
+
+            if (ElapsedThrowTime > 0.2f){
+                ThrowForce = (ElapsedThrowTime * 10.0f);
+            }
+
 			ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
 
 			ItemInstance.transform.SetParent(null, true);
+
+            ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
 
 			ItemInstance = null;
 		}
 	}
 
-	public void GrabEnd(InputAction.CallbackContext Context){
+    public void GrabStart(InputAction.CallbackContext Context){
+        if (Context.started){
+            Debug.Log(Context.control.name);
+
+            LeftHand.GetComponent<Collider>().enabled = true;
+        }
+    }
+
+    public void GrabEnd(InputAction.CallbackContext Context){
         if (Context.canceled){
-            //Debug.Log("Grab End");
+            LeftHand.GetComponent<Collider>().enabled = false;
         }
     }
 
     public void Look(InputAction.CallbackContext Context){
-        Vector2 MouseLook = PlayerInput.Player.Look.ReadValue<Vector2>();
+        if (true){
+            Vector2 MouseLook = PlayerInput.Player.Look.ReadValue<Vector2>();
 
-        ControlRotation.x = (MouseLook.x * PlayerReference.PlayerSettings.LookSpeedX);
-        ControlRotation.y -= (MouseLook.y * PlayerReference.PlayerSettings.LookSpeedY);
-        ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
+            ControlRotation.x = (MouseLook.x * PlayerReference.PlayerSettings.LookSpeedX);
+            ControlRotation.y -= (MouseLook.y * PlayerReference.PlayerSettings.LookSpeedY);
+            ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
 
-        Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
+            Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
 
-        gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
-        PlayerReference.CameraReference.transform.localRotation = XQuaternion;
+            gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+            PlayerReference.CameraReference.transform.localRotation = XQuaternion;
+        }
     }
 
     public void Interact(InputAction.CallbackContext Context){
@@ -187,16 +216,12 @@ public class Player_Controller : Controller{
         }
     }
 
-    public void GrabStart(InputAction.CallbackContext Context){
-        if (Context.performed){
-            //Debug.Log("Grab");
-
-            PlayerReference.SetItemEquipped(true);
-        }
-    }
-
     public void Move(InputAction.CallbackContext Context){
         MovementVelocity = Context.ReadValue<Vector2>();
+    }
+
+    public void ResetPosition(InputAction.CallbackContext Context){
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){
