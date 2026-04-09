@@ -4,8 +4,13 @@ public class Laser_Head : MonoBehaviour
 {
     public float intensity = 100f; // how quickly objects are engraved
 	public Texture2D testShape;
+	public PrintJob ActiveJob;
 
+	// Atlas pixels (UV) per inch of machine bed
+	// TODO: This absolutely needs tuning
+	public float atlasPixelsPerInch = 100f;
 
+	private bool _jobApplied; // Currently unused but almost certainly will need later
 
 	void Update()
     {
@@ -27,7 +32,32 @@ public class Laser_Head : MonoBehaviour
 		*/
     }
 
-	[ContextMenu("Test Printing Shape")]
+	[ContextMenu("Try to Apply Job")]
+	void TryApplyJob()
+	{
+		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+			return;
+
+		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+		if (block == null)
+			return;
+
+		int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
+		int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
+
+		Texture2D mask = ActiveJob.GetResampledMask(atlasPixelsPerInch);
+		block.PaintShape(mask, originX, originY, intensity);
+
+		_jobApplied = true;
+	}
+
+	public void LoadJob(PrintJob job)
+	{
+		ActiveJob = job;
+		_jobApplied = false;
+	}
+
+[ContextMenu("Test Printing Shape")]
 	void TestPrintShape()
 	{
 		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))

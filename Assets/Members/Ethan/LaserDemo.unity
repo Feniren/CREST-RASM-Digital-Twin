@@ -676,12 +676,12 @@ PrefabInstance:
       objectReference: {fileID: 2033895328}
     - target: {fileID: 9168776928943923744, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
       propertyPath: intensity
-      value: 10
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 9168776928943923744, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
       propertyPath: testShape
       value: 
-      objectReference: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
+      objectReference: {fileID: 2800000, guid: 351776f8a24f08941816d0761dc5659d, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -939,6 +939,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3077442194134756337, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
   m_PrefabInstance: {fileID: 2135731809}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &733440245 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9168776928943923744, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
+  m_PrefabInstance: {fileID: 361860244}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245d4c3cf6c6d34daa8d1794cf86f18a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Laser_Head
 --- !u!1001 &746952567
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2160,6 +2171,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
+--- !u!1 &2098425789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2098425791}
+  - component: {fileID: 2098425790}
+  m_Layer: 0
+  m_Name: TestJob
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2098425790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098425789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05ab02840bd8d714bb46ecc50e655674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrintJobTest
+  laserHead: {fileID: 733440245}
+  testImagePath: Assets\Members\Ethan\TestImage.png
+  jobWidthInches: 6
+  jobDPI: 100
+--- !u!4 &2098425791
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098425789}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.98396, y: 0.846, z: 3.73257}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2098765044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7641843955062889096, guid: e39039133bee3fb41aaf8518676a4202, type: 3}
@@ -3128,3 +3187,4 @@ SceneRoots:
   - {fileID: 5177355085667944496}
   - {fileID: 635106073}
   - {fileID: 1284791694}
+  - {fileID: 2098425791}
