@@ -56,6 +56,11 @@ public class e_Item_Epoxy_Block : Item_Parent
 		renderer.materials = new Material[] { baseMat, overlayMat };
 	}
 
+	/// <summary>
+	/// Paints more opacity onto the texture at the pixel position given.
+	/// Circle of radius = brushRadius.
+	/// Outdated initial form of PaintShape
+	/// </summary>
 	public void PaintAt(int centerX, int centerY, float increase)
 	{
 		for (int dx = -brushRadius; dx <= brushRadius; dx++)
@@ -73,6 +78,40 @@ public class e_Item_Epoxy_Block : Item_Parent
 
 				Color c = Atlas.GetPixel(px, py);
 				c.a = Mathf.Clamp01(c.a + increase);
+				Atlas.SetPixel(px, py, c);
+			}
+		}
+
+		Atlas.Apply();
+	}
+
+	/// <summary>
+	/// Stamps a shape texture onto the atlas at the given top-left position.
+	/// Shape alpha acts as a mask scaled by intensity.
+	/// </summary>
+	public void PaintShape(Texture2D shape, int originX, int originY, float intensity)
+	{
+		int shapeW = shape.width;
+		int shapeH = shape.height;
+
+		// Clamp iteration bounds to atlas dimensions
+		int startX = Mathf.Max(0, -originX);
+		int startY = Mathf.Max(0, -originY);
+		int endX = Mathf.Min(shapeW, Atlas.width - originX);
+		int endY = Mathf.Min(shapeH, Atlas.height - originY);
+
+		for (int sx = startX; sx < endX; sx++)
+		{
+			for (int sy = startY; sy < endY; sy++)
+			{
+				float mask = shape.GetPixel(sx, sy).a;
+				if (mask <= 0f) continue;
+
+				int px = originX + sx;
+				int py = originY + sy;
+
+				Color c = Atlas.GetPixel(px, py);
+				c.a = Mathf.Clamp01(c.a + mask * intensity);
 				Atlas.SetPixel(px, py, c);
 			}
 		}
