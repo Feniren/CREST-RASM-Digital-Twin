@@ -10,29 +10,6 @@ public class RackScanner : MonoBehaviour
 {
     [SerializeField] private Item_ASRS rack;
 
-    // public void OnTriggerEnter(Collider other)
-    // {
-    //     if (rack == null)
-    //     {
-    //         Debug.LogError("Rack reference is not assigned.");
-    //         return;
-    //     }
-    //     Item_Slotted_Table slottedTable = other.GetComponent<Item_Slotted_Table>();
-    //     if (slottedTable == null) return;
-    //     Debug.Log("Collision detected with Item_Slotted_Table. Table ID: " + slottedTable.TableID);
-
-    //     if (slottedTable.task == RACK_TASK.RETRIEVE)
-    //         rack.Retrieve(slottedTable);
-
-    //     if (slottedTable.task == RACK_TASK.INSERT)
-    //         rack.Insert(slottedTable);
-
-    //     var spline = other.GetComponent<Spline_Animate>();
-    //     if (spline == null) return;
-
-    //     spline.Pause();
-    // }
-
     [SerializeField] private float resumeDelay = 1f;
 
     // BLOCK OPERATIONS TESTER
