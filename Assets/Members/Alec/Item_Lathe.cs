@@ -1,7 +1,14 @@
 using UnityEngine;
 
-public class Item_Lathe : Item_Parent{
-	public Item_Slotted_Table ActiveTable;
+public class Item_Lathe : Item_Station{
+
+	private bool _isProcessing;
+
+	public override bool IsProcessing => _isProcessing;
+
+	public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
+		// TODO: implement lathe processing
+	}
 
 	public Item_Lathe(){
 		Name = "Lathe";

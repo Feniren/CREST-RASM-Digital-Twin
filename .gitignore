@@ -97,3 +97,11 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+
+.gitignore
+build-library
+CLAUDE.md
+/.claude
+/.gitignore
+ProMill8000.md
