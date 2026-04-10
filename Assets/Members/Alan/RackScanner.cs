@@ -63,33 +63,34 @@ public class RackScanner : MonoBehaviour
         Item_Slotted_Table slottedTable = other.GetComponent<Item_Slotted_Table>();
         if (slottedTable == null) return;
 
-        if (slottedTable.task == RACK_TASK.RETRIEVE && !rack.NeedsRackReturn(slottedTable))
-        {
-            Debug.Log("Table " + slottedTable.TableID + " does not need retrieval, skipping.");
-            return;
-        }
-
-        if (slottedTable.task == RACK_TASK.INSERT && !rack.NeedsRackReturn(slottedTable))
-        {
-            Debug.Log("Table " + slottedTable.TableID + " is marked to return to rack, skipping insert.");
-            return;
-        }
-
         Spline_Animate spline = other.GetComponent<Spline_Animate>();
         if (spline == null) return;
 
-        Debug.Log("Block operation - Collision detected with Item_Slotted_Table. Table ID: " + slottedTable.TableID);
-        spline.Pause();
-        Debug.Log("Spline paused.");
+        if (slottedTable.task == RACK_TASK.RETRIEVE)
+        {
+            if (!rack.NeedsRackReturn(slottedTable))
+            {
+                Debug.Log($"Table {slottedTable.TableID} slot is occupied, skipping retrieve.");
+                return;
+            }
 
-        //if (slottedTable.task == RACK_TASK.RETRIEVE)
-        //    rack.BlockRetrieve(slottedTable);
-        //if (slottedTable.task == RACK_TASK.INSERT)
-        //    rack.BlockInsert(slottedTable);
+            spline.Pause();
+            rack.SlotRetrieve(slottedTable);
+            StartCoroutine(ResumeAfterDelay(spline));
+        }
+        else if (slottedTable.task == RACK_TASK.INSERT)
+        {
+            if (!rack.NeedsRackReturn(slottedTable))
+            {
+                Debug.Log($"Table {slottedTable.TableID} slot is already occupied, skipping insert.");
+                return;
+            }
 
-        StartCoroutine(ResumeAfterDelay(spline));
+            spline.Pause();
+            rack.SlotInsert(slottedTable);
+            StartCoroutine(ResumeAfterDelay(spline));
+        }
     }
-
     private IEnumerator ResumeAfterDelay(Spline_Animate spline)
     {
         yield return new WaitForSeconds(resumeDelay);
