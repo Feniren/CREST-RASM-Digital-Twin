@@ -2202,7 +2202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PrintJobTest
   laserHead: {fileID: 733440245}
   testImagePath: Assets\Members\Ethan\TestImage.png
-  jobWidthInches: 6
+  jobWidthInches: 1
   jobDPI: 100
 --- !u!4 &2098425791
 Transform:

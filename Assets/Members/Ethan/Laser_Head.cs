@@ -2,36 +2,41 @@ using UnityEngine;
 
 public class Laser_Head : MonoBehaviour
 {
-    public float intensity = 100f; // how quickly objects are engraved
+	public float intensity = 100f;
 	public Texture2D testShape;
 	public PrintJob ActiveJob;
 
-	// Atlas pixels (UV) per inch of machine bed
-	// TODO: This absolutely needs tuning
 	public float atlasPixelsPerInch = 100f;
 
-	private bool _jobApplied; // Currently unused but almost certainly will need later
+	[Tooltip("Reveal brush radius in UV space (0-1). Tune to match beam width.")]
+	public float revealRadiusUV = 0.02f;
+
+	[Tooltip("Brush edge softness.")]
+	[Range(0f, 1f)]
+	public float revealHardness = 0.8f;
+
+	// Whether a job has been stamped onto the current target
+	private bool _jobApplied;
 
 	void Update()
-    {
-        Debug.DrawRay(transform.position, Vector3.down * 100f, Color.red);
+	{
+		Debug.DrawRay(transform.position, Vector3.down * 100f, Color.red);
 
-		/* CONSTANT LASER - OUTDATED IMPLEMENTATION
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-        {
-            e_Item_Epoxy_Block epoxy_block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
-            if (epoxy_block != null)
-            {
-                Debug.Log("Thing happening...");
-                Debug.Log($"textureCoord: {hit.textureCoord}, triangleIndex: {hit.triangleIndex}");
-                int x = Mathf.FloorToInt(hit.textureCoord.x * epoxy_block.Atlas.width);
-                int y = Mathf.FloorToInt(hit.textureCoord.y * epoxy_block.Atlas.height);
-                epoxy_block.PaintAt(x, y, intensity * Time.deltaTime);
-            }
-        }
-		*/
-    }
+		if (!_jobApplied) return;
 
+		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+			return;
+
+		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+		if (block == null) return;
+
+		block.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
+	}
+
+	/// <summary>
+	/// Stamps the job atlas immediately and resets the reveal mask.
+	/// Engraving becomes visible as the head moves over the block.
+	/// </summary>
 	[ContextMenu("Try to Apply Job")]
 	void TryApplyJob()
 	{
@@ -39,12 +44,12 @@ public class Laser_Head : MonoBehaviour
 			return;
 
 		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
-		if (block == null)
-			return;
+		if (block == null) return;
 
 		int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
 		int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
 
+		block.ClearRevealMask();
 		Texture2D mask = ActiveJob.GetResampledMask(atlasPixelsPerInch);
 		block.PaintShape(mask, originX, originY, intensity);
 
@@ -57,24 +62,21 @@ public class Laser_Head : MonoBehaviour
 		_jobApplied = false;
 	}
 
-[ContextMenu("Test Printing Shape")]
+	[ContextMenu("Test Printing Shape")]
 	void TestPrintShape()
 	{
-		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+			return;
+
+		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+		if (block == null)
 		{
-			e_Item_Epoxy_Block epoxy_block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
-			if (epoxy_block != null)
-			{
-				Debug.Log("Testing epoxy shape print...");
-				Debug.Log($"textureCoord: {hit.textureCoord}, triangleIndex: {hit.triangleIndex}");
-				int x = Mathf.FloorToInt(hit.textureCoord.x * epoxy_block.Atlas.width);
-				int y = Mathf.FloorToInt(hit.textureCoord.y * epoxy_block.Atlas.height);
-				epoxy_block.PaintShape(testShape, x, y, intensity);
-			}
-			else
-			{
-				Debug.LogWarning("Tried to print shape but didn't hit an engravable object.");
-			}
+			Debug.LogWarning("Tried to print shape but didn't hit an engravable object.");
+			return;
 		}
+
+		int x = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
+		int y = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
+		block.PaintShape(testShape, x, y, intensity);
 	}
 }
