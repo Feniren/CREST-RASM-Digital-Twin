@@ -23,7 +23,7 @@ public class Item_ASRS : Item_Parent{
 	public override void Start(){
 		base.Start();
 
-		foreach (Item_Slotted_Table table in FindObjectsByType<Item_Slotted_Table>(FindObjectsSortMode.None))
+		foreach (Item_Slotted_Table table in GetComponentsInChildren<Item_Slotted_Table>())
 		{
 			if (string.IsNullOrWhiteSpace(table.TableID)) continue;
 			int index = GetIndex(int.Parse(table.TableID));
