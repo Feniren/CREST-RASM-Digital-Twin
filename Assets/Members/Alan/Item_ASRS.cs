@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-
-
-
-
 public class Item_ASRS : Item_Parent{
-	// public List<Machine_Job> Jobs = new List<Machine_Job>();
 	public RACK_TASK task;
 	public Item_Slotted_Table item = null;
 	public Item_Epoxy_Block material = null;
-	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
 	public List<GameObject> BlockList = new List<GameObject>();
+
+	private Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
+	private Dictionary<int, Vector3> anchorPositions = new Dictionary<int, Vector3>();
+	private Dictionary<int, Quaternion> anchorRotations = new Dictionary<int, Quaternion>();
 
 	public Item_ASRS(){
 		Name = "ASRS";
@@ -22,9 +20,19 @@ public class Item_ASRS : Item_Parent{
 	}
 
 
-    public override void Start(){
+	public override void Start(){
 		base.Start();
 
+		foreach (Item_Slotted_Table table in FindObjectsByType<Item_Slotted_Table>(FindObjectsSortMode.None))
+		{
+			if (string.IsNullOrWhiteSpace(table.TableID)) continue;
+			int index = GetIndex(int.Parse(table.TableID));
+			TableMap[index] = table;
+			anchorPositions[index] = table.transform.position;
+			anchorRotations[index] = table.transform.rotation;
+		}
+
+		Debug.Log($"ASRS: Registered {TableMap.Count} slotted tables.");
 	}
 
 	public override void Interact(Entity_Player PlayerReference){
@@ -34,63 +42,48 @@ public class Item_ASRS : Item_Parent{
 	public override void AlternateInteract(Entity_Player PlayerReference){
 	}
 
-
-
 	public void Retrieve(Item_Slotted_Table target)
 	{
-        if (target == null)
-            throw new ArgumentNullException(nameof(target), "Target table cannot be null.");
+		if (target == null)
+			throw new ArgumentNullException(nameof(target), "Target table cannot be null.");
 
-        if (string.IsNullOrWhiteSpace(target.TableID))
-            throw new ArgumentException("Table ID cannot be null or empty.");
+		if (string.IsNullOrWhiteSpace(target.TableID))
+			throw new ArgumentException("Table ID cannot be null or empty.");
 
-        int id = int.Parse(target.TableID);
-        int table_index = GetIndex(id);
+		int index = GetIndex(int.Parse(target.TableID));
 
-        if (table_index < 0 || table_index >= TableList.Count)
-            throw new IndexOutOfRangeException($"Computed index {table_index} is out of bounds.");
+		if (!TableMap.TryGetValue(index, out Item_Slotted_Table occupied) || occupied == null)
+			throw new InvalidOperationException("No item exists in the requested slot.");
 
-        Item_Slotted_Table occupied = TableList[table_index];
+		TableMap[index] = null;
 
-        if (occupied == null)
-            throw new InvalidOperationException("No item exists in the requested slot.");
-
-        TableList[table_index] = null;
-
-        GameObject retrievedItem = occupied.Item;
-        if (retrievedItem != null)
-        {
-            target.Item = retrievedItem;
-            retrievedItem.transform.SetParent(target.AnchorPoint.transform, false);
-            retrievedItem.transform.position = target.AnchorPoint.transform.position;
-            retrievedItem.transform.rotation = target.AnchorPoint.transform.rotation;
-            Debug.Log("Placed Item_Epoxy_Block onto table: " + target.TableID);
-        }
+		GameObject retrievedItem = occupied.Item;
+		if (retrievedItem != null)
+		{
+			target.Item = retrievedItem;
+			retrievedItem.transform.SetParent(target.transform, false);
+			retrievedItem.transform.position = anchorPositions[index];
+			retrievedItem.transform.rotation = anchorRotations[index];
+			Debug.Log("Placed Item_Epoxy_Block onto table: " + target.TableID);
+		}
 	}
 
 	public void Insert(Item_Slotted_Table table)
 	{
-        if (table == null)
-            throw new ArgumentNullException(nameof(table), "Table object cannot be null.");
+		if (table == null)
+			throw new ArgumentNullException(nameof(table), "Table object cannot be null.");
 
-        if (string.IsNullOrWhiteSpace(table.TableID))
-            throw new ArgumentException("Table ID cannot be null or empty.");
+		if (string.IsNullOrWhiteSpace(table.TableID))
+			throw new ArgumentException("Table ID cannot be null or empty.");
 
-        int id = int.Parse(table.TableID);
-        int table_index = GetIndex(id);
+		int index = GetIndex(int.Parse(table.TableID));
 
-        if (table_index < 0 || table_index >= TableList.Count)
-            throw new IndexOutOfRangeException($"Computed index {table_index} is out of bounds.");
+		if (TableMap.TryGetValue(index, out Item_Slotted_Table occupied) && occupied != null)
+			throw new InvalidOperationException("Slot is occupied.");
 
-        Item_Slotted_Table occupied = TableList[table_index];
-
-        if (occupied != null)
-            throw new InvalidOperationException("Slot is occupied.");
-
-        TableList[table_index] = table;
+		TableMap[index] = table;
 	}
 
-	// TEMP TESTER: retrieves the first block from BlockList onto the target table
 	public void BlockRetrieve(Item_Slotted_Table target)
 	{
 		if (target == null)
@@ -105,20 +98,21 @@ public class Item_ASRS : Item_Parent{
 			return;
 		}
 
+		int index = GetIndex(int.Parse(target.TableID));
+
 		GameObject block = BlockList[0];
 		BlockList.RemoveAt(0);
 
 		block.SetActive(true);
 		target.Item = block;
-		block.transform.SetParent(target.AnchorPoint.transform, true);
-		block.transform.position = target.AnchorPoint.transform.position;
-		block.transform.rotation = target.AnchorPoint.transform.localRotation;
+		block.transform.SetParent(target.transform, true);
+		block.transform.position = anchorPositions[index];
+		block.transform.rotation = anchorRotations[index];
 		block.transform.localPosition = Vector3.zero;
 
 		Debug.Log($"BlockRetrieve: Placed block onto table '{target.TableID}'. Remaining: {BlockList.Count}");
 	}
 
-	// TEMP TESTER: takes the block off the target table and returns it to BlockList
 	public void BlockInsert(Item_Slotted_Table target)
 	{
 		if (target == null)
@@ -156,5 +150,4 @@ public class Item_ASRS : Item_Parent{
 
 		return (row - 1) * 6 + (col - 1);
 	}
-
 }
