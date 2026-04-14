@@ -9,7 +9,7 @@ using UnityEngine;
 public class RandomJointStateProvider : MonoBehaviour, IJointStateProvider
 {
 	[Tooltip("Emit interval in seconds")]
-	public float publishRate = 0.1f;
+	public float publishRate = 0.02f;
 
 	[Tooltip("Position amplitude bounds in radians")]
 	public float minAmplitude = 0.3f;
