@@ -3,98 +3,96 @@ using UnityEngine;
 
 public enum RACK_TASK
 {
-	RETRIEVE , INSERT
+    RETRIEVE,
+    INSERT
 }
 
 public class RackScanner : MonoBehaviour
 {
     [SerializeField] private Item_ASRS rack;
+    [SerializeField] private float processDelay = 1.5f;
 
-    [SerializeField] private float resumeDelay = 1f;
+    public Item_Slotted_Table ActiveTable { get; private set; }
+    public bool IsProcessing { get; private set; }
 
-    // BLOCK OPERATIONS TESTER
-    //public void OnTriggerEnter(Collider other)
-    //{
-    //    if (rack == null)
-    //    {
-    //        Debug.LogError("Rack reference is not assigned.");
-    //        return;
-    //    }
-
-    //    Item_Slotted_Table slottedTable = other.GetComponent<Item_Slotted_Table>();
-    //    if (slottedTable == null) return;
-
-    //    if (slottedTable.task == RACK_TASK.RETRIEVE && slottedTable.Item != null)
-    //    {
-    //        Debug.Log("Table " + slottedTable.TableID + " already has a block, skipping retrieve.");
-    //        return;
-    //    }
-
-    //    if (slottedTable.task == RACK_TASK.INSERT && slottedTable.Item == null)
-    //    {
-    //        Debug.Log("Table " + slottedTable.TableID + " has no block to insert, skipping.");
-    //        return;
-    //    }
-
-    //    Spline_Animate spline = other.GetComponent<Spline_Animate>();
-    //    if (spline == null) return;
-
-    //    Debug.Log("Block operation - Collision detected with Item_Slotted_Table. Table ID: " + slottedTable.TableID);
-
-    //    spline.Pause();
-    //    Debug.Log("Spline paused.");
-
-    //    if (slottedTable.task == RACK_TASK.RETRIEVE)
-    //        rack.BlockRetrieve(slottedTable);
-
-    //    if (slottedTable.task == RACK_TASK.INSERT)
-    //        rack.BlockInsert(slottedTable);
-
-    //    StartCoroutine(ResumeAfterDelay(spline));
-    //}
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"RackScanner: Trigger entered by '{other.name}'.", other.gameObject);
+
         if (rack == null)
         {
-            Debug.LogError("Rack reference is not assigned.");
+            Debug.LogError("RackScanner: Rack reference is not assigned.", this);
             return;
         }
 
-        Item_Slotted_Table slottedTable = other.GetComponent<Item_Slotted_Table>();
-        if (slottedTable == null) return;
-
-        Spline_Animate spline = other.GetComponent<Spline_Animate>();
-        if (spline == null) return;
-
-        if (slottedTable.task == RACK_TASK.RETRIEVE)
+        if (IsProcessing)
         {
-            if (!rack.NeedsRackReturn(slottedTable))
-            {
-                Debug.Log($"Table {slottedTable.TableID} slot is occupied, skipping retrieve.");
-                return;
-            }
-
-            spline.Pause();
-            rack.SlotRetrieve(slottedTable);
-            StartCoroutine(ResumeAfterDelay(spline));
+            Debug.Log("RackScanner: Already processing a table, ignoring new trigger.", this);
+            return;
         }
-        else if (slottedTable.task == RACK_TASK.INSERT)
+
+        Item_Slotted_Table slottedTable = other.GetComponentInParent<Item_Slotted_Table>();
+        if (slottedTable == null)
         {
-            if (!rack.NeedsRackReturn(slottedTable))
-            {
-                Debug.Log($"Table {slottedTable.TableID} slot is already occupied, skipping insert.");
-                return;
-            }
-
-            spline.Pause();
-            rack.SlotInsert(slottedTable);
-            StartCoroutine(ResumeAfterDelay(spline));
+            Debug.Log("RackScanner: Entering object is not part of a slotted table.", other.gameObject);
+            return;
         }
+
+        Spline_Animate spline = other.GetComponentInParent<Spline_Animate>();
+        if (spline == null)
+        {
+            Debug.LogWarning($"RackScanner: Table '{slottedTable.TableID}' is missing Spline_Animate.", slottedTable);
+            return;
+        }
+
+        if (!rack.NeedsRackReturn(slottedTable))
+        {
+            Debug.Log($"RackScanner: Table '{slottedTable.TableID}' slot is already occupied. Skipping.", slottedTable);
+            return;
+        }
+
+        Debug.Log($"RackScanner: Slotted table '{slottedTable.TableID}' passed through scanner.", slottedTable);
+
+        ActiveTable = slottedTable;
+        IsProcessing = true;
+
+        spline.Pause();
+        StartCoroutine(ProcessRackReturn(slottedTable, spline));
     }
-    private IEnumerator ResumeAfterDelay(Spline_Animate spline)
+
+    private IEnumerator ProcessRackReturn(Item_Slotted_Table table, Spline_Animate spline)
     {
-        yield return new WaitForSeconds(resumeDelay);
-        spline.Play();
-        Debug.Log("Spline resumed.");
+        yield return new WaitForSeconds(processDelay);
+
+        if (table == null)
+        {
+            ClearProcessingState();
+            yield break;
+        }
+
+        switch (table.task)
+        {
+            case RACK_TASK.RETRIEVE:
+                rack.SlotRetrieve(table);
+                Debug.Log($"RackScanner: Retrieved table '{table.TableID}' into rack.", table);
+                break;
+
+            case RACK_TASK.INSERT:
+                rack.SlotInsert(table);
+                Debug.Log($"RackScanner: Inserted table '{table.TableID}' into rack.", table);
+                break;
+
+            default:
+                Debug.LogWarning($"RackScanner: Unsupported rack task on table '{table.TableID}'.", table);
+                break;
+        }
+
+        ClearProcessingState();
+    }
+
+    private void ClearProcessingState()
+    {
+        ActiveTable = null;
+        IsProcessing = false;
     }
 }
