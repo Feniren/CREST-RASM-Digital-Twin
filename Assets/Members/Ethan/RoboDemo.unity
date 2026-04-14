@@ -4131,6 +4131,8 @@ GameObject:
   - component: {fileID: 1323936107}
   - component: {fileID: 1323936106}
   - component: {fileID: 1323936109}
+  - component: {fileID: 1323936111}
+  - component: {fileID: 1323936110}
   m_Layer: 0
   m_Name: motoman_gp8
   m_TagString: robot
@@ -4200,21 +4202,51 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323936105}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57639d5d8b5934b4388e763c108ebea5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unity.Robotics.UrdfImporter.Control.ManualURDFController
-  selectedJoint: 
-  selectedIndex: 0
-  control: 0
+  highlightColor: {r: 1, g: 0, b: 0, a: 1}
+  selectedJointName: 
+  driveMode: 0
   stiffness: 10000
   damping: 100
   forceLimit: 1000
   speed: 50
-  torque: 500
   acceleration: 100
-  highLightColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &1323936110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323936105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f0841a374e86114691c208d9d7f73ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomJointStateProvider
+  publishRate: 0.1
+  minPosition: -1.57
+  maxPosition: 1.57
+  minVelocity: -1
+  maxVelocity: 1
+--- !u!114 &1323936111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323936105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59b62e0245aec174ea9d2d26b47befdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JointStateController
+  stiffness: 10000
+  damping: 100
+  forceLimit: 1000
 --- !u!1001 &1326440005
 PrefabInstance:
   m_ObjectHideFlags: 0
