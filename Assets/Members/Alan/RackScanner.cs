@@ -10,7 +10,8 @@ public enum RACK_TASK
 public class RackScanner : MonoBehaviour
 {
     [SerializeField] private Item_ASRS rack;
-    [SerializeField] private float processDelay = 1.5f;
+    [SerializeField] private Item_Conveyor_Belt conveyor;
+    [SerializeField] private float processDelay = 1.0f;
 
     public Item_Slotted_Table ActiveTable { get; private set; }
     public bool IsProcessing { get; private set; }
@@ -25,9 +26,15 @@ public class RackScanner : MonoBehaviour
             return;
         }
 
+        if (conveyor == null)
+        {
+            Debug.LogError("RackScanner: Conveyor reference is not assigned.", this);
+            return;
+        }
+
         if (IsProcessing)
         {
-            Debug.Log("RackScanner: Already processing a table, ignoring new trigger.", this);
+            Debug.Log("RackScanner: Already processing a table.", this);
             return;
         }
 
@@ -57,10 +64,10 @@ public class RackScanner : MonoBehaviour
         IsProcessing = true;
 
         spline.Pause();
-        StartCoroutine(ProcessRackReturn(slottedTable, spline));
+        StartCoroutine(ProcessRackReturn(slottedTable));
     }
 
-    private IEnumerator ProcessRackReturn(Item_Slotted_Table table, Spline_Animate spline)
+    private IEnumerator ProcessRackReturn(Item_Slotted_Table table)
     {
         yield return new WaitForSeconds(processDelay);
 
@@ -74,11 +81,13 @@ public class RackScanner : MonoBehaviour
         {
             case RACK_TASK.RETRIEVE:
                 rack.SlotRetrieve(table);
+                conveyor.RemovePlate(table.TableID);
                 Debug.Log($"RackScanner: Retrieved table '{table.TableID}' into rack.", table);
                 break;
 
             case RACK_TASK.INSERT:
                 rack.SlotInsert(table);
+                conveyor.RemovePlate(table.TableID);
                 Debug.Log($"RackScanner: Inserted table '{table.TableID}' into rack.", table);
                 break;
 
