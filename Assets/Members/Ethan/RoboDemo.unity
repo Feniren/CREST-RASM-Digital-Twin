@@ -5542,7 +5542,7 @@ MonoBehaviour:
   maxJointDelta: 0.1
   linearSpeed: 0.2
   publishRate: 50
-  targetPosition: {x: 0, y: 0, z: 0}
+  targetPosition: {x: 0.3, y: 0.3, z: 0.3}
   targetActive: 0
 --- !u!1 &1704768685
 GameObject:

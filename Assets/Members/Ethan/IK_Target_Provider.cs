@@ -39,7 +39,7 @@ public class IKTargetProvider : MonoBehaviour, IJointStateProvider
 	[Tooltip("Set in inspector to test — base-frame coordinates (meters)")]
 	public Vector3 targetPosition;
 	[Tooltip("Enable to start solving toward targetPosition")]
-	public bool targetActive;
+	public bool targetActive; // inspector-only trigger
 
 	public event Action<JointStateMessage> OnJointStateReceived;
 
@@ -51,7 +51,6 @@ public class IKTargetProvider : MonoBehaviour, IJointStateProvider
 	// Shadow FK state — never written back to ArticulationBody
 	private float[] currentAngles;       // radians
 	private Vector3[] jointAxesLocal;     // local rotation axis per movable joint
-	private Vector3[] anchorPositions;    // local anchor offsets
 
 	private Transform baseTransform;
 	private float publishTimer;
@@ -200,13 +199,19 @@ public class IKTargetProvider : MonoBehaviour, IJointStateProvider
 	private void ComputeJointTransform(int solverIndex, out Vector3 posLocal, out Vector3 axisLocal)
 	{
 		ComputeChainTransform(solverIndex, out posLocal, out Quaternion rot);
-		axisLocal = rot * jointAxesLocal[solverIndex];
+		axisLocal = rot * Vector3.right;
 	}
 
+
 	/// <summary>
-	/// Walk the kinematic chain using shadow angles, stopping after processing
-	/// upToSolverIndex movable joints. Returns accumulated position/rotation
-	/// in base-local space.
+	/// Shadow FK using ArticulationBody anchor transforms.
+	/// Each joint step:
+	///   1. parentAnchorPosition/Rotation — move to joint attachment point in parent frame
+	///   2. R(θ) around Vector3.right — apply revolute motion in anchor frame
+	///   3. Inverse(anchorRotation) — convert from anchor frame into child body frame
+	///
+	/// Full per-joint: T_child = T_parent * parentAnchorRotation * R(θ) * Inverse(anchorRotation)
+	///
 	/// </summary>
 	private void ComputeChainTransform(int upToSolverIndex, out Vector3 pos, out Quaternion rot)
 	{
@@ -214,45 +219,34 @@ public class IKTargetProvider : MonoBehaviour, IJointStateProvider
 		rot = Quaternion.identity;
 
 		int solverIdx = 0;
+		bool chainStarted = false; // don't acumulate until first revolute
 
-		for (int i = 0; i < allBodies.Length; i++)
+		for (int i = 1; i < allBodies.Length; i++)
 		{
 			var body = allBodies[i];
 
-			// Apply local anchor offset
-			Vector3 localOffset = body.transform.localPosition;
-			if (i > 0)
+			if (!chainStarted)
 			{
-				pos += rot * localOffset;
-				rot *= body.transform.localRotation;
+				if (body.jointType == ArticulationJointType.FixedJoint)
+					continue; // assumes everything before first revolute already in baseTransform
+				chainStarted = true;
 			}
 
-			// If this is a movable joint, apply shadow angle
+			pos += rot * body.parentAnchorPosition;
+			rot *= body.parentAnchorRotation;
+
 			if (body.jointType != ArticulationJointType.FixedJoint)
 			{
 				if (solverIdx >= upToSolverIndex)
 					break;
 
-				// Rotate around local joint axis by shadow angle
-				// Subtract rest pose angle since localRotation includes rest pose
-				float restAngle = body.jointPosition[0];
-				float deltaAngle = currentAngles[solverIdx] - restAngle;
-				rot *= Quaternion.AngleAxis(deltaAngle * Mathf.Rad2Deg, jointAxesLocal[solverIdx]);
-
+				rot *= Quaternion.AngleAxis(currentAngles[solverIdx] * Mathf.Rad2Deg, Vector3.right);
 				solverIdx++;
 			}
-		}
 
-		// If we walked the full chain, include end-effector offset
-		if (upToSolverIndex >= movableIndices.Length && endEffector != null)
-		{
-			// Offset from last body to end-effector
-			var lastBody = allBodies[allBodies.Length - 1];
-			Vector3 eeOffset = lastBody.transform.InverseTransformPoint(endEffector.position);
-			pos += rot * eeOffset;
+			rot *= Quaternion.Inverse(body.anchorRotation);
 		}
 	}
-
 	#endregion
 
 	private void ClampAngle(int solverIndex)
