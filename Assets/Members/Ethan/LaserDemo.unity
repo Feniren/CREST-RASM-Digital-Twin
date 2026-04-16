@@ -668,12 +668,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6227486138970689809, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.37025255
+      value: -0.8234735
       objectReference: {fileID: 0}
     - target: {fileID: 6253495840110350541, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
       propertyPath: ActiveTable
       value: 
       objectReference: {fileID: 2033895328}
+    - target: {fileID: 9168776928943923744, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
+      propertyPath: stepSize
+      value: 0.005
+      objectReference: {fileID: 0}
     - target: {fileID: 9168776928943923744, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
       propertyPath: intensity
       value: 0.8
@@ -682,7 +686,8 @@ PrefabInstance:
       propertyPath: testShape
       value: 
       objectReference: {fileID: 2800000, guid: 351776f8a24f08941816d0761dc5659d, type: 3}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2102970434555358261, guid: a4046e8a35fb7ae43af2b3caae4c6e24, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1589,7 +1594,7 @@ Transform:
   m_GameObject: {fileID: 1284791690}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.0259, y: 0.796, z: 3.7408}
+  m_LocalPosition: {x: -5.356, y: 0.796, z: 4.357}
   m_LocalScale: {x: 0.19929321, y: 0.1, z: 0.23387277}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2202,7 +2207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PrintJobTest
   laserHead: {fileID: 733440245}
   testImagePath: Assets\Members\Ethan\TestImage.png
-  jobWidthInches: 1
+  jobWidthInches: 2
   jobDPI: 100
 --- !u!4 &2098425791
 Transform:

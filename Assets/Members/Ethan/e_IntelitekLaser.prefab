@@ -30,11 +30,11 @@ Transform:
   m_GameObject: {fileID: 181994643615703414}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
-  m_LocalPosition: {x: -0.11442837, y: 0.032654706, z: -0.37025246}
-  m_LocalScale: {x: 0.6119201, y: 0.816378, z: 0.045263194}
+  m_LocalPosition: {x: 0.7978001, y: 0.56299996, z: -0.8234735}
+  m_LocalScale: {x: 0.09999998, y: 0.099999964, z: 0.099999964}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3073960914500210304}
+  m_Father: {fileID: 1414999116052961702}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2534839776746302746
 MeshFilter:
@@ -123,7 +123,7 @@ PositionConstraint:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181994643615703414}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Weight: 1
   m_TranslationAtRest: {x: -0.11442837, y: 0.032654706, z: -0.37025255}
@@ -149,6 +149,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Laser_Head
   intensity: 0.5
+  testShape: {fileID: 0}
+  atlasPixelsPerInch: 100
+  revealRadiusUV: 0.02
+  revealHardness: 0.8
+  moveSpeed: 2
+  stepSize: 0.05
 --- !u!1 &5223415215688208534
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,6 +168,7 @@ GameObject:
   - component: {fileID: 183680392619393735}
   - component: {fileID: 5128438954334888499}
   - component: {fileID: 8496337052492302802}
+  - component: {fileID: 1321955778243870473}
   m_Layer: 0
   m_Name: GantryX
   m_TagString: Untagged
@@ -181,8 +188,7 @@ Transform:
   m_LocalPosition: {x: 0.8165, y: 0.559, z: -0.00000039736}
   m_LocalScale: {x: 0.16342, y: 0.12249225, z: 2.2093}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6227486138970689809}
+  m_Children: []
   m_Father: {fileID: 1414999116052961702}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7531326231018515243
@@ -270,7 +276,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5223415215688208534}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4717378f4b972eb419b597e1bebda5c1, type: 3}
   m_Name: 
@@ -280,6 +286,26 @@ MonoBehaviour:
   rangeLower: -0.5
   rangeUpper: 0
   _target: -0.4
+--- !u!1818360608 &1321955778243870473
+PositionConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5223415215688208534}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0.8165, y: 0.559, z: -0.00000039736}
+  m_TranslationOffset: {x: 0.018699884, y: -0.0039999485, z: 0.82347304}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 0
+  m_AffectTranslationZ: 0
+  m_Active: 1
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 6227486138970689809}
+    weight: 1
 --- !u!1 &7369359824288850628
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,6 +319,7 @@ GameObject:
   - component: {fileID: 3223423118162937423}
   - component: {fileID: 6581519794966822902}
   - component: {fileID: 5089634143045701848}
+  - component: {fileID: 7706470988890201546}
   m_Layer: 0
   m_Name: GantryZ
   m_TagString: Untagged
@@ -400,7 +427,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7369359824288850628}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4717378f4b972eb419b597e1bebda5c1, type: 3}
   m_Name: 
@@ -410,6 +437,26 @@ MonoBehaviour:
   rangeLower: 0
   rangeUpper: 1
   _target: 1
+--- !u!1818360608 &7706470988890201546
+PositionConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7369359824288850628}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0.13799983, y: 0.5709999, z: -0.82800025}
+  m_TranslationOffset: {x: -0.6598003, y: 0.007999957, z: -0.004526794}
+  m_AffectTranslationX: 0
+  m_AffectTranslationY: 0
+  m_AffectTranslationZ: 1
+  m_Active: 1
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 6227486138970689809}
+    weight: 1
 --- !u!1 &9069627629461337390
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +643,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1294760016456825609}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6227486138970689809}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 22d4cd23e1e2f2d47bcb345b6b467e71, type: 3}
       insertIndex: -1
       addedObject: {fileID: 535124754728539897}
