@@ -92,37 +92,66 @@ public class e_Item_Epoxy_Block : Item_Parent
 	}
 
 	/// <summary>
-	/// Stamps a shape texture onto the atlas at the given top-left pixel position.
+	/// Stamps a shape texture onto the atlas at the given center pixel position.
+	/// Counter-rotates against the object's Y rotation so the stamp appears
+	/// axis-aligned in world space regardless of object orientation.
 	/// </summary>
 	public void PaintShape(Texture2D shape, int originX, int originY, float intensity)
 	{
+		if (shape == null) return;
+
 		int shapeW = shape.width;
 		int shapeH = shape.height;
 
-		int startX = Mathf.Max(0, -originX);
-		int startY = Mathf.Max(0, -originY);
-		int endX = Mathf.Min(shapeW, Atlas.width - originX);
-		int endY = Mathf.Min(shapeH, Atlas.height - originY);
+		// Negate to counter-rotate: world-aligned stamp cancels object rotation
+		float angleRad = -transform.localEulerAngles.y * Mathf.Deg2Rad;
+		float cos = Mathf.Cos(angleRad);
+		float sin = Mathf.Sin(angleRad);
 
-		for (int sx = startX; sx < endX; sx++)
+		float halfDiag = 0.5f * Mathf.Sqrt(shapeW * shapeW + shapeH * shapeH);
+		float halfW = shapeW * 0.5f;
+		float halfH = shapeH * 0.5f;
+
+		int startX = Mathf.Max(0, Mathf.FloorToInt(originX - halfDiag));
+		int startY = Mathf.Max(0, Mathf.FloorToInt(originY - halfDiag));
+		int endX = Mathf.Min(Atlas.width, Mathf.CeilToInt(originX + halfDiag));
+		int endY = Mathf.Min(Atlas.height, Mathf.CeilToInt(originY + halfDiag));
+
+		int regionW = endX - startX;
+		int regionH = endY - startY;
+		if (regionW <= 0 || regionH <= 0) return;
+
+		Color[] atlasPixels = Atlas.GetPixels(startX, startY, regionW, regionH);
+		Color[] shapePixels = shape.GetPixels();
+
+		for (int py = startY; py < endY; py++)
 		{
-			for (int sy = startY; sy < endY; sy++)
+			for (int px = startX; px < endX; px++)
 			{
-				float mask = shape.GetPixel(sx, sy).a;
+				float dx = px - originX;
+				float dy = py - originY;
+
+				// Rotate atlas-space offset into shape-space, centered on shape
+				float sx = dx * cos - dy * sin + halfW;
+				float sy = dx * sin + dy * cos + halfH;
+
+				int ix = Mathf.RoundToInt(sx);
+				int iy = Mathf.RoundToInt(sy);
+
+				if ((uint)ix >= (uint)shapeW || (uint)iy >= (uint)shapeH) continue;
+
+				float mask = shapePixels[iy * shapeW + ix].a;
 				if (mask <= 0f) continue;
 
-				int px = originX + sx;
-				int py = originY + sy;
-
-				Color c = Atlas.GetPixel(px, py);
-				c.a = Mathf.Clamp01(c.a + mask * intensity);
-				Atlas.SetPixel(px, py, c);
+				int ai = (py - startY) * regionW + (px - startX);
+				atlasPixels[ai].a = Mathf.Clamp01(atlasPixels[ai].a + mask * intensity);
 			}
 		}
 
-		Atlas.Apply();
+		Atlas.SetPixels(startX, startY, regionW, regionH, atlasPixels);
+		Atlas.Apply(); // note: if paint_shape ends up being called repeatedly,
+					   // move Apply() responsibility to caller for better performance.
 	}
-
 	/// <summary>
 	/// Paints opacity directly at a pixel position. Kept for legacy use.
 	/// </summary>
