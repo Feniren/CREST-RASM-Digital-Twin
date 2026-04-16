@@ -90,8 +90,9 @@ public class Laser_Head : MonoBehaviour
 			return;
 		}
 
-		int x = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
-		int y = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
+		int x = block.Atlas.width / 2;
+		int y = block.Atlas.height / 2;
+
 		block.PaintShape(testShape, x, y, intensity);
 	}
 
