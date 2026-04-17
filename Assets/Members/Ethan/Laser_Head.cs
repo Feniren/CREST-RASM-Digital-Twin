@@ -21,55 +21,52 @@ public class Laser_Head : MonoBehaviour
 	[Tooltip("How far the laser head moves down on the Z axis per pass.")]
 	public float stepSize = 0.005f;
 
-	// Whether a job has been stamped onto the current target
-	private bool _jobApplied;
 	private Coroutine _engraveCoroutine;
 
 	void Update()
 	{
 		Debug.DrawRay(transform.position, Vector3.down * 100f, Color.red);
-
-		if (!_jobApplied) return;
-
-		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-			return;
-
-		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
-		if (block == null) return;
-
-		block.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
 	}
 
-	/// <summary>
-	/// Stamps the job atlas immediately and resets the reveal mask.
-	/// Engraving becomes visible as the head moves over the block.
-	/// </summary>
-	[ContextMenu("Try to Apply Job")]
+    private void UpdateEngraving()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+        {
+            e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+            if (block != null)
+            {
+                block.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Stamps the job atlas immediately and resets the reveal mask.
+    /// Engraving becomes visible as the head moves over the block.
+    /// </summary>
+    [ContextMenu("Try to Apply Job")]
 	void TryApplyJob()
-	{
-		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-			return;
+    {
+        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
+            return;
 
-		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
-		if (block == null) return;
+        e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+        if (block == null) return;
 
-		int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
-		int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
+        int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
+        int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
 
-		block.ClearRevealMask();
-		Texture2D mask = ActiveJob.GetResampledMask(atlasPixelsPerInch);
-		block.PaintShape(mask, originX, originY, intensity);
+        block.ClearRevealMask();
+        Texture2D mask = ActiveJob.GetResampledMask(atlasPixelsPerInch);
+        block.PaintShape(mask, originX, originY, intensity);
 
-		_jobApplied = true;
+        if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
+        _engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
+    }
 
-		if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
-		_engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
-	}
-
-	public void LoadJob(PrintJob job)
+    public void LoadJob(PrintJob job)
 	{
 		ActiveJob = job;
-		_jobApplied = false;
 		if (_engraveCoroutine != null)
 		{
 			StopCoroutine(_engraveCoroutine);
@@ -124,7 +121,8 @@ public class Laser_Head : MonoBehaviour
 			while (Vector3.Distance(transform.position, passTarget) > 0.001f)
 			{
 				transform.position = Vector3.MoveTowards(transform.position, passTarget, moveSpeed * Time.deltaTime);
-				yield return null;
+                UpdateEngraving();
+                yield return null;
 			}
 
 			currentZ -= stepSize;
@@ -142,5 +140,6 @@ public class Laser_Head : MonoBehaviour
 		}
 
 		Debug.Log("Laser Engraving Finished.");
+		_engraveCoroutine = null;
 	}
 }
