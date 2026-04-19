@@ -9,6 +9,7 @@ public class Item_ASRS : Item_Parent
     public Item_Epoxy_Block material = null;
     public List<GameObject> BlockList = new List<GameObject>();
     public Spline_Animate spline;
+    public Item_Conveyor_Belt conveyor;
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
 
@@ -26,51 +27,96 @@ public class Item_ASRS : Item_Parent
     {
         base.Start();
 
+        Debug.Log("ASRS Start() running...");
+
         anchorPositions.Clear();
         anchorRotations.Clear();
         TableMap.Clear();
+
+        HashSet<Item_Slotted_Table> conveyorTables = new HashSet<Item_Slotted_Table>();
+        List<GameObject> conveyorList = conveyor.GetSlottedTableList();
+
+        foreach (GameObject obj in conveyorList)
+        {
+            if (obj == null) continue;
+
+            Item_Slotted_Table table = obj.GetComponent<Item_Slotted_Table>();
+            if (table != null)
+                conveyorTables.Add(table);
+        }
 
         foreach (Item_Slotted_Table table in GetComponentsInChildren<Item_Slotted_Table>(true))
         {
             if (table == null || string.IsNullOrWhiteSpace(table.TableID))
                 continue;
 
-            if (!int.TryParse(table.TableID, out int rawTableId))
+            if (!int.TryParse(table.TableID, out int rawTableID))
             {
-                Debug.LogWarning($"ASRS: Invalid TableID '{table.TableID}'.", table);
+                Debug.LogWarning($"Invalid TableID: {table.TableID}", table);
                 continue;
             }
 
             int index;
             try
             {
-                index = GetIndex(rawTableId);
+                index = GetIndex(rawTableID);
             }
-            catch (ArgumentOutOfRangeException ex)
+            catch (Exception e)
             {
-                Debug.LogError(ex.Message, table);
+                Debug.LogError(e.Message, table);
                 continue;
             }
 
-            int row = rawTableId / 10000;
+            int row = rawTableID / 10000;
+            bool isOnConveyor = conveyorTables.Contains(table);
+            bool isRetrieve = table.task == RACK_TASK.RETRIEVE;
+            bool isVacantRow = row == 5;
 
             anchorPositions[index] = table.transform.position;
             anchorRotations[index] = table.transform.rotation;
 
-            if (row == 5)
+            if (isOnConveyor && isRetrieve)
+            {
+                SetTableVisibility(table.gameObject, false);
+                Debug.Log($"Conveyor table {table.TableID} hidden (RETRIEVE)");
+            }
+            else
+            {
+                SetTableVisibility(table.gameObject, true);
+            }
+
+            if (isVacantRow)
             {
                 TableMap[index] = null;
-                table.gameObject.SetActive(false);
+                table.Item = null;
+                table.task = RACK_TASK.RETRIEVE;
+
+                SetTableVisibility(table.gameObject, false);
+                Debug.Log($"Slot {index} → EMPTY (Row 5)");
             }
             else
             {
                 TableMap[index] = table;
+
+                if (!(isOnConveyor && isRetrieve))
+                    SetTableVisibility(table.gameObject, true);
+
+                Debug.Log($"Slot {index} → OCCUPIED ({table.TableID})");
             }
         }
 
-        Debug.Log($"ASRS: Anchors saved: {anchorPositions.Count}");
+        Debug.Log($"ASRS: Total anchors saved: {anchorPositions.Count}");
         Debug.Log($"ASRS: TableMap entries: {TableMap.Count}");
         Debug.Log($"ASRS: Vacant slots: {CountVacantSlots()}");
+    }
+
+    private void SetTableVisibility(GameObject obj, bool isVisible)
+    {
+        MeshRenderer[] renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (MeshRenderer r in renderers)
+        {
+            r.enabled = isVisible;
+        }
     }
 
     public override void Interact(Entity_Player PlayerReference)
@@ -95,45 +141,34 @@ public class Item_ASRS : Item_Parent
         return vacant;
     }
 
-    public void SlotRetrieve(Item_Slotted_Table target)
+    public Item_Slotted_Table SlotRetrieve(Item_Slotted_Table requestTable)
     {
-        if (target == null)
+        if (!TryGetTableIndex(requestTable, out int index))
+            return null;
+
+        if (!TableMap.TryGetValue(index, out Item_Slotted_Table storedTable) || storedTable == null)
         {
-            Debug.LogError("SlotRetrieve: target table is null.");
-            return;
+            Debug.LogError("No table in rack slot to retrieve.");
+            return null;
         }
 
-        if (!TryGetTableIndex(target, out int index))
-            return;
+        TableMap[index] = null;
 
-        if (!TableMap.TryGetValue(index, out Item_Slotted_Table rackSlot) || rackSlot == null)
-        {
-            Debug.LogError($"SlotRetrieve: No rack slot table found for '{target.TableID}'.", target);
-            return;
-        }
+        storedTable.gameObject.SetActive(true);
+        SetTableVisibility(storedTable.gameObject, true);
 
-        if (!anchorPositions.TryGetValue(index, out Vector3 anchorPosition) ||
-            !anchorRotations.TryGetValue(index, out Quaternion anchorRotation))
-        {
-            Debug.LogError($"SlotRetrieve: Missing saved anchor transform for index {index}.", target);
-            return;
-        }
+        Spline_Animate splineAnimate = storedTable.GetComponent<Spline_Animate>();
+        if (splineAnimate == null)
+            splineAnimate = storedTable.GetComponentInParent<Spline_Animate>();
 
-        target.transform.SetParent(rackSlot.transform.parent, true);
-        target.transform.position = anchorPosition;
-        target.transform.rotation = anchorRotation;
-
-        Spline_Animate splineAnimate = target.GetComponent<Spline_Animate>();
         if (splineAnimate != null)
         {
-            splineAnimate.Pause();
-            splineAnimate.Container = null;
+            splineAnimate.enabled = true;
         }
 
-        TableMap[index] = target;
-        target.gameObject.SetActive(true);
+        Debug.Log($"Retrieved table {storedTable.TableID} from rack.");
 
-        Debug.Log($"SlotRetrieve: Table '{target.TableID}' placed into rack slot {index}.");
+        return storedTable;
     }
 
     public void SlotInsert(Item_Slotted_Table target)
@@ -165,14 +200,19 @@ public class Item_ASRS : Item_Parent
         target.transform.rotation = anchorRotation;
 
         Spline_Animate splineAnimate = target.GetComponent<Spline_Animate>();
+        if (splineAnimate == null)
+            splineAnimate = target.GetComponentInParent<Spline_Animate>();
+
         if (splineAnimate != null)
         {
             splineAnimate.Pause();
             splineAnimate.Container = null;
+            splineAnimate.enabled = false;
         }
 
         TableMap[index] = target;
         target.gameObject.SetActive(true);
+        SetTableVisibility(target.gameObject, true);
 
         Debug.Log($"SlotInsert: Table '{target.TableID}' placed into rack slot {index}.");
     }
@@ -228,5 +268,37 @@ public class Item_ASRS : Item_Parent
             Debug.LogError($"ASRS: Invalid TableID '{table.TableID}'. {ex.Message}", table);
             return false;
         }
+    }
+
+    public Item_Slotted_Table RetrieveByID(string tableID)
+    {
+        if (string.IsNullOrWhiteSpace(tableID))
+            return null;
+
+        int index = GetIndex(int.Parse(tableID));
+
+        if (!TableMap.TryGetValue(index, out Item_Slotted_Table storedTable) || storedTable == null)
+        {
+            Debug.LogWarning($"ASRS: No table available for {tableID}");
+            return null;
+        }
+
+        TableMap[index] = null;
+
+        storedTable.gameObject.SetActive(true);
+        SetTableVisibility(storedTable.gameObject, true);
+
+        Spline_Animate splineAnimate = storedTable.GetComponent<Spline_Animate>();
+        if (splineAnimate == null)
+            splineAnimate = storedTable.GetComponentInParent<Spline_Animate>();
+
+        if (splineAnimate != null)
+        {
+            splineAnimate.enabled = true;
+        }
+
+        Debug.Log($"ASRS: Retrieved table '{storedTable.TableID}'");
+
+        return storedTable;
     }
 }
