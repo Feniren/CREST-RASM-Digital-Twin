@@ -11321,6 +11321,10 @@ PrefabInstance:
       propertyPath: TableID
       value: 010002
       objectReference: {fileID: 0}
+    - target: {fileID: 1007586237954945262, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1094826565009013216, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
       value: 2
@@ -11344,6 +11348,10 @@ PrefabInstance:
     - target: {fileID: 1404423045773200755, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_Name
       value: SlottedTableSingleBuffer (30)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1961181809990753263, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2111476959587771416, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
