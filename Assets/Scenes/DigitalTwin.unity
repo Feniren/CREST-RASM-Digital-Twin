@@ -3414,7 +3414,6 @@ MonoBehaviour:
   rack: {fileID: 217882417}
   conveyor: {fileID: 814723534}
   processDelay: 1.5
-  retrieveReturnOffset: 0
 --- !u!1001 &941098457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11313,6 +11312,10 @@ PrefabInstance:
       propertyPath: m_text
       value: 050004
       objectReference: {fileID: 0}
+    - target: {fileID: 194490232431019601, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 829039691460382489, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
       value: 1
@@ -11449,6 +11452,10 @@ PrefabInstance:
       propertyPath: TableID
       value: 050004
       objectReference: {fileID: 0}
+    - target: {fileID: 5856493871889294852, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5939592728302332155, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_Name
       value: SlottedTableSingleBuffer (27)
@@ -11456,6 +11463,10 @@ PrefabInstance:
     - target: {fileID: 6553514766894095346, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_text
       value: 050002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6553514766894095346, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7197536205433759195, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
@@ -11472,6 +11483,10 @@ PrefabInstance:
     - target: {fileID: 7588032153882721834, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_text
       value: 050005
+      objectReference: {fileID: 0}
+    - target: {fileID: 7591170703223470257, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8239825869797005668, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_Enabled
