@@ -82,7 +82,7 @@ public class Player_Controller : Controller{
 	}
 
 	private void LateUpdate(){
-		gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+		gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
 	}
 
     public void Interact(InputAction.CallbackContext Context){

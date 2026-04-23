@@ -510,7 +510,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""caad5cfe-5329-442f-8661-50bde371273e"",
-                    ""path"": ""<QuestTouchPlusController>{RightHand}/thumbstick"",
+                    ""path"": ""<XRController>{RightHand}/thumbstick"",
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone"",
                     ""groups"": """",
