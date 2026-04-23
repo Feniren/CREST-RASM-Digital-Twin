@@ -59,9 +59,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
     }
 
     void Update(){
-        //Quaternion Rotation = Quaternion.Euler(0.0f, CameraReference.transform.localEulerAngles.y, 0.0f);
-
-        //transform.rotation = Rotation;
     }
 
     public void LoadData(Save_Data SaveData){
@@ -74,32 +71,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
         SaveData.PlayerLocation = gameObject.transform.position;
         SaveData.PlayerRotation = gameObject.transform.rotation;
         SaveData.PlayerScale = gameObject.transform.localScale;
-    }
-
-    public bool GetItemEquipped(){return false;
-    }
-
-    public void SetItemEquipped(bool Equipped){
-    }
-
-    public void ToggleEquippedItem(){
-
-
-        /*if (true){
-            if (InventoryReference.InstancedInventory.Count != 0){
-                GameObject ItemReference = InventoryReference.InstancedInventory[0];
-
-                ItemReference.SetActive(true);
-                ItemReference.transform.rotation = Quaternion.identity;
-
-                Debug.Log("Item should be spawned");
-
-                InventoryReference.RemoveFromInventory(ItemReference);
-            }
-            else{
-                Debug.Log("No Items in inventory");
-            }
-        }*/
     }
 
     public override void TakeDamage(Damage_Event DamageEvent){

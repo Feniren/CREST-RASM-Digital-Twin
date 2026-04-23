@@ -159,7 +159,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""SwitchCameraPerspective"",
                     ""type"": ""Button"",
                     ""id"": ""be4228c1-ffc7-4905-9557-a33294759d4b"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -356,7 +356,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""805e6f1b-df47-4a65-9ed1-ff09d4f25fc6"",
-                    ""path"": ""<QuestTouchPlusController>/thumbstick/up"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -367,7 +367,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""down"",
                     ""id"": ""12b7f805-a377-4866-9907-b519304b73f7"",
-                    ""path"": ""<QuestTouchPlusController>/thumbstick/down"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/down"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -378,7 +378,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""9ccffd30-444c-45e0-b8d7-bd43727a931a"",
-                    ""path"": ""<QuestTouchPlusController>/thumbstick/left"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -389,7 +389,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""093ac5ce-9580-4a85-98d7-155021425d49"",
-                    ""path"": ""<QuestTouchPlusController>/thumbstick/right"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/right"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -502,6 +502,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""caad5cfe-5329-442f-8661-50bde371273e"",
+                    ""path"": ""<XRController>{RightHand}/thumbstick"",
+                    ""interactions"": """",
+                    ""processors"": ""StickDeadzone"",
                     ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": false,
