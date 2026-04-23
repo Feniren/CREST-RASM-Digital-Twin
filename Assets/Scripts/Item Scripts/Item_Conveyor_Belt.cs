@@ -8,7 +8,7 @@ public class Item_Conveyor_Belt : Item_Parent{
     List<GameObject> SlottedTableList = new List<GameObject>();
 
     bool Active = true;
-    float BaseSpeed = 0.325f;
+	//float BaseSpeed = 0.325f;
 
     public Item_Conveyor_Belt(){
         Name = "Conveyor Belt";

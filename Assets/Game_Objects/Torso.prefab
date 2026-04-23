@@ -757,7 +757,7 @@ GameObject:
   - component: {fileID: 1572484982806773569}
   - component: {fileID: 9115649977232283583}
   - component: {fileID: 351181043974663649}
-  - component: {fileID: 5809700056977313639}
+  - component: {fileID: 3130149072785183680}
   m_Layer: 0
   m_Name: RightHand
   m_TagString: Untagged
@@ -774,7 +774,7 @@ Transform:
   m_GameObject: {fileID: 4085109177247283198}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0005, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -857,8 +857,8 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
-  m_Center: {x: 0, y: -0.000000059604645, z: 0}
---- !u!114 &5809700056977313639
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3130149072785183680
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -867,10 +867,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4085109177247283198}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d56902bf0131c4586ed8af74656274, type: 3}
+  m_Script: {fileID: 11500000, guid: d860ea4708080e146b7274ffc0bc59c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
-  PlayerReference: {fileID: 8535134499384648863}
 --- !u!1 &4717846206409009550
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,7 +882,7 @@ GameObject:
   - component: {fileID: 9087320875030315748}
   - component: {fileID: 4717383777684238494}
   - component: {fileID: 5276303178890650024}
-  - component: {fileID: 2564482757187011881}
+  - component: {fileID: 233569210894456406}
   m_Layer: 0
   m_Name: LeftHand
   m_TagString: Untagged
@@ -983,8 +982,8 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
-  m_Center: {x: 0, y: -0.000000059604645, z: 0}
---- !u!114 &2564482757187011881
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &233569210894456406
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -993,10 +992,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4717846206409009550}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d56902bf0131c4586ed8af74656274, type: 3}
+  m_Script: {fileID: 11500000, guid: d860ea4708080e146b7274ffc0bc59c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
-  PlayerReference: {fileID: 8535134499384648863}
 --- !u!1 &4845787876623777835
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,7 +1204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3065021691011289864
 Transform:
   m_ObjectHideFlags: 0
