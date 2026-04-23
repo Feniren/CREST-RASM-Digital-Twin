@@ -6,7 +6,7 @@ public class Laser_Tender_Arm : MonoBehaviour
     [Tooltip("Leave this blank to auto-find 'Bone.007/Bone.007_end', or drag the bone here in the Inspector.")]
     public Transform attachmentPoint;
 
-    private e_Item_Epoxy_Block currentlyHeldItem;
+    private Item_Epoxy_Block currentlyHeldItem;
 
     void Start()
     {
@@ -24,19 +24,19 @@ public class Laser_Tender_Arm : MonoBehaviour
         Invoke("Drop", 2.0f);
     }
 
-    // Finds the nearest e_Item_Epoxy_Block, teleports it to the attachment point, and parents it.
+    // Finds the nearest Item_Epoxy_Block, teleports it to the attachment point, and parents it.
     public void Grab()
     {
         if (currentlyHeldItem != null || attachmentPoint == null) return;
 
-        e_Item_Epoxy_Block[] allBlocks = FindObjectsOfType<e_Item_Epoxy_Block>();
+        Item_Epoxy_Block[] allBlocks = FindObjectsOfType<Item_Epoxy_Block>();
         if (allBlocks.Length == 0) return;
 
-        e_Item_Epoxy_Block nearestBlock = null;
+        Item_Epoxy_Block nearestBlock = null;
         float shortestDistance = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
 
-        foreach (e_Item_Epoxy_Block block in allBlocks)
+        foreach (Item_Epoxy_Block block in allBlocks)
         {
             float distance = Vector3.Distance(currentPosition, block.transform.position);
             if (distance < shortestDistance)

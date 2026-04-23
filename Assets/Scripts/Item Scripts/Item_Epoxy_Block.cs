@@ -3,21 +3,22 @@ using UnityEngine.Rendering;
 
 public class Item_Epoxy_Block : Item_Parent
 {
-    public Texture2D Atlas { get; private set; }
-    public RenderTexture RevealMask { get; private set; }
-
-    // Kept for legacy PaintAt support
-    public int brushRadius = 5;
-
-    private Material _overlayMat;
-    private Material _revealBrushMat;
-
+    
     public Item_Epoxy_Block()
     {
         Name = "Epoxy Block";
         Pickup = true;
         Quantity = 1;
     }
+
+
+    // ==== Laser Engraving Logic =======================================================
+
+    public Texture2D Atlas { get; private set; } // Stores engraving results permanently, starts transparent
+    public RenderTexture RevealMask { get; private set; } // Used with shaders for revealing the information in Atlas
+
+    private Material _overlayMat;
+    private Material _revealBrushMat;
 
     public override void Start()
     {
@@ -39,7 +40,6 @@ public class Item_Epoxy_Block : Item_Parent
         if (col == null) col = gameObject.AddComponent<MeshCollider>();
         col.sharedMesh = mesh;
 
-        // Atlas: persistent engraving result, starts fully transparent
         Atlas = new Texture2D(512, 512, TextureFormat.RGBA32, false);
         Color[] clear = new Color[512 * 512];
         for (int i = 0; i < clear.Length; i++)
@@ -47,13 +47,11 @@ public class Item_Epoxy_Block : Item_Parent
         Atlas.SetPixels(clear);
         Atlas.Apply();
 
-        // RevealMask: GPU-side, starts black (nothing revealed)
         RevealMask = new RenderTexture(512, 512, 0, RenderTextureFormat.R8);
         RevealMask.filterMode = FilterMode.Bilinear;
         RevealMask.Create();
         ClearRevealMask();
 
-        // Overlay material using the custom reveal shader
         _overlayMat = new Material(Shader.Find("Custom/LaserReveal"));
         _overlayMat.SetTexture("_EngraveTex", Atlas);
         _overlayMat.SetTexture("_RevealMask", RevealMask);
@@ -149,33 +147,8 @@ public class Item_Epoxy_Block : Item_Parent
         }
 
         Atlas.SetPixels(startX, startY, regionW, regionH, atlasPixels);
-        Atlas.Apply(); // note: if paint_shape ends up being called repeatedly,
+        Atlas.Apply(); // note: if paint_shape ends up being called in sequences,
                        // move Apply() responsibility to caller for better performance.
-    }
-    /// <summary>
-    /// Paints opacity directly at a pixel position. Kept for legacy use.
-    /// </summary>
-    public void PaintAt(int centerX, int centerY, float increase)
-    {
-        for (int dx = -brushRadius; dx <= brushRadius; dx++)
-        {
-            for (int dy = -brushRadius; dy <= brushRadius; dy++)
-            {
-                int px = centerX + dx;
-                int py = centerY + dy;
-
-                if (px < 0 || px >= Atlas.width || py < 0 || py >= Atlas.height)
-                    continue;
-                if (dx * dx + dy * dy > brushRadius * brushRadius)
-                    continue;
-
-                Color c = Atlas.GetPixel(px, py);
-                c.a = Mathf.Clamp01(c.a + increase);
-                Atlas.SetPixel(px, py, c);
-            }
-        }
-
-        Atlas.Apply();
     }
 
     void OnDestroy()

@@ -716,17 +716,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 140473834}
-  Text: {fileID: 1285538723}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &317153382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1268,6 +1257,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5758526513041126778, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5758526513041126778, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8480719488249995161, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
       propertyPath: m_Name
       value: Item_Epoxy_Block
@@ -2813,17 +2810,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 110331428}
-  Text: {fileID: 429630449}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1459467172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3171,17 +3157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 733245305}
-  Text: {fileID: 1170171094}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1480542901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3659,17 +3634,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 1469531482}
-  Text: {fileID: 1764758910}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1599092601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3874,17 +3838,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 1300011771}
-  Text: {fileID: 1473845703}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1712524308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4282,17 +4235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 687562869}
-  Text: {fileID: 1582696046}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1856762548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4451,17 +4393,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 77087178}
-  Text: {fileID: 908598903}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &1998296217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4597,17 +4528,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7867da8e08d5304ea537243d51d87b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::e_Item_Slotted_Table
-  AutomaticActivation: 0
-  Owner: {fileID: 0}
-  Pickup: 0
-  Quantity: 1
-  Name: Slotted Table
-  ID: 
-  Item: {fileID: 0}
-  AnchorPoint: {fileID: 350944716}
-  Text: {fileID: 2098765044}
-  TableID: 
-  OwnEngraving: {fileID: 0}
 --- !u!114 &2033895329
 MonoBehaviour:
   m_ObjectHideFlags: 0
