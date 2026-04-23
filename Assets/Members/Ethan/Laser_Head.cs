@@ -32,7 +32,7 @@ public class Laser_Head : MonoBehaviour
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
         {
-            e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+            Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
             if (block != null)
             {
                 block.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
@@ -50,7 +50,7 @@ public class Laser_Head : MonoBehaviour
         if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
             return;
 
-        e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+        Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
         if (block == null) return;
 
         int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
@@ -80,7 +80,7 @@ public class Laser_Head : MonoBehaviour
 		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
 			return;
 
-		e_Item_Epoxy_Block block = hit.collider.GetComponent<e_Item_Epoxy_Block>();
+		Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
 		if (block == null)
 		{
 			Debug.LogWarning("Tried to print shape but didn't hit an engravable object.");
