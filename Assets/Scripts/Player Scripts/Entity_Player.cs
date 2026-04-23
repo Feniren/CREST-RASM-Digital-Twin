@@ -23,6 +23,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         PlayerSettings.LookSpeedX = 0.5f;
         PlayerSettings.LookSpeedY = 0.5f;
+
+        PlayerSettings.XREnabled = true;
     }
 
     public override void Start(){
@@ -34,13 +36,15 @@ public class Entity_Player : Entity, Save_Data_Interface{
             if (XRList[i].running){
                 Debug.Log("XR Device running");
 
-                PlayerSettings.XREnabled = true;
+                PlayerSettings.XREnabled = false;
 
                 CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
                 LeftHandAnchor.SetActive(true);
                 RightHandAnchor.SetActive(true);
             }
         }
+
+        PlayerSettings.XREnabled = true;
 
         if (!PlayerSettings.XREnabled){
             XRGeneralSettings.Instance.Manager.DeinitializeLoader();
