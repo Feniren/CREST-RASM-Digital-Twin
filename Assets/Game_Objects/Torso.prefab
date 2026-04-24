@@ -671,8 +671,8 @@ MonoBehaviour:
   RespawnPoint: {fileID: 0}
   HUDReference: {fileID: 6026051913380763262, guid: c09c91077485a624188a44c9b3bbb9d5, type: 3}
   ItemAnchor: {fileID: 6976731901817273467}
-  LeftHandAnchor: {fileID: 0}
-  RightHandAnchor: {fileID: 0}
+  LeftHandAnchor: {fileID: 708017444173431688}
+  RightHandAnchor: {fileID: 5723858274441386849}
   CameraReference: {fileID: 4771338484410660247}
   HealthBarReference: {fileID: 0}
   ItemLibraryReference: {fileID: 0}
@@ -680,6 +680,7 @@ MonoBehaviour:
     LookSpeedX: 0
     LookSpeedY: 0
     XREnabled: 0
+  ActiveHand: {fileID: 0}
 --- !u!114 &4540730180810923974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -948,6 +949,8 @@ GameObject:
   - component: {fileID: 3065021691011289864}
   - component: {fileID: 9127909817771342422}
   - component: {fileID: 8485585056937658117}
+  - component: {fileID: 2904561238303113771}
+  - component: {fileID: 2830237683119804274}
   m_Layer: 0
   m_Name: Backpack
   m_TagString: Untagged
@@ -1029,6 +1032,41 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &2904561238303113771
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5783155463243069370}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &2830237683119804274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5783155463243069370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f26d0383061aed6498af747bcaa3c4ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Inventory_Bag
+  ItemInstance: {fileID: 0}
+  PlayerReference: {fileID: 8535134499384648863}
 --- !u!1 &5824663075886872541
 GameObject:
   m_ObjectHideFlags: 0
@@ -1452,6 +1490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d860ea4708080e146b7274ffc0bc59c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
+  ItemReference: {fileID: 0}
 --- !u!1001 &8355370631519669762
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1574,3 +1613,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d860ea4708080e146b7274ffc0bc59c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
+  ItemReference: {fileID: 0}

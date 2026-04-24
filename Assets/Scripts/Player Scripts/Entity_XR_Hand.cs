@@ -1,8 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Entity_XR_Hand : MonoBehaviour{
-	GameObject ItemReference;
+	public GameObject ItemReference;
+	public UnityEvent OnGrabEnd;
+
 	Vector3 PreviousPosition;
 	Vector3 Velocity;
 	
@@ -22,17 +25,20 @@ public class Entity_XR_Hand : MonoBehaviour{
 	public void GrabStart(Entity_Player PlayerReference, GameObject Item){
 		ItemReference = Item;
 
-		if (ItemReference.GetComponent<Item_Parent>().Pickup){
-			ItemReference.transform.SetParent(gameObject.transform);
+		PlayerReference.ActiveHand = this;
 
-			ItemReference.layer = 3;
+		if (ItemReference.GetComponent<Item_Parent>()){
+			if (ItemReference.GetComponent<Item_Parent>().Pickup){
+				HoldItem();
+			}
+			else{
+				ItemReference.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+			}
 
-			ItemReference.GetComponent<Rigidbody>().isKinematic = true;
-
-			GetComponent<Collider>().enabled = false;
+			ItemReference.GetComponent<Item_Parent>().OnGrabbed.Invoke();
 		}
 		else{
-			ItemReference.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
+			ItemReference.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
 		}
 	}
 
@@ -48,6 +54,18 @@ public class Entity_XR_Hand : MonoBehaviour{
 
 				GetComponent<Collider>().enabled = true;
 			}
+
+			OnGrabEnd.Invoke();
 		}
+	}
+
+	public void HoldItem(){
+		ItemReference.transform.SetParent(gameObject.transform);
+
+		ItemReference.layer = 3;
+
+		ItemReference.GetComponent<Rigidbody>().isKinematic = true;
+
+		GetComponent<Collider>().enabled = false;
 	}
 }

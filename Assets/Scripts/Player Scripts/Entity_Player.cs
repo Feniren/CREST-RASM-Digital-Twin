@@ -15,6 +15,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public Health_Bar HealthBarReference;
     public Item_Library ItemLibraryReference;
     public Player_Settings PlayerSettings;
+	
+	public Entity_XR_Hand ActiveHand;
 
     List<XRDisplaySubsystem> XRList = new List<XRDisplaySubsystem>();
 
@@ -23,8 +25,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         PlayerSettings.LookSpeedX = 0.5f;
         PlayerSettings.LookSpeedY = 0.5f;
-
-        PlayerSettings.XREnabled = true;
     }
 
     public override void Start(){
@@ -48,7 +48,10 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         if (!PlayerSettings.XREnabled){
             XRGeneralSettings.Instance.Manager.DeinitializeLoader();
-        }
+
+			LeftHandAnchor.SetActive(false);
+			RightHandAnchor.SetActive(false);
+		}
 
         ItemLibraryReference = GetComponent<Item_Library>();
 
