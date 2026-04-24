@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Item_Laser_Engraver : Item_Parent{
-	public Item_Slotted_Table ActiveTable;
+	public Item_Plate ActiveTable;
 	public Item_Laser_Engraver(){
 		Name = "Laser Engraver";
 		Pickup = false;

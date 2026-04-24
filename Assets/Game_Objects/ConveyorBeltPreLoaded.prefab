@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2804903862756194876}
   - component: {fileID: 3154793738967751048}
+  - component: {fileID: 6392552673087622263}
   m_Layer: 0
   m_Name: ConveyorBeltPreLoaded
   m_TagString: Untagged
@@ -51,8 +52,33 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 1
   Name: Conveyor Belt
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
   SplineReference: {fileID: 3742634290205708191}
+--- !u!64 &6392552673087622263
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754266479860928945}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8803937527578110353, guid: b69d3f7edda22904599f7adb03837b6c, type: 3}
 --- !u!1001 &153246171949511653
 PrefabInstance:
   m_ObjectHideFlags: 0

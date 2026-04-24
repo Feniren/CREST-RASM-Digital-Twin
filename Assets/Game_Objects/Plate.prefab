@@ -262,7 +262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       propertyPath: m_Name
-      value: SlottedTableSingleBuffer
+      value: Plate
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       propertyPath: m_TagString
@@ -281,6 +281,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       insertIndex: -1
       addedObject: {fileID: -3882083859030463547}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2838506253508268611}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7618627270335626011}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 941791499567811077}
@@ -320,6 +326,54 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5442504242233754212, guid: a10fce1b2ac1b4144b0336b27d109ed8, type: 3}
+--- !u!65 &2838506253508268611
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4368086432513296165}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.001430001, y: 0.0019400013, z: 0.0003000004}
+  m_Center: {x: 0.00003967178, y: 0.00002154577, z: 0.00016}
+--- !u!54 &7618627270335626011
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4368086432513296165}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &941791499567811077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,11 +391,14 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 0
   Name: 
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
   Item: {fileID: 0}
   AnchorPoint: {fileID: 3077442194134756337}
   Text: {fileID: 7641843955062889096}
-  TableID: 
+  PlateID: 
 --- !u!114 &3876046896611053542
 MonoBehaviour:
   m_ObjectHideFlags: 0

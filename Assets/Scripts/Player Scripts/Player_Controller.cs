@@ -82,7 +82,9 @@ public class Player_Controller : Controller{
 	}
 
 	private void LateUpdate(){
-		gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
+		if (PlayerReference.PlayerSettings.XREnabled){
+			gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
+		}
 	}
 
     public void Interact(InputAction.CallbackContext Context){
@@ -99,9 +101,9 @@ public class Player_Controller : Controller{
         RaycastHit Hit;
 
         if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-            if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
+			if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
-            }
+			}
         }
     }
 
@@ -173,7 +175,7 @@ public class Player_Controller : Controller{
 			OverlappedObjects = Physics.OverlapSphere(ActiveHand.transform.position, (ActiveHand.GetComponentInChildren<SphereCollider>().radius * 0.1f));
 
 			for (int Index = 0; Index < OverlappedObjects.Length; Index++){
-				if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>()){
+				if (OverlappedObjects[Index].gameObject.GetComponent<Interact_Interface>() != null){
 					ItemList.Add(OverlappedObjects[Index].gameObject);
 				}
 			}
@@ -223,7 +225,9 @@ public class Player_Controller : Controller{
 			}
 		}
 		else if (Context.canceled){
-			ControlRotation = Vector2.zero;
+			if (PlayerReference.PlayerSettings.XREnabled){
+				ControlRotation = Vector2.zero;
+			}
 		}
 	}
 
@@ -297,13 +301,15 @@ public class Player_Controller : Controller{
 				ThrowForce = (ElapsedThrowTime * 10.0f);
 			}
 
-			ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
+			if (ItemInstance){
+				ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
 
-			ItemInstance.transform.SetParent(null, true);
+				ItemInstance.transform.SetParent(null, true);
 
-			ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
+				ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
 
-			ItemInstance = null;
+				ItemInstance = null;
+			}
 		}
 	}
 }

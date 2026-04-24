@@ -48,6 +48,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 469545eba3b12574da8a083907715617, type: 3}
+      propertyPath: 'm_Materials.Array.data[10]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 469545eba3b12574da8a083907715617, type: 3}
+      propertyPath: 'm_Materials.Array.data[30]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 469545eba3b12574da8a083907715617, type: 3}
+      propertyPath: 'm_Materials.Array.data[31]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 469545eba3b12574da8a083907715617, type: 3}
+      propertyPath: 'm_Materials.Array.data[34]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 469545eba3b12574da8a083907715617, type: 3}
+      propertyPath: 'm_Materials.Array.data[45]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4a9dc15b0b3f18a45ac19ca694dd0938, type: 2}
     - target: {fileID: 919132149155446097, guid: 469545eba3b12574da8a083907715617, type: 3}
       propertyPath: m_Name
       value: Mill
@@ -85,6 +105,9 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 1
   Name: Mill
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
   ActiveTable: {fileID: 0}
 --- !u!64 &7194738328653865888
