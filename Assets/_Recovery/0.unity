@@ -482,37 +482,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
   m_PrefabInstance: {fileID: 602581407}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &181489937
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 181489938}
-  m_Layer: 0
-  m_Name: Hand
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &181489938
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 181489937}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 217882419}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &186622351 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
@@ -11343,10 +11312,6 @@ PrefabInstance:
       propertyPath: m_text
       value: 050004
       objectReference: {fileID: 0}
-    - target: {fileID: 194490232431019601, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 829039691460382489, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
       value: 1
@@ -11483,10 +11448,6 @@ PrefabInstance:
       propertyPath: TableID
       value: 050004
       objectReference: {fileID: 0}
-    - target: {fileID: 5856493871889294852, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5939592728302332155, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_Name
       value: SlottedTableSingleBuffer (27)
@@ -11494,10 +11455,6 @@ PrefabInstance:
     - target: {fileID: 6553514766894095346, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_text
       value: 050002
-      objectReference: {fileID: 0}
-    - target: {fileID: 6553514766894095346, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7197536205433759195, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: task
@@ -11514,10 +11471,6 @@ PrefabInstance:
     - target: {fileID: 7588032153882721834, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_text
       value: 050005
-      objectReference: {fileID: 0}
-    - target: {fileID: 7591170703223470257, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8239825869797005668, guid: d1dba03c84cde0441b9825ff03ae055f, type: 3}
       propertyPath: m_Enabled
@@ -11896,9 +11849,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 523191047928746900, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 937834492}
-    - targetCorrespondingSourceObject: {fileID: 523191047928746900, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 181489938}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
 --- !u!1001 &5080863831809980041
