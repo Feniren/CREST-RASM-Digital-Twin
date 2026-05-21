@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections;
 public class Lathe_Sim : MonoBehaviour
 {
+    // stockObj should be given a method to change its actual value
     [SerializeField]  GameObject toolPrefab;
     [SerializeField]  GameObject stockObj;
 
@@ -14,11 +15,11 @@ public class Lathe_Sim : MonoBehaviour
     
 
     void Start() {
-        // Drilling(.5f, .25f);
+        Drilling(3, .5f, 1);
         // test();
     }
     // CSG quick tutorial guide
-    public void dictionary()
+    private void CSGquickDictionary()
     {
         // create cube + sphere, increase size of sphere
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -26,8 +27,10 @@ public class Lathe_Sim : MonoBehaviour
         sphere.transform.localScale = Vector3.one * 1.3f; // changes overall size of object to 1.3x og size
         sphere.transform.localScale += new Vector3(0f, 3f, 0f); // changes just the y side (length for this scenario due to 90 deg rotation)
         
-        // perform subtraction 
+        // operations 
         Model result = CSG.Subtract(cube, sphere);
+        result = CSG.Intersect(cube, sphere);
+        result = CSG.Union(cube, sphere);
 
         // re-render new version
         var composite = new GameObject();
@@ -35,7 +38,43 @@ public class Lathe_Sim : MonoBehaviour
         composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
     }
 
-    public void Drilling(float diameter = 1f, float depth = 1f) // depth = y, diameter = x,z
+    private GameObject ToolSetup(float diameter = 1f, float depth = 1f, float positionOffset = 0f)
+    {
+        // if dimensions don't make sense, throw an error message/exception
+        // ask if there's any big limitations/keep-out zones for safety reasons
+
+        GameObject tool = Instantiate(toolPrefab);
+
+        tool.transform.localScale = new Vector3(diameter, depth + slack, diameter);
+        
+        float operationPosition = stockObj.transform.localScale.y - depth - positionOffset + slack;
+
+        tool.transform.position = stockObj.transform.position;
+        tool.transform.position += new Vector3(operationPosition, 0f, 0f);
+
+        return tool;
+    }
+
+    public void Cloning(GameObject original, GameObject clone) // work in progress
+    {
+        List<string> exclusions = new List<string>{"MeshFilter", "MeshRenderer"};
+        Component[] components = original.GetComponents(typeof(Component));
+
+        foreach (Component component in components)
+        {
+            string name = component.GetType().Name;
+            if(exclusions.Contains(name))
+            {
+                continue;
+            }
+            else
+            {
+                clone.CopyComponent(component);
+            }
+        }
+    }
+
+    public void Drilling(float diameter = 1f, float depth = 1f, float positionOffset = 0f) // depth = y, diameter = x,z
     {
         /*
             1. spawn tool prefab
@@ -43,31 +82,24 @@ public class Lathe_Sim : MonoBehaviour
             3. set tool position to designated spot (main.y - depth)
             4. perform subtraction  
         */
-        GameObject toolInstance = Instantiate(toolPrefab);
+        GameObject toolInstance = ToolSetup(diameter, depth, positionOffset);
 
-        toolInstance.transform.localScale = new Vector3(diameter, depth + slack, diameter);
+        // Model result = CSG.Subtract(stockObj, toolInstance.transform.GetChild(0).gameObject);
 
-        toolInstance.transform.position = stockObj.transform.position;
-        float drillDepth = stockObj.transform.localScale.y - depth;
-        toolInstance.transform.position = stockObj.transform.position;
-        toolInstance.transform.position += new Vector3(drillDepth, 0f, 0f);
-
-        Model result = CSG.Subtract(stockObj, toolInstance.transform.GetChild(0).gameObject);
-
-        GameObject composite = new GameObject();
-        // GameObject composite = Cloning(stockObj);
+        // GameObject composite = new GameObject();
+        // // GameObject composite = Cloning(stockObj);
 
         
-        MeshCopy(result, composite);
+        // MeshCopy(result, composite);
 
-        // what's supposed to happen after everything works properly:
-        string name = stockObj.name;
+        // // what's supposed to happen after everything works properly:
+        // string name = stockObj.name;
 
-        Destroy(toolInstance);
-        Destroy(stockObj);
+        // Destroy(toolInstance);
+        // Destroy(stockObj);
 
-        stockObj = composite;
-        stockObj.name = name;
+        // stockObj = composite;
+        // stockObj.name = name;
     }
 
     public void Turning(float diameter = 0.5f, float depth = 0.5f) {
@@ -83,32 +115,5 @@ public class Lathe_Sim : MonoBehaviour
         */
         // float slackDiameter = stockObj.l
         GameObject unionTool = Instantiate(toolPrefab), subTool = Instantiate(toolPrefab);
-    }
-
-    private void MeshCopy(Model CSGresult, GameObject output) {
-        output.AddComponent<MeshFilter>().sharedMesh = CSGresult.mesh;
-        output.AddComponent<MeshRenderer>().sharedMaterials = CSGresult.materials.ToArray();
-    }
-
-    public GameObject Cloning(GameObject original) // work in progress
-    {
-        // StartCoroutine(DelayedAction()); -- may be needed if operation does not work immediately, used right after calling this function
-
-        // GameObject clone = Instantiate(original);
-        List<string> exclusions = new List<string>{"MeshFilter", "MeshRenderer"};
-        Component[] components = original.GetComponents(typeof(Component));
-
-        foreach (Component component in components)
-        {
-            string name = component.GetType().Name;
-            if(exclusions.Contains(name))
-            {
-                DestroyImmediate(component);
-            }
-        }
-        GameObject clone = Instantiate(original);
-
-        clone.name = "Clone";
-        return clone;
     }
 }
