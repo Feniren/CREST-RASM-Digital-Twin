@@ -22,12 +22,12 @@ public class Entity_XR_Hand : MonoBehaviour{
 		PreviousPosition = transform.position;
 	}
 	
-	public void GrabStart(Entity_Player PlayerReference, GameObject Item){
-		ItemReference = Item;
-
+	public void GrabStart(Entity_Player PlayerReference, GameObject Interactable){
 		PlayerReference.ActiveHand = this;
 
-		if (ItemReference.GetComponent<Item_Parent>()){
+		if (Interactable.GetComponent<Item_Parent>()){
+			ItemReference = Interactable;
+
 			if (ItemReference.GetComponent<Item_Parent>().Pickup){
 				HoldItem();
 			}
@@ -38,21 +38,25 @@ public class Entity_XR_Hand : MonoBehaviour{
 			ItemReference.GetComponent<Item_Parent>().OnGrabbed.Invoke();
 		}
 		else{
-			ItemReference.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+			Interactable.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+
+			GetComponent<Collider>().enabled = false;
 		}
 	}
 
 	public void GrabEnd(){
 		if (!GetComponent<Collider>().enabled){
-			if (ItemReference.transform.parent == gameObject.transform){
-				ItemReference.transform.SetParent(null, true);
+			if (ItemReference){
+				if (ItemReference.transform.parent == gameObject.transform){
+					ItemReference.transform.SetParent(null, true);
 
-				ItemReference.layer = 1;
+					ItemReference.layer = 1;
 
-				ItemReference.GetComponent<Rigidbody>().isKinematic = false;
-				ItemReference.GetComponent<Rigidbody>().linearVelocity = Velocity;
+					ItemReference.GetComponent<Rigidbody>().isKinematic = false;
+					ItemReference.GetComponent<Rigidbody>().linearVelocity = Velocity;
 
-				GetComponent<Collider>().enabled = true;
+					GetComponent<Collider>().enabled = true;
+				}
 			}
 
 			OnGrabEnd.Invoke();

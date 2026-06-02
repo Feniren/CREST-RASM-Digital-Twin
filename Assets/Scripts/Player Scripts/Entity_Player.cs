@@ -44,7 +44,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
             }
         }
 
-        PlayerSettings.XREnabled = true;
+        PlayerSettings.XREnabled = false;
 
         if (!PlayerSettings.XREnabled){
             XRGeneralSettings.Instance.Manager.DeinitializeLoader();
