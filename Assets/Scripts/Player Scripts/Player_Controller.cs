@@ -123,7 +123,7 @@ public class Player_Controller : Controller{
 			}
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
+					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
 
 					PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
 
