@@ -62,10 +62,17 @@ public class Lathe_Sim : MonoBehaviour
         Destroy(stockObj);
     }
 
-    public void Facing(float depth = 1f)
+    public void Facing(float depth = 0.01f)
     {
         float stockDiameter = stockObj.transform.lossyScale.x;
         Drilling(stockDiameter, depth);
+    }
+
+    public GameObject Parting(float depth = 2f, float toolWidth = 0.01f)
+    {
+        GameObject partedObj = ToolSetup(stockObj.transform.lossyScale.x, depth - toolWidth, -2);
+        Facing(depth);
+        return partedObj;
     }
 
     public void Turning(float diameter = 0.5f, float depth = 0.5f, float positionOffset = 0f) {
