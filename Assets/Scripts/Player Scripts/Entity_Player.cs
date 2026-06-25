@@ -15,6 +15,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public Health_Bar HealthBarReference;
     public Item_Library ItemLibraryReference;
     public Player_Settings PlayerSettings;
+	
+	public Entity_XR_Hand ActiveHand;
 
     List<XRDisplaySubsystem> XRList = new List<XRDisplaySubsystem>();
 
@@ -34,7 +36,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
             if (XRList[i].running){
                 Debug.Log("XR Device running");
 
-                PlayerSettings.XREnabled = true;
+                PlayerSettings.XREnabled = false;
 
                 CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
                 LeftHandAnchor.SetActive(true);
@@ -42,9 +44,14 @@ public class Entity_Player : Entity, Save_Data_Interface{
             }
         }
 
+        PlayerSettings.XREnabled = false;
+
         if (!PlayerSettings.XREnabled){
             XRGeneralSettings.Instance.Manager.DeinitializeLoader();
-        }
+
+			LeftHandAnchor.SetActive(false);
+			RightHandAnchor.SetActive(false);
+		}
 
         ItemLibraryReference = GetComponent<Item_Library>();
 
@@ -55,9 +62,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
     }
 
     void Update(){
-        //Quaternion Rotation = Quaternion.Euler(0.0f, CameraReference.transform.localEulerAngles.y, 0.0f);
-
-        //transform.rotation = Rotation;
     }
 
     public void LoadData(Save_Data SaveData){
@@ -70,32 +74,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
         SaveData.PlayerLocation = gameObject.transform.position;
         SaveData.PlayerRotation = gameObject.transform.rotation;
         SaveData.PlayerScale = gameObject.transform.localScale;
-    }
-
-    public bool GetItemEquipped(){return false;
-    }
-
-    public void SetItemEquipped(bool Equipped){
-    }
-
-    public void ToggleEquippedItem(){
-
-
-        /*if (true){
-            if (InventoryReference.InstancedInventory.Count != 0){
-                GameObject ItemReference = InventoryReference.InstancedInventory[0];
-
-                ItemReference.SetActive(true);
-                ItemReference.transform.rotation = Quaternion.identity;
-
-                Debug.Log("Item should be spawned");
-
-                InventoryReference.RemoveFromInventory(ItemReference);
-            }
-            else{
-                Debug.Log("No Items in inventory");
-            }
-        }*/
     }
 
     public override void TakeDamage(Damage_Event DamageEvent){

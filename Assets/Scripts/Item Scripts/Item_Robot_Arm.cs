@@ -13,9 +13,13 @@ public class Item_Robot_Arm : Item_Parent{
     public override void Start(){
         base.Start();
 
+		float RandomOffset = Random.Range(0.0f, 1.0f);
+
         AnimatorReference = GetComponent<Animator>();
 
-        AnimatorReference.Play("PickUpItem");
+		AnimatorReference.SetFloat("StartOffset", RandomOffset);
+
+        //AnimatorReference.Play("PickUpItem");
     }
 
     public override void AlternateInteract(Entity_Player PlayerReference){
