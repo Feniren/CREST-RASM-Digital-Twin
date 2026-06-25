@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /// Standalone keyboard controller for ArticulationBody chains (e.g. URDF imports).
 /// No dependency on Unity.Robotics.UrdfImporter.Control — drives articulations directly.
 /// </summary>
-public class StandaloneArticulationController : MonoBehaviour
+public class ManualURDFController : MonoBehaviour
 {
 	public enum DriveMode { Position, Velocity }
 
@@ -177,4 +177,9 @@ public class StandaloneArticulationController : MonoBehaviour
 		GUI.Label(new Rect(cx, 10, 400, 20), "Left/Right: select joint | Up/Down: move joint", style);
 		GUI.Label(new Rect(cx, 30, 400, 20), "Active: " + selectedJointName, style);
 	}
+
+	public void DriveCurrentPositive() { DriveJoint(selectedIndex, 1); }
+
+	public void DriveCurrentNegative() { DriveJoint(selectedIndex, -1); }
+
 }
