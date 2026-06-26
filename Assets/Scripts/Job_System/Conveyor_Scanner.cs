@@ -11,7 +11,7 @@ public class Conveyor_Scanner : MonoBehaviour {
 		var queue = other.GetComponent<Job_Queue>();
 		if (queue == null) return;
 
-		if (queue.jobPeek() != TargetJobType) return;
+		if (queue.Jobs.Count == 0 || queue.jobPeek() != TargetJobType) return;
 		if (table.Item == null) return;
 		if (TargetStation == null || TargetStation.IsProcessing) return;
 
