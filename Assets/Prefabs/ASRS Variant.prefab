@@ -1446,7 +1446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ASRSArmController
   armZ: {fileID: 2681534559492847593}
   armY: {fileID: 3726603864722771308}
-  yawAxis: {fileID: 3913204881261650808}
+  yawAxis: {fileID: 3726603864722771308}
   armX: {fileID: 4593448537747176711}
   hand: {fileID: 3598701990093850923}
   moveSpeed: 1
