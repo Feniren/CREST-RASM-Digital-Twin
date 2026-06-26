@@ -1,18 +1,75 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Entity_XR_Hand : MonoBehaviour{
-    public Entity_Player PlayerReference;
+	public GameObject ItemReference;
+	public UnityEvent OnGrabEnd;
 
-    public Entity_XR_Hand(){
-    }
+	Vector3 PreviousPosition;
+	Vector3 Velocity;
+	
+	public Entity_XR_Hand(){
+	}
 
-    public void OnTriggerEnter(Collider Other){
-        Debug.Log(Other.gameObject.name);
+	public void Start(){
+		PreviousPosition = transform.position;
+	}
 
-        if (Other.gameObject.GetComponent<Item_Parent>()){
-            Debug.Log("Is an item");
+	public void Update(){
+		Velocity = ((transform.position - PreviousPosition) / Time.deltaTime);
 
-            Other.gameObject.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
-        }
-    }
+		PreviousPosition = transform.position;
+	}
+	
+	public void GrabStart(Entity_Player PlayerReference, GameObject Interactable){
+		PlayerReference.ActiveHand = this;
+
+		if (Interactable.GetComponent<Item_Parent>()){
+			ItemReference = Interactable;
+
+			if (ItemReference.GetComponent<Item_Parent>().Pickup){
+				HoldItem();
+			}
+			else{
+				ItemReference.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+			}
+
+			ItemReference.GetComponent<Item_Parent>().OnGrabbed.Invoke();
+		}
+		else{
+			Interactable.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+
+			GetComponent<Collider>().enabled = false;
+		}
+	}
+
+	public void GrabEnd(){
+		if (!GetComponent<Collider>().enabled){
+			if (ItemReference){
+				if (ItemReference.transform.parent == gameObject.transform){
+					ItemReference.transform.SetParent(null, true);
+
+					ItemReference.layer = 1;
+
+					ItemReference.GetComponent<Rigidbody>().isKinematic = false;
+					ItemReference.GetComponent<Rigidbody>().linearVelocity = Velocity;
+
+					GetComponent<Collider>().enabled = true;
+				}
+			}
+
+			OnGrabEnd.Invoke();
+		}
+	}
+
+	public void HoldItem(){
+		ItemReference.transform.SetParent(gameObject.transform);
+
+		ItemReference.layer = 3;
+
+		ItemReference.GetComponent<Rigidbody>().isKinematic = true;
+
+		GetComponent<Collider>().enabled = false;
+	}
 }
