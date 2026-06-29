@@ -8,7 +8,7 @@ public class Item_Conveyor_Belt : Item_Parent{
     List<GameObject> SlottedTableList = new List<GameObject>();
 
     bool Active = true;
-    float BaseSpeed = 0.325f;
+	//float BaseSpeed = 0.325f;
 
     public Item_Conveyor_Belt(){
         Name = "Conveyor Belt";
@@ -47,7 +47,7 @@ public class Item_Conveyor_Belt : Item_Parent{
 
     public void RemovePlate(string PlateID){
         for (int i = 0; i < SlottedTableList.Count; i++){
-            if (SlottedTableList[i].GetComponent<Item_Slotted_Table>().TableID == PlateID){
+            if (SlottedTableList[i].GetComponent<Item_Plate>().PlateID == PlateID){
                 SlottedTableList[i].GetComponent<Spline_Animate>().Pause();
                 SlottedTableList[i].GetComponent<Spline_Animate>().Container = null;
 

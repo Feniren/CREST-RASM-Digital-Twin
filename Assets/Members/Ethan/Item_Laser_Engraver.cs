@@ -1,5 +1,6 @@
 using UnityEngine;
 
+<<<<<<< HEAD
 public class Item_Laser_Engraver : Item_Station{
 
 	private bool _isProcessing;
@@ -10,6 +11,10 @@ public class Item_Laser_Engraver : Item_Station{
 		// TODO: implement laser engraver processing
 	}
 
+=======
+public class Item_Laser_Engraver : Item_Parent{
+	public Item_Plate ActiveTable;
+>>>>>>> main
 	public Item_Laser_Engraver(){
 		Name = "Laser Engraver";
 		Pickup = false;

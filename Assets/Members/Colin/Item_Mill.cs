@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using ProMill8000;
 
+<<<<<<< HEAD
 public class Item_Mill : Item_Station{
 	public Transform ProcessPoint;
 	[SerializeField] private MillingAnimation millingAnimation;
@@ -10,6 +11,10 @@ public class Item_Mill : Item_Station{
 	private bool _isProcessing;
 
 	public override bool IsProcessing => _isProcessing;
+=======
+public class Item_Mill : Item_Parent{
+	public Item_Plate ActiveTable;
+>>>>>>> main
 
 	public Item_Mill(){
 		Name = "Mill";

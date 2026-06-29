@@ -22,8 +22,11 @@ public class Item_Robot_Arm : Item_Parent{
     public override void Start(){
         base.Start();
 
+		float RandomOffset = Random.Range(0.0f, 1.0f);
+
         AnimatorReference = GetComponent<Animator>();
 
+<<<<<<< HEAD
         var clips = AnimatorReference.runtimeAnimatorController.animationClips;
         _animationLength = clips.Length > 0 ? clips[0].length : 1f;
 
@@ -69,6 +72,11 @@ public class Item_Robot_Arm : Item_Parent{
         HeldItem = null;
 
         _isBusy = false;
+=======
+		AnimatorReference.SetFloat("StartOffset", RandomOffset);
+
+        //AnimatorReference.Play("PickUpItem");
+>>>>>>> main
     }
 
     public override void AlternateInteract(Entity_Player PlayerReference){

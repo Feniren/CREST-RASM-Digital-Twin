@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+<<<<<<< HEAD
 public class Item_ASRS : Item_Parent
 {
     public RACK_TASK task;
@@ -9,6 +10,10 @@ public class Item_ASRS : Item_Parent
     public Item_Epoxy_Block material = null;
     public List<GameObject> BlockList = new List<GameObject>();
     public Spline_Animate spline;
+=======
+public class Item_ASRS : Item_Parent{
+	public List<Item_Plate> TableList = new List<Item_Plate>();
+>>>>>>> main
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+<<<<<<< HEAD
 public class Item_Lathe : Item_Station{
 
 	private bool _isProcessing;
@@ -9,6 +10,10 @@ public class Item_Lathe : Item_Station{
 	public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
 		// TODO: implement lathe processing
 	}
+=======
+public class Item_Lathe : Item_Parent{
+	public Item_Plate ActiveTable;
+>>>>>>> main
 
 	public Item_Lathe(){
 		Name = "Lathe";
