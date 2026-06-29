@@ -119,28 +119,22 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &92154710 stripped
+--- !u!4 &315466982 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3726603864722771308, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
+  m_PrefabInstance: {fileID: 2043486779}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &480942865 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1629494962778875297, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
-  m_PrefabInstance: {fileID: 1865006349}
+  m_CorrespondingSourceObject: {fileID: 8513782205779548499, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
+  m_PrefabInstance: {fileID: 2043486779}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcad68ed25d15924cafa085ce6ca282c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6294f69bb476bf745ac97302639b14f6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ASRSArmMovement
---- !u!114 &354803185 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5217552813246381290, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
-  m_PrefabInstance: {fileID: 1865006349}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcad68ed25d15924cafa085ce6ca282c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ASRSArmMovement
+  m_EditorClassIdentifier: Assembly-CSharp::ASRSArmController
 --- !u!1 &578692167
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +222,7 @@ Transform:
   m_GameObject: {fileID: 578692167}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.6957873, z: -0, w: 0.7182479}
-  m_LocalPosition: {x: 9.46, y: 1, z: 18.6}
+  m_LocalPosition: {x: 9.44, y: 1, z: 19.225}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -434,12 +428,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f368ef8a217be849861782a723677c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  armX: {fileID: 354803185}
-  armY: {fileID: 1800414639}
-  armZ: {fileID: 92154710}
-  xTarget: 2
-  yTarget: 1
+  armController: {fileID: 480942865}
   zTarget: 1
+  yTarget: 1
+  yawTarget: 90
+  xTarget: 2
+  resetPosition: 0
 --- !u!4 &879015642
 Transform:
   m_ObjectHideFlags: 0
@@ -455,18 +449,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1800414639 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2589431810520957340, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
-  m_PrefabInstance: {fileID: 1865006349}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcad68ed25d15924cafa085ce6ca282c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ASRSArmMovement
---- !u!1001 &1865006349
+--- !u!1001 &2043486779
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -480,7 +463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 727172132679966300, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 11.38323
+      value: 12.36327
       objectReference: {fileID: 0}
     - target: {fileID: 727172132679966300, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -488,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 727172132679966300, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 18.10956
+      value: 19.0253
       objectReference: {fileID: 0}
     - target: {fileID: 727172132679966300, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -517,6 +500,14 @@ PrefabInstance:
     - target: {fileID: 727172132679966300, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8513782205779548499, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
+      propertyPath: yawAxis
+      value: 
+      objectReference: {fileID: 315466982}
+    - target: {fileID: 8592958611801740292, guid: 068ec2ea2d5105d40a3efcd7e923aa5d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -746,4 +737,4 @@ SceneRoots:
   - {fileID: 578692170}
   - {fileID: 638902778}
   - {fileID: 879015642}
-  - {fileID: 1865006349}
+  - {fileID: 2043486779}
