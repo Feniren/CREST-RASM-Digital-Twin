@@ -159,7 +159,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""SwitchCameraPerspective"",
                     ""type"": ""Button"",
                     ""id"": ""be4228c1-ffc7-4905-9557-a33294759d4b"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -177,15 +177,87 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": ""AlternateInteract"",
                     ""type"": ""Button"",
                     ""id"": ""0f30c64a-4f2b-4390-9c48-659518dbd12e"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""XRControllerPosition"",
-                    ""type"": ""Button"",
+                    ""name"": ""XRControllerLeftPosition"",
+                    ""type"": ""Value"",
                     ""id"": ""65041af2-887e-4a7e-b0e7-558966591108"",
+                    ""expectedControlType"": ""Vector3"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XRControllerLeftRotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""d0f9790f-894c-4d0f-b533-646b38bf2a59"",
+                    ""expectedControlType"": ""Quaternion"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XRControllerLeftTrackingState"",
+                    ""type"": ""Value"",
+                    ""id"": ""a3e619f2-df28-4d63-a9ea-8ff670a0a3f6"",
+                    ""expectedControlType"": ""Integer"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XRControllerRightPosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""5fb10860-8fcf-492e-a40f-0fcccbdecec6"",
+                    ""expectedControlType"": ""Vector3"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XRControllerRightRotation"",
+                    ""type"": ""Value"",
+                    ""id"": ""4685a5eb-7d8c-4049-8f97-19cf37578b65"",
+                    ""expectedControlType"": ""Quaternion"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XRControllerRightTrackingState"",
+                    ""type"": ""Value"",
+                    ""id"": ""961591c6-3823-40db-998e-66a74613a9a8"",
+                    ""expectedControlType"": ""Integer"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ResetPosition"",
+                    ""type"": ""Button"",
+                    ""id"": ""218020a2-0b40-4c66-99ec-ced6e3b5f55e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XRLeftGrab"",
+                    ""type"": ""Button"",
+                    ""id"": ""51aeffb3-7794-4813-bb4f-972a63a3d653"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""XRRightGrab"",
+                    ""type"": ""Button"",
+                    ""id"": ""eefd5889-fe61-45fb-aa3b-42ba3d02cf5f"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -197,6 +269,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""84b65a56-39f9-490f-830e-033ec4270313"",
                     ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b44a5338-89e9-4313-9a66-1bc5882e3563"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryTrigger}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -273,7 +356,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""805e6f1b-df47-4a65-9ed1-ff09d4f25fc6"",
-                    ""path"": ""<QuestProTouchController>{LeftHand}/thumbstick/x"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -284,7 +367,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""down"",
                     ""id"": ""12b7f805-a377-4866-9907-b519304b73f7"",
-                    ""path"": ""<QuestTouchPlusController>/thumbstick/y"",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/down"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -295,7 +378,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""9ccffd30-444c-45e0-b8d7-bd43727a931a"",
-                    ""path"": """",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -306,7 +389,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""right"",
                     ""id"": ""093ac5ce-9580-4a85-98d7-155021425d49"",
-                    ""path"": """",
+                    ""path"": ""<QuestTouchPlusController>{LeftHand}/thumbstick/right"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -318,6 +401,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""456bafa6-25b8-4c31-80bf-5bad258c6d98"",
                     ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a5dc014-a4f0-4120-969f-2e1978cf4daa"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryButton}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -393,6 +487,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""0a3fb1ca-fe49-4b9b-8a53-f9036e810e4c"",
+                    ""path"": ""<XRController>{LeftHand}/{PrimaryTrigger}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AlternateInteract"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""546dbf13-ec01-4a18-b6b0-9782d789e137"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
@@ -403,37 +508,257 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
+                    ""name"": """",
+                    ""id"": ""caad5cfe-5329-442f-8661-50bde371273e"",
+                    ""path"": ""<XRController>{RightHand}/thumbstick"",
+                    ""interactions"": """",
+                    ""processors"": ""StickDeadzone"",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Vector 3 Fallback"",
                     ""id"": ""8e3e7290-df50-416f-828f-b7a8e59f2f1c"",
-                    ""path"": ""1DAxis"",
+                    ""path"": ""Vector3Fallback"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""XRControllerPosition"",
+                    ""action"": ""XRControllerLeftPosition"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""negative"",
+                    ""name"": ""First"",
                     ""id"": ""17215b1b-286e-43e5-a84c-e0370d45ff06"",
-                    ""path"": """",
+                    ""path"": ""<XRController>{LeftHand}/{PointerPosition}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""XRControllerPosition"",
+                    ""action"": ""XRControllerLeftPosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""positive"",
+                    ""name"": ""Second"",
                     ""id"": ""173965e1-7121-4606-b23a-74daa92bc6ea"",
+                    ""path"": ""<XRController>{LeftHand}/devicePosition"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Third"",
+                    ""id"": ""ff3362cc-8ea7-4b0e-89d2-1fdf373ca0d7"",
                     ""path"": """",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""XRControllerPosition"",
+                    ""action"": ""XRControllerLeftPosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Quaternion Fallback"",
+                    ""id"": ""f5bf00f5-7e41-4622-9b2d-f87a31f49013"",
+                    ""path"": ""QuaternionFallback"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftRotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""first"",
+                    ""id"": ""51c08e75-9422-4a24-b67d-17831821668e"",
+                    ""path"": ""<XRController>{LeftHand}/{PointerRotation}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""second"",
+                    ""id"": ""7d7ca29c-5ecf-4905-8b2a-695024b4583b"",
+                    ""path"": ""<XRController>{LeftHand}/deviceRotation"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""third"",
+                    ""id"": ""3350557e-b721-4919-8de1-455cf70613db"",
+                    ""path"": ""<XRController>{LeftHand}/{DeviceRotation}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22520f1c-2f2f-475e-9c8d-f14e69715441"",
+                    ""path"": ""<XRController>{LeftHand}/trackingState"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerLeftTrackingState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Vector 3 Fallback"",
+                    ""id"": ""60e6c01e-2174-4a98-8929-1b9fd2caedb1"",
+                    ""path"": ""Vector3Fallback"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightPosition"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""first"",
+                    ""id"": ""c1116f5d-7fcd-43cd-b228-e24f469fee34"",
+                    ""path"": ""<XRController>{RightHand}/{PointerPosition}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""second"",
+                    ""id"": ""095c0ada-d715-4d81-9a0e-90b20ad563b8"",
+                    ""path"": ""<XRController>{RightHand}/devicePosition"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""third"",
+                    ""id"": ""f2ef86ab-b1bb-4cfe-b14a-c175d99c93bb"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Quaternion Fallback"",
+                    ""id"": ""dc79845a-666e-457e-9095-2055d56a1217"",
+                    ""path"": ""QuaternionFallback"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightRotation"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""first"",
+                    ""id"": ""83d28782-7d2b-4f1c-8bf0-e0b3e32655ac"",
+                    ""path"": ""<XRController>{RightHand}/{PointerRotation}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""second"",
+                    ""id"": ""92a374c8-7b23-418f-a1a0-d37ed0f097fd"",
+                    ""path"": ""<XRController>{RightHand}/deviceRotation"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""third"",
+                    ""id"": ""48641266-5eba-414e-a8a8-fe09acefe342"",
+                    ""path"": ""<XRController>{RightHand}/{DeviceRotation}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""760bb337-35f9-4aad-928d-e73c3ab23b7c"",
+                    ""path"": ""<XRController>{RightHand}/trackingState"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRControllerRightTrackingState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7f52c92-2a80-493a-838e-6b450ee4a50c"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ba9ae07-f8d5-4963-988f-e116a531b3e8"",
+                    ""path"": ""<XRController>{LeftHand}/{SecondaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""42991a2b-cfd3-4b39-b472-5feb715be36f"",
+                    ""path"": ""<XRController>{LeftHand}/{GripButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRLeftGrab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d9e3c6e7-de00-4e6e-b6b7-cb01f3523429"",
+                    ""path"": ""<XRController>{RightHand}/{GripButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""XRRightGrab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -500,7 +825,15 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_SwitchCameraPerspective = m_Player.FindAction("SwitchCameraPerspective", throwIfNotFound: true);
         m_Player_CreateItem = m_Player.FindAction("CreateItem", throwIfNotFound: true);
         m_Player_AlternateInteract = m_Player.FindAction("AlternateInteract", throwIfNotFound: true);
-        m_Player_XRControllerPosition = m_Player.FindAction("XRControllerPosition", throwIfNotFound: true);
+        m_Player_XRControllerLeftPosition = m_Player.FindAction("XRControllerLeftPosition", throwIfNotFound: true);
+        m_Player_XRControllerLeftRotation = m_Player.FindAction("XRControllerLeftRotation", throwIfNotFound: true);
+        m_Player_XRControllerLeftTrackingState = m_Player.FindAction("XRControllerLeftTrackingState", throwIfNotFound: true);
+        m_Player_XRControllerRightPosition = m_Player.FindAction("XRControllerRightPosition", throwIfNotFound: true);
+        m_Player_XRControllerRightRotation = m_Player.FindAction("XRControllerRightRotation", throwIfNotFound: true);
+        m_Player_XRControllerRightTrackingState = m_Player.FindAction("XRControllerRightTrackingState", throwIfNotFound: true);
+        m_Player_ResetPosition = m_Player.FindAction("ResetPosition", throwIfNotFound: true);
+        m_Player_XRLeftGrab = m_Player.FindAction("XRLeftGrab", throwIfNotFound: true);
+        m_Player_XRRightGrab = m_Player.FindAction("XRRightGrab", throwIfNotFound: true);
         // ItemEquipped
         m_ItemEquipped = asset.FindActionMap("ItemEquipped", throwIfNotFound: true);
         m_ItemEquipped_ThrowItem = m_ItemEquipped.FindAction("ThrowItem", throwIfNotFound: true);
@@ -596,7 +929,15 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwitchCameraPerspective;
     private readonly InputAction m_Player_CreateItem;
     private readonly InputAction m_Player_AlternateInteract;
-    private readonly InputAction m_Player_XRControllerPosition;
+    private readonly InputAction m_Player_XRControllerLeftPosition;
+    private readonly InputAction m_Player_XRControllerLeftRotation;
+    private readonly InputAction m_Player_XRControllerLeftTrackingState;
+    private readonly InputAction m_Player_XRControllerRightPosition;
+    private readonly InputAction m_Player_XRControllerRightRotation;
+    private readonly InputAction m_Player_XRControllerRightTrackingState;
+    private readonly InputAction m_Player_ResetPosition;
+    private readonly InputAction m_Player_XRLeftGrab;
+    private readonly InputAction m_Player_XRRightGrab;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -649,9 +990,41 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @AlternateInteract => m_Wrapper.m_Player_AlternateInteract;
         /// <summary>
-        /// Provides access to the underlying input action "Player/XRControllerPosition".
+        /// Provides access to the underlying input action "Player/XRControllerLeftPosition".
         /// </summary>
-        public InputAction @XRControllerPosition => m_Wrapper.m_Player_XRControllerPosition;
+        public InputAction @XRControllerLeftPosition => m_Wrapper.m_Player_XRControllerLeftPosition;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerLeftRotation".
+        /// </summary>
+        public InputAction @XRControllerLeftRotation => m_Wrapper.m_Player_XRControllerLeftRotation;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerLeftTrackingState".
+        /// </summary>
+        public InputAction @XRControllerLeftTrackingState => m_Wrapper.m_Player_XRControllerLeftTrackingState;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerRightPosition".
+        /// </summary>
+        public InputAction @XRControllerRightPosition => m_Wrapper.m_Player_XRControllerRightPosition;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerRightRotation".
+        /// </summary>
+        public InputAction @XRControllerRightRotation => m_Wrapper.m_Player_XRControllerRightRotation;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRControllerRightTrackingState".
+        /// </summary>
+        public InputAction @XRControllerRightTrackingState => m_Wrapper.m_Player_XRControllerRightTrackingState;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ResetPosition".
+        /// </summary>
+        public InputAction @ResetPosition => m_Wrapper.m_Player_ResetPosition;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRLeftGrab".
+        /// </summary>
+        public InputAction @XRLeftGrab => m_Wrapper.m_Player_XRLeftGrab;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/XRRightGrab".
+        /// </summary>
+        public InputAction @XRRightGrab => m_Wrapper.m_Player_XRRightGrab;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -708,9 +1081,33 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started += instance.OnAlternateInteract;
             @AlternateInteract.performed += instance.OnAlternateInteract;
             @AlternateInteract.canceled += instance.OnAlternateInteract;
-            @XRControllerPosition.started += instance.OnXRControllerPosition;
-            @XRControllerPosition.performed += instance.OnXRControllerPosition;
-            @XRControllerPosition.canceled += instance.OnXRControllerPosition;
+            @XRControllerLeftPosition.started += instance.OnXRControllerLeftPosition;
+            @XRControllerLeftPosition.performed += instance.OnXRControllerLeftPosition;
+            @XRControllerLeftPosition.canceled += instance.OnXRControllerLeftPosition;
+            @XRControllerLeftRotation.started += instance.OnXRControllerLeftRotation;
+            @XRControllerLeftRotation.performed += instance.OnXRControllerLeftRotation;
+            @XRControllerLeftRotation.canceled += instance.OnXRControllerLeftRotation;
+            @XRControllerLeftTrackingState.started += instance.OnXRControllerLeftTrackingState;
+            @XRControllerLeftTrackingState.performed += instance.OnXRControllerLeftTrackingState;
+            @XRControllerLeftTrackingState.canceled += instance.OnXRControllerLeftTrackingState;
+            @XRControllerRightPosition.started += instance.OnXRControllerRightPosition;
+            @XRControllerRightPosition.performed += instance.OnXRControllerRightPosition;
+            @XRControllerRightPosition.canceled += instance.OnXRControllerRightPosition;
+            @XRControllerRightRotation.started += instance.OnXRControllerRightRotation;
+            @XRControllerRightRotation.performed += instance.OnXRControllerRightRotation;
+            @XRControllerRightRotation.canceled += instance.OnXRControllerRightRotation;
+            @XRControllerRightTrackingState.started += instance.OnXRControllerRightTrackingState;
+            @XRControllerRightTrackingState.performed += instance.OnXRControllerRightTrackingState;
+            @XRControllerRightTrackingState.canceled += instance.OnXRControllerRightTrackingState;
+            @ResetPosition.started += instance.OnResetPosition;
+            @ResetPosition.performed += instance.OnResetPosition;
+            @ResetPosition.canceled += instance.OnResetPosition;
+            @XRLeftGrab.started += instance.OnXRLeftGrab;
+            @XRLeftGrab.performed += instance.OnXRLeftGrab;
+            @XRLeftGrab.canceled += instance.OnXRLeftGrab;
+            @XRRightGrab.started += instance.OnXRRightGrab;
+            @XRRightGrab.performed += instance.OnXRRightGrab;
+            @XRRightGrab.canceled += instance.OnXRRightGrab;
         }
 
         /// <summary>
@@ -752,9 +1149,33 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started -= instance.OnAlternateInteract;
             @AlternateInteract.performed -= instance.OnAlternateInteract;
             @AlternateInteract.canceled -= instance.OnAlternateInteract;
-            @XRControllerPosition.started -= instance.OnXRControllerPosition;
-            @XRControllerPosition.performed -= instance.OnXRControllerPosition;
-            @XRControllerPosition.canceled -= instance.OnXRControllerPosition;
+            @XRControllerLeftPosition.started -= instance.OnXRControllerLeftPosition;
+            @XRControllerLeftPosition.performed -= instance.OnXRControllerLeftPosition;
+            @XRControllerLeftPosition.canceled -= instance.OnXRControllerLeftPosition;
+            @XRControllerLeftRotation.started -= instance.OnXRControllerLeftRotation;
+            @XRControllerLeftRotation.performed -= instance.OnXRControllerLeftRotation;
+            @XRControllerLeftRotation.canceled -= instance.OnXRControllerLeftRotation;
+            @XRControllerLeftTrackingState.started -= instance.OnXRControllerLeftTrackingState;
+            @XRControllerLeftTrackingState.performed -= instance.OnXRControllerLeftTrackingState;
+            @XRControllerLeftTrackingState.canceled -= instance.OnXRControllerLeftTrackingState;
+            @XRControllerRightPosition.started -= instance.OnXRControllerRightPosition;
+            @XRControllerRightPosition.performed -= instance.OnXRControllerRightPosition;
+            @XRControllerRightPosition.canceled -= instance.OnXRControllerRightPosition;
+            @XRControllerRightRotation.started -= instance.OnXRControllerRightRotation;
+            @XRControllerRightRotation.performed -= instance.OnXRControllerRightRotation;
+            @XRControllerRightRotation.canceled -= instance.OnXRControllerRightRotation;
+            @XRControllerRightTrackingState.started -= instance.OnXRControllerRightTrackingState;
+            @XRControllerRightTrackingState.performed -= instance.OnXRControllerRightTrackingState;
+            @XRControllerRightTrackingState.canceled -= instance.OnXRControllerRightTrackingState;
+            @ResetPosition.started -= instance.OnResetPosition;
+            @ResetPosition.performed -= instance.OnResetPosition;
+            @ResetPosition.canceled -= instance.OnResetPosition;
+            @XRLeftGrab.started -= instance.OnXRLeftGrab;
+            @XRLeftGrab.performed -= instance.OnXRLeftGrab;
+            @XRLeftGrab.canceled -= instance.OnXRLeftGrab;
+            @XRRightGrab.started -= instance.OnXRRightGrab;
+            @XRRightGrab.performed -= instance.OnXRRightGrab;
+            @XRRightGrab.canceled -= instance.OnXRRightGrab;
         }
 
         /// <summary>
@@ -973,12 +1394,68 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlternateInteract(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "XRControllerPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "XRControllerLeftPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnXRControllerPosition(InputAction.CallbackContext context);
+        void OnXRControllerLeftPosition(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerLeftRotation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerLeftRotation(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerLeftTrackingState" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerLeftTrackingState(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerRightPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerRightPosition(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerRightRotation" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerRightRotation(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRControllerRightTrackingState" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRControllerRightTrackingState(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ResetPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnResetPosition(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRLeftGrab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRLeftGrab(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "XRRightGrab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnXRRightGrab(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemEquipped" which allows adding and removing callbacks.

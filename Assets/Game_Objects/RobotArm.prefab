@@ -122,7 +122,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8251842262334146742, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
     - target: {fileID: -7511558181221131132, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -4367133491943567580, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -951759491288416336, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: -270599205488690649, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: 372966766929116273, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
@@ -130,6 +150,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: RobotArm
       objectReference: {fileID: 0}
+    - target: {fileID: 1846831998908377796, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+    - target: {fileID: 6709101619342045120, guid: 01565f1b0491c924893e929e6d726b65, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -196,6 +224,9 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 1
   Name: Robot Arm
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
 --- !u!95 &6784529460807903099
 Animator:
