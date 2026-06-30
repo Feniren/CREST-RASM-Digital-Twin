@@ -1425,6 +1425,9 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 1
   Name: ASRS
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
   task: 0
   item: {fileID: 0}
@@ -20458,6 +20461,7 @@ Transform:
   - {fileID: 3518931251436672635}
   - {fileID: 1391213671892460318}
   - {fileID: 7629450874186725716}
+  - {fileID: 3942038993534699598}
   - {fileID: 3726603864722771308}
   m_Father: {fileID: 727172132679966300}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -48679,7 +48683,6 @@ Transform:
   - {fileID: 8274454220276150984}
   - {fileID: 1178747031296877638}
   - {fileID: 6010127997483054646}
-  - {fileID: 3942038993534699598}
   - {fileID: 1676325945381606809}
   - {fileID: 6654840492489766227}
   - {fileID: 4593448537747176711}
@@ -57536,7 +57539,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3913204881261650808}
+  m_Father: {fileID: 2681534559492847593}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7227544725159999205
 MeshFilter:

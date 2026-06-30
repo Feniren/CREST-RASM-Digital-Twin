@@ -5,12 +5,11 @@ public class ASRSArmController : MonoBehaviour
     [Header("Axis Transforms")]
     [SerializeField] private Transform armZ;
     [SerializeField] private Transform armY;
-    [SerializeField] private Transform yawAxis;
     [SerializeField] private Transform armX;
     [SerializeField] private Transform hand;
 
     [Header("Speeds")]
-    [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private float moveSpeed = 0.5f;
     [SerializeField] private float rotateSpeed = 60f;
 
     private float? targetZ;
@@ -44,9 +43,9 @@ public class ASRSArmController : MonoBehaviour
         targetX = localX;
     }
 
-    public void RotateY(float yAngle)
+    public void RotateY(float angle = 180f)
     {
-        targetYaw = yAngle;
+        targetYaw = angle;
     }
 
     public void StopAll()
@@ -83,19 +82,14 @@ public class ASRSArmController : MonoBehaviour
 
     private void RotateYaw()
     {
-        if (yawAxis == null || !targetYaw.HasValue)
+        if (armY == null || !targetYaw.HasValue)
             return;
 
-        Vector3 rot = yawAxis.localEulerAngles;
+        Vector3 rot = armY.localEulerAngles;
 
-        float next = Mathf.MoveTowardsAngle(
-            rot.y,
-            targetYaw.Value,
-            rotateSpeed * Time.deltaTime
-        );
-
+        float next = Mathf.MoveTowardsAngle(rot.y, targetYaw.Value, rotateSpeed * Time.deltaTime);
         rot.y = next;
-        yawAxis.localEulerAngles = rot;
+        armY.localEulerAngles = rot;
 
         if (Mathf.Abs(Mathf.DeltaAngle(next, targetYaw.Value)) < 0.1f)
             targetYaw = null;

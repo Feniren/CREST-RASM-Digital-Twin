@@ -8,7 +8,6 @@ public class ASRSArmTester : MonoBehaviour
     [Header("Targets")]
     [SerializeField] private float zTarget = 2f;
     [SerializeField] private float yTarget = 1f;
-    [SerializeField] private float yawTarget = 90f;
     [SerializeField] private float xTarget = 1f;
 
     [Header("Reset")]
@@ -33,11 +32,11 @@ public class ASRSArmTester : MonoBehaviour
             armController.MoveY(yTarget);
         }
 
-        // Rotation around Y
+        // Rotate 180 around Y
         if (Keyboard.current.digit3Key.wasPressedThisFrame)
         {
-            Debug.Log("Rotating Yaw");
-            armController.RotateY(yawTarget);
+            Debug.Log("Rotating Y 180");
+            armController.RotateY();
         }
 
         // X Axis
@@ -51,7 +50,6 @@ public class ASRSArmTester : MonoBehaviour
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             Debug.Log("Resetting");
-
             armController.MoveZ(resetPosition);
             armController.MoveY(resetPosition);
             armController.RotateY(0f);
