@@ -6,7 +6,6 @@ public class ASRSArmController : MonoBehaviour
     [SerializeField] private Transform armZ;
     [SerializeField] private Transform armY;
     [SerializeField] private Transform armX;
-    [SerializeField] private Transform hand;
 
     [Header("Speeds")]
     [SerializeField] private float moveSpeed = 0.5f;
@@ -16,6 +15,10 @@ public class ASRSArmController : MonoBehaviour
     private float? targetY;
     private float? targetX;
     private float? targetYaw;
+
+    public Transform ArmZ => armZ;
+    public Transform ArmY => armY;
+    public Transform ArmX => armX;
 
     public bool IsMoving =>
         targetZ.HasValue || targetY.HasValue || targetX.HasValue || targetYaw.HasValue;
