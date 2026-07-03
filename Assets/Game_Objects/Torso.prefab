@@ -1115,7 +1115,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5824663075886872541}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1326,7 +1326,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7545950533279017964}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1491,6 +1491,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
   ItemReference: {fileID: 0}
+  OnGrabEnd:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &8355370631519669762
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1614,3 +1617,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity_XR_Hand
   ItemReference: {fileID: 0}
+  OnGrabEnd:
+    m_PersistentCalls:
+      m_Calls: []
