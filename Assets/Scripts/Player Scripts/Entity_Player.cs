@@ -18,7 +18,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
 	
 	public Entity_XR_Hand ActiveHand;
 
-    List<XRDisplaySubsystem> XRList = new List<XRDisplaySubsystem>();
+    List<InputDevice> XRList = new List<InputDevice>();
 
     void Awake(){
         PlayerSettings = new Player_Settings();
@@ -30,28 +30,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public override void Start(){
         base.Start();
 
-        SubsystemManager.GetSubsystems<XRDisplaySubsystem>(XRList);
-
-        for (int i = 0; i < XRList.Count; i++){
-            if (XRList[i].running){
-                Debug.Log("XR Device running");
-
-                PlayerSettings.XREnabled = false;
-
-                CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
-                LeftHandAnchor.SetActive(true);
-                RightHandAnchor.SetActive(true);
-            }
-        }
-
-        PlayerSettings.XREnabled = false;
-
-        if (!PlayerSettings.XREnabled){
-            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
-
-			LeftHandAnchor.SetActive(false);
-			RightHandAnchor.SetActive(false);
-		}
+		StartCoroutine(LaunchXR(0.5f));
 
         ItemLibraryReference = GetComponent<Item_Library>();
 
@@ -63,6 +42,30 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
     void Update(){
     }
+
+	private IEnumerator LaunchXR(float Timeout){
+		yield return new WaitForSeconds(Timeout);
+
+		if (XRSettings.isDeviceActive){
+			Debug.Log("XR Device running");
+
+			PlayerSettings.XREnabled = true;
+
+			CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
+			LeftHandAnchor.SetActive(true);
+			RightHandAnchor.SetActive(true);
+		}
+		else{
+			XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+
+			PlayerSettings.XREnabled = false;
+
+			LeftHandAnchor.SetActive(false);
+			RightHandAnchor.SetActive(false);
+
+			Debug.Log("XR Device not detected");
+		}
+	}
 
     public void LoadData(Save_Data SaveData){
         gameObject.transform.position = SaveData.PlayerLocation;
