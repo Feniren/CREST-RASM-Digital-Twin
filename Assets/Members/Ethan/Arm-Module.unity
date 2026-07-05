@@ -127,6 +127,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 178682122818131419, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      propertyPath: m_XDrive.lowerLimit
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 178682122818131419, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      propertyPath: m_XDrive.upperLimit
+      value: 120
+      objectReference: {fileID: 0}
     - target: {fileID: 474064414736667290, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -182,6 +190,14 @@ PrefabInstance:
     - target: {fileID: 5021535501805417680, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766877366869697505, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      propertyPath: m_XDrive.lowerLimit
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766877366869697505, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      propertyPath: m_XDrive.upperLimit
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

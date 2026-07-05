@@ -33,16 +33,21 @@ public class RandomJointPoseProvider : MonoBehaviour, IJointStateProvider
 
             names.Add(body.name);
 
-            // Prismatic uses xDrive too; revolute/spherical map similarly for single-DOF URDF joints.
             var drive = body.xDrive;
+            bool isAngular = body.jointType == ArticulationJointType.RevoluteJoint
+                || body.jointType == ArticulationJointType.SphericalJoint;
+            float lo = drive.lowerLimit;
+            float hi = drive.upperLimit;
+
+            if (isAngular) { lo *= Mathf.Deg2Rad; hi *= Mathf.Deg2Rad; }
             bool limited = body.twistLock == ArticulationDofLock.LimitedMotion
                 || body.jointType == ArticulationJointType.PrismaticJoint
-                || drive.lowerLimit != 0f || drive.upperLimit != 0f;
+                || lo != 0f || lo != 0f;
 
             if (limited && drive.upperLimit > drive.lowerLimit)
             {
-                los.Add(drive.lowerLimit);
-                his.Add(drive.upperLimit);
+                los.Add(lo);
+                his.Add(hi);
             }
             else
             {
