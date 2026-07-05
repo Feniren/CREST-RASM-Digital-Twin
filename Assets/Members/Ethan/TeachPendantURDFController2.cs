@@ -107,9 +107,7 @@ public class ButtonURDFController : MonoBehaviour
     public void Joint1Plus() { inputs[1] = 1f; }
     public void Joint1Minus() { inputs[1] = -1f; }
     public void Joint2Plus() { inputs[2] = 1f; }
-    public void Joint2Minus() { inputs[2] = -1f;
-        Debug.Log("pressy");
-    }
+    public void Joint2Minus() { inputs[2] = -1f; }
     public void Joint3Plus() { inputs[3] = 1f; }
     public void Joint3Minus() { inputs[3] = -1f; }
     public void Joint4Plus() { inputs[4] = 1f; }
@@ -124,6 +122,12 @@ public class ButtonURDFController : MonoBehaviour
     public void Joint3Stop() { inputs[3] = 0f; }
     public void Joint4Stop() { inputs[4] = 0f; }
     public void Joint5Stop() { inputs[5] = 0f; }
+
+    // Speed Changers (they change da speed)
+    public void SetSpeed1() { speed = 5f; }
+    public void SetSpeed2() { speed = 10f; }
+    public void SetSpeed3() { speed = 20f; }
+    public void SetSpeed4() { speed = 40f; }
 
     // Single-step alternatives — one discrete nudge per click. Wire to Button.onClick.
     public void Joint0StepPlus() { Step(0, 1f); }
