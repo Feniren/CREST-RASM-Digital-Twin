@@ -178,8 +178,4 @@ public class ManualURDFController : MonoBehaviour
 		GUI.Label(new Rect(cx, 30, 400, 20), "Active: " + selectedJointName, style);
 	}
 
-	public void DriveCurrentPositive() { DriveJoint(selectedIndex, 1); }
-
-	public void DriveCurrentNegative() { DriveJoint(selectedIndex, -1); }
-
 }

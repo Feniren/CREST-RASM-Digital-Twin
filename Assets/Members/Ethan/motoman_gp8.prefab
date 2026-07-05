@@ -1113,6 +1113,7 @@ GameObject:
   - component: {fileID: 5223711916152364772}
   - component: {fileID: 1279045286148357871}
   - component: {fileID: 474064414736667290}
+  - component: {fileID: 2325373776013700449}
   m_Layer: 0
   m_Name: motoman_gp8
   m_TagString: robot
@@ -1196,7 +1197,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3282666746881280642}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57639d5d8b5934b4388e763c108ebea5, type: 3}
   m_Name: 
@@ -1209,6 +1210,31 @@ MonoBehaviour:
   forceLimit: 1000
   speed: 5
   acceleration: 5
+--- !u!114 &2325373776013700449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282666746881280642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10546a44796419645a132d7b22555448, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonURDFController
+  joint0: {fileID: 4546719766780656174}
+  joint1: {fileID: 6766877366869697505}
+  joint2: {fileID: 178682122818131419}
+  joint3: {fileID: 4289525626270068147}
+  joint4: {fileID: 8391081492453797334}
+  joint5: {fileID: 1474925596542344251}
+  driveMode: 0
+  stiffness: 10000
+  damping: 100
+  forceLimit: 1000
+  speed: 5
+  acceleration: 5
+  stepDegrees: 5
 --- !u!1 &3318405399374824346
 GameObject:
   m_ObjectHideFlags: 0
