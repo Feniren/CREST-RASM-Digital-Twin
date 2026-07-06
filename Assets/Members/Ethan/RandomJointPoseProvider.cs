@@ -19,7 +19,9 @@ public class RandomJointPoseProvider : MonoBehaviour, IJointStateProvider
     private float[] upperLimits;
     private JointStateMessage latestMessage;
 
-    void Start()
+    void Awake() => BuildLimits();
+
+    void BuildLimits()
     {
         var bodies = GetComponentsInChildren<ArticulationBody>();
         var names = new List<string>();
@@ -59,6 +61,11 @@ public class RandomJointPoseProvider : MonoBehaviour, IJointStateProvider
         jointNames = names.ToArray();
         lowerLimits = los.ToArray();
         upperLimits = his.ToArray();
+    }
+
+    void Start()
+    {
+
     }
 
     /// <summary>Generate + emit a new random pose.</summary>

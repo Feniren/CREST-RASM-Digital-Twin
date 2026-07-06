@@ -7,6 +7,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
     public WaypointSpawner WaypointHandler;
     public RandomJointPoseProvider PoseProvider;
     public GameObject PoseGhost;
+    public GameObject PickPlaceHandler;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,7 +42,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
     void FirstPose()
     {
         PoseGhost.SetActive(true);
-        StartPose();
+        Invoke(nameof(StartPose), 0.01f);
     }
 
     void StartPose()
@@ -56,5 +57,15 @@ public class ObjectiveOrderHandler : MonoBehaviour
         {
             StartPose();
         }
+        else
+        {
+            FirstPickPlace();
+        }
+    }
+
+    void FirstPickPlace()
+    {
+        PoseGhost.SetActive(false);
+        PickPlaceHandler.SetActive(true);
     }
 }

@@ -46,6 +46,14 @@ public class ButtonURDFController : MonoBehaviour
     [Tooltip("Safety timeout (s) for homing move")]
     public float homeTimeout = 15f;
 
+    [Header("Grab")]
+    [Tooltip("GameObject that performs the grab (the gripper)")]
+    [SerializeField] private Transform grabber;
+    [Tooltip("Max distance (m) from grabber to a rigidbody's position for grab to attach")]
+    public float grabDistance = 0.1f;
+    [Tooltip("Optional: only grab bodies on these layers (0 = all)")]
+    public LayerMask grabMask = ~0;
+
     private ArticulationBody[] joints;
     private float[] targetPositions;
     // -1, 0, or +1 per joint; set by button press/release, consumed in Update
@@ -54,8 +62,9 @@ public class ButtonURDFController : MonoBehaviour
     // --- Recording state ---
     private struct Frame
     {
-        public float[] signals; // per-joint commanded angular velocity (deg/s) = input * speed at record time
+        public float[] signals;
         public float dt;
+        public bool grab; // recorded grab state this frame
     }
 
     private RecState recState = RecState.Idle;
@@ -65,6 +74,17 @@ public class ButtonURDFController : MonoBehaviour
     private float homingTimer;
     private int playIndex;
     private float playClock;
+
+    // --- Grab state ---
+    private bool grabActive;
+    private Rigidbody grabbedBody;
+    private ArticulationBody grabbedArtBody;
+    private Transform grabbedTf;
+    private Vector3 grabLocalPos;
+    private Quaternion grabLocalRot;
+    private bool grabbedWasKinematic;
+    // recorded per-frame grab command: true = want-grabbed
+    private bool grabInput;
 
     void Start()
     {
@@ -94,20 +114,24 @@ public class ButtonURDFController : MonoBehaviour
         switch (recState)
         {
             case RecState.Idle:
+                UpdateGrabFollow();
                 DriveAllFromInputs(Time.deltaTime);
                 break;
 
             case RecState.HomingToRecord:
             case RecState.HomingToPlay:
+                UpdateGrabFollow();
                 UpdateHoming();
                 break;
 
             case RecState.Recording:
+                UpdateGrabFollow();
                 DriveAllFromInputs(Time.deltaTime);
                 CaptureFrame(Time.deltaTime);
                 break;
 
             case RecState.Playing:
+                UpdateGrabFollow();
                 UpdatePlayback();
                 break;
         }
@@ -168,6 +192,8 @@ public class ButtonURDFController : MonoBehaviour
     /// <summary>Move to neutral pose, then start recording. Wire to a "Record" button.</summary>
     public void Record()
     {
+        grabInput = false;
+        if (grabActive) ReleaseGrab();
         if (recState != RecState.Idle) return;
         recording.Clear();
         BeginHoming(RecState.HomingToRecord);
@@ -197,6 +223,8 @@ public class ButtonURDFController : MonoBehaviour
 
     private void BeginHoming(RecState pending)
     {
+        grabInput = false;
+        if (grabActive) ReleaseGrab();
         recState = pending;
         homingTimer = 0f;
         ClearInputs();
@@ -261,9 +289,9 @@ public class ButtonURDFController : MonoBehaviour
 
     private void CaptureFrame(float dt)
     {
-        var f = new Frame { signals = new float[joints.Length], dt = dt };
+        var f = new Frame { signals = new float[joints.Length], dt = dt, grab = grabInput };
         for (int i = 0; i < joints.Length; i++)
-            f.signals[i] = inputs[i] * speed; // bakes in mid-recording speed changes
+            f.signals[i] = inputs[i] * speed;
         recording.Add(f);
     }
 
@@ -277,6 +305,7 @@ public class ButtonURDFController : MonoBehaviour
             var f = savedRecording[playIndex];
             for (int i = 0; i < joints.Length; i++)
                 DriveJoint(i, f.signals[i], f.dt);
+            ApplyGrabState(f.grab);   // replay grab toggles
             playClock -= f.dt;
             playIndex++;
         }
@@ -287,6 +316,70 @@ public class ButtonURDFController : MonoBehaviour
             ClearInputs();
             if (driveMode == DriveMode.Velocity) ZeroVelocities();
         }
+    }
+
+    /// <summary>Toggle grab on/off. Wire to a "Grab" button (Button.onClick).</summary>
+    public void ToggleGrab()
+    {
+        grabInput = !grabInput;
+        ApplyGrabState(grabInput);
+    }
+
+    // Applies the desired grab state: attach nearest eligible body, or release.
+    private void ApplyGrabState(bool want)
+    {
+        if (want && !grabActive) TryGrab();
+        else if (!want && grabActive) ReleaseGrab();
+    }
+
+    private void TryGrab()
+    {
+        if (grabber == null) return;
+
+        Rigidbody best = null;
+        float bestSqr = grabDistance * grabDistance;
+        Vector3 gp = grabber.position;
+
+        Collider[] hits = Physics.OverlapSphere(gp, grabDistance, grabMask, QueryTriggerInteraction.Ignore);
+        foreach (var c in hits)
+        {
+            var rb = c.attachedRigidbody;
+            if (rb == null) continue;
+            float d = (rb.worldCenterOfMass - gp).sqrMagnitude;
+            if (d <= bestSqr) { bestSqr = d; best = rb; }
+        }
+
+        if (best == null) return;
+
+        grabbedBody = best;
+        grabbedTf = best.transform;
+        grabbedWasKinematic = best.isKinematic;
+        best.isKinematic = true;
+
+        grabLocalPos = grabber.InverseTransformPoint(grabbedTf.position);
+        grabLocalRot = Quaternion.Inverse(grabber.rotation) * grabbedTf.rotation;
+
+        grabActive = true;
+    }
+
+    private void ReleaseGrab()
+    {
+        if (grabbedBody != null)
+        {
+            grabbedBody.isKinematic = grabbedWasKinematic;
+            grabbedBody.linearVelocity = Vector3.zero;
+            grabbedBody.angularVelocity = Vector3.zero;
+        }
+        grabbedBody = null;
+        grabbedTf = null;
+        grabActive = false;
+    }
+
+    private void UpdateGrabFollow()
+    {
+        if (!grabActive || grabber == null || grabbedTf == null) return;
+        grabbedTf.position = grabber.TransformPoint(grabLocalPos);
+        grabbedTf.rotation = grabber.rotation * grabLocalRot;
     }
 
     private void ClearInputs()
