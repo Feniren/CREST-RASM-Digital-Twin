@@ -37,7 +37,7 @@ public class PickAndPlaceHandler : MonoBehaviour
             block.transform.SetPositionAndRotation(pos, Quaternion.identity);
             if (block.TryGetComponent<Rigidbody>(out var rb))
             {
-                rb.linearVelocity = Vector3.zero; // .velocity on Unity < 6
+                rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
         }
@@ -51,7 +51,6 @@ public class PickAndPlaceHandler : MonoBehaviour
         if (block.transform.position.y < resetHeight)
             SpawnBlock();
 
-        // objective check (AABB, no trigger colliders needed)
         if (!triggered || !triggerOnce)
         {
             Bounds b = new Bounds(objectiveCenter, objectiveSize);

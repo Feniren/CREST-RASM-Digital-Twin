@@ -129,11 +129,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 178682122818131419, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_XDrive.lowerLimit
-      value: -30
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: 178682122818131419, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_XDrive.upperLimit
-      value: 120
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 474064414736667290, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_Enabled
@@ -150,6 +150,10 @@ PrefabInstance:
     - target: {fileID: 3282666746881280642, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4470812569007386585, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5021535501805417680, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7768,6 +7772,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 178682122818131419, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
+      propertyPath: m_XDrive.damping
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 178682122818131419, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
+      propertyPath: m_XDrive.stiffness
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 474064414736667290, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
       propertyPath: speed
       value: 20
@@ -7779,6 +7791,10 @@ PrefabInstance:
     - target: {fileID: 1474925596542344251, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
       propertyPath: m_ParentAnchorPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2325373776013700449, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
+      propertyPath: damping
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2325373776013700449, guid: 6e7720cb8c870b24292bfba38f6b009a, type: 3}
       propertyPath: grabber
