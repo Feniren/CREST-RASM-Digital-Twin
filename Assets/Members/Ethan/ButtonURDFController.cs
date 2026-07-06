@@ -5,7 +5,7 @@ using UnityEngine;
 /// UI-button-driven controller for ArticulationBody joints (e.g. URDF imports).
 /// Assign up to six joints in the inspector. Hook UI Buttons to the
 /// parameterless Joint#Plus / Joint#Minus methods (use EventTrigger
-/// PointerDown/PointerUp for hold-to-move, or plain Button.onClick for steps).
+/// PointerDown/PointerUp for hold-to-move).
 ///
 /// Recording:
 ///   Record()     -> returns robot to neutral pose, then records button input each frame.
@@ -35,10 +35,6 @@ public class ButtonURDFController : MonoBehaviour
     public float forceLimit = 1000f;
     public float speed = 5f;        // deg/s
     public float acceleration = 5f; // deg/s^2
-
-    [Header("Step Mode")]
-    [Tooltip("Degrees moved per single-step button click (Position mode only)")]
-    public float stepDegrees = 5f;
 
     [Header("Recording")]
     [Tooltip("Max joint error (deg) to consider neutral pose reached")]
@@ -155,6 +151,10 @@ public class ButtonURDFController : MonoBehaviour
         {
             case DriveMode.Position:
                 targetPositions[index] += signal * dt;
+                // Clamp to joint limits so the target can't wind up past the
+                // physical range (otherwise reversing direction stalls until
+                // the accumulated overshoot is consumed).
+                targetPositions[index] = ClampToJointLimits(body, drive, targetPositions[index]);
                 drive.target = targetPositions[index];
                 break;
 
@@ -164,6 +164,20 @@ public class ButtonURDFController : MonoBehaviour
         }
 
         body.xDrive = drive;
+    }
+
+    // Clamps a target angle (deg) to the joint's allowed range, if limited.
+    private static float ClampToJointLimits(ArticulationBody body, in ArticulationDrive drive, float targetDeg)
+    {
+        bool limited =
+            (body.jointType == ArticulationJointType.RevoluteJoint && body.twistLock == ArticulationDofLock.LimitedMotion) ||
+            (body.jointType == ArticulationJointType.PrismaticJoint &&
+                (body.linearLockX == ArticulationDofLock.LimitedMotion ||
+                 body.linearLockY == ArticulationDofLock.LimitedMotion ||
+                 body.linearLockZ == ArticulationDofLock.LimitedMotion));
+
+        if (!limited) return targetDeg;
+        return Mathf.Clamp(targetDeg, drive.lowerLimit, drive.upperLimit);
     }
 
     private void ApplyDriveSettings(ArticulationBody body)
@@ -430,32 +444,6 @@ public class ButtonURDFController : MonoBehaviour
     public void SetSpeed2() { speed = 10f; }
     public void SetSpeed3() { speed = 20f; }
     public void SetSpeed4() { speed = 40f; }
-
-    // Single-step alternatives — one discrete nudge per click. Wire to Button.onClick.
-    public void Joint0StepPlus() { Step(0, 1f); }
-    public void Joint0StepMinus() { Step(0, -1f); }
-    public void Joint1StepPlus() { Step(1, 1f); }
-    public void Joint1StepMinus() { Step(1, -1f); }
-    public void Joint2StepPlus() { Step(2, 1f); }
-    public void Joint2StepMinus() { Step(2, -1f); }
-    public void Joint3StepPlus() { Step(3, 1f); }
-    public void Joint3StepMinus() { Step(3, -1f); }
-    public void Joint4StepPlus() { Step(4, 1f); }
-    public void Joint4StepMinus() { Step(4, -1f); }
-    public void Joint5StepPlus() { Step(5, 1f); }
-    public void Joint5StepMinus() { Step(5, -1f); }
-
-    private void Step(int index, float direction)
-    {
-        var body = joints[index];
-        if (body == null || body.jointType == ArticulationJointType.FixedJoint) return;
-        if (driveMode != DriveMode.Position) return;
-
-        targetPositions[index] += direction * stepDegrees;
-        ArticulationDrive drive = body.xDrive;
-        drive.target = targetPositions[index];
-        body.xDrive = drive;
-    }
 
     #endregion
 }
