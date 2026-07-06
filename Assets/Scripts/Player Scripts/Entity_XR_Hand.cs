@@ -25,8 +25,8 @@ public class Entity_XR_Hand : MonoBehaviour{
 	public void GrabStart(Entity_Player PlayerReference, GameObject Interactable){
 		PlayerReference.ActiveHand = this;
 
-		if (Interactable.GetComponent<Item_Parent>()){
-			ItemReference = Interactable;
+		if (Interactable.GetComponentInParent<Item_Parent>()){
+			ItemReference = Interactable.GetComponentInParent<Item_Parent>().gameObject;
 
 			if (ItemReference.GetComponent<Item_Parent>().Pickup){
 				HoldItem();
@@ -38,7 +38,7 @@ public class Entity_XR_Hand : MonoBehaviour{
 			ItemReference.GetComponent<Item_Parent>().OnGrabbed.Invoke();
 		}
 		else{
-			Interactable.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+			Interactable.GetComponentInParent<Interact_Interface>().AlternateInteract(PlayerReference);
 
 			GetComponent<Collider>().enabled = false;
 		}
