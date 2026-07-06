@@ -4,10 +4,12 @@ public class ObjectiveOrderHandler : MonoBehaviour
 {
     public int WaypointRuns = 5;
     public int PoseRuns = 5;
+    public int PickPlaceRuns = 5;
     public WaypointSpawner WaypointHandler;
     public RandomJointPoseProvider PoseProvider;
     public GameObject PoseGhost;
-    public GameObject PickPlaceHandler;
+    public GameObject PickPlaceObject;
+    public PickAndPlaceHandler PickPlaceHandler;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -66,6 +68,24 @@ public class ObjectiveOrderHandler : MonoBehaviour
     void FirstPickPlace()
     {
         PoseGhost.SetActive(false);
-        PickPlaceHandler.SetActive(true);
+        PickPlaceObject.SetActive(true);
+    }
+
+    void StartPickPlace()
+    {
+        if (PickPlaceRuns > 0)
+        {
+            PickPlaceHandler.SpawnBlock();
+        }
+        else
+        {
+            Debug.Log("Done!");
+        }
+    }
+
+    public void PickPlaceHit()
+    {
+        PickPlaceRuns--;
+        StartPickPlace();
     }
 }

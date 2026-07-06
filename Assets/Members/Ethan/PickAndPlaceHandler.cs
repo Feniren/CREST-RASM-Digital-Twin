@@ -26,7 +26,7 @@ public class PickAndPlaceHandler : MonoBehaviour
         SpawnBlock();
     }
 
-    void SpawnBlock()
+    public void SpawnBlock()
     {
         Vector3 pos = useSpawnPoint && spawnPoint ? spawnPoint.position : spawnPosition;
         if (block == null)

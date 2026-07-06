@@ -6548,7 +6548,19 @@ MonoBehaviour:
   objectiveSize: {x: 0.3, y: 0.3, z: 0.3}
   onObjectiveReached:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1797544543}
+        m_TargetAssemblyTypeName: ObjectiveOrderHandler, Assembly-CSharp
+        m_MethodName: PickPlaceHit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   triggerOnce: 1
 --- !u!1 &1795075885
 GameObject:
@@ -6718,10 +6730,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveOrderHandler
   WaypointRuns: 0
   PoseRuns: 0
+  PickPlaceRuns: 5
   WaypointHandler: {fileID: 97766975}
   PoseProvider: {fileID: 1352278955}
   PoseGhost: {fileID: 1352278948}
-  PickPlaceHandler: {fileID: 1789080054}
+  PickPlaceObject: {fileID: 1789080054}
+  PickPlaceHandler: {fileID: 1789080056}
 --- !u!4 &1797544544
 Transform:
   m_ObjectHideFlags: 0
