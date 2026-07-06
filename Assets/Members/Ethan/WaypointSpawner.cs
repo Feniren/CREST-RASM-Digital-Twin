@@ -78,7 +78,7 @@ public class WaypointSpawner : MonoBehaviour
 
         // Spherical coordinates: random azimuth, elevation, radius.
         float halfAzimuth = azimuthRange * 0.5f;
-        float azimuth = Random.Range(-halfAzimuth, halfAzimuth);
+        float azimuth = 180f + Random.Range(-halfAzimuth, halfAzimuth);
 
         // Sample sin(elevation) uniformly for even distribution over sphere surface
         // (uniform elevation angle would cluster points at poles).
@@ -94,6 +94,7 @@ public class WaypointSpawner : MonoBehaviour
 
         CurrentWaypoint = Instantiate(waypointPrefab, spawnPosition, Quaternion.identity).transform;
         TargetHasArrived = false;
+        Debug.Log("SpawnwaypEnd");
     }
 
     /// <summary>Removes current waypoint marker if one exists.</summary>
@@ -117,10 +118,11 @@ public class WaypointSpawner : MonoBehaviour
     private void HandleArrival()
     {
         TargetHasArrived = true;
-        onTargetArrived?.Invoke();
 
         if (destroyOnArrival)
             ClearWaypoint();
+
+        onTargetArrived?.Invoke();
     }
 
     // Editor visualization of spawn bounds + arrival radius.
@@ -141,12 +143,12 @@ public class WaypointSpawner : MonoBehaviour
     {
         const int segments = 48;
         float halfRange = azimuthRange * 0.5f;
-        Vector3 prev = transform.position + Quaternion.Euler(0f, -halfRange, 0f) * transform.forward * radius;
+        Vector3 prev = transform.position + Quaternion.Euler(0f, 180f - halfRange, 0f) * transform.forward * radius;
 
         for (int i = 1; i <= segments; i++)
         {
             float t = Mathf.Lerp(-halfRange, halfRange, i / (float)segments);
-            Vector3 next = transform.position + Quaternion.Euler(0f, t, 0f) * transform.forward * radius;
+            Vector3 next = transform.position + Quaternion.Euler(0f, 180f + t, 0f) * transform.forward * radius;
             Gizmos.DrawLine(prev, next);
             prev = next;
         }
