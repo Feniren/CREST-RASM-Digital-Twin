@@ -6798,8 +6798,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bea962b2351e93d4dbd80b677047f73c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveOrderHandler
-  WaypointRuns: 1
-  PoseRuns: 1
+  WaypointRuns: 5
+  PoseRuns: 5
   PickPlaceRuns: 5
   WaypointHandler: {fileID: 97766975}
   PoseProvider: {fileID: 1352278955}
@@ -6836,7 +6836,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: f129945a7293d0a4eb4cf9a901c6fe2c, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
