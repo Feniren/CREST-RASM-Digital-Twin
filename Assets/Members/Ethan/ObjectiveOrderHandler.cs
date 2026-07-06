@@ -47,7 +47,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void FirstPose()
     {
-        TextMesh.text = "Now, move the arm to match the hologram's poses.";
+        TextMesh.text = "Now, try moving the arm to match the hologram's poses.";
         PoseGhost.SetActive(true);
         Invoke(nameof(StartPose), 0.01f);
     }
@@ -73,7 +73,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void FirstPickPlace()
     {
-        TextMesh.text = $"Now, pick up the block from the left platform and move it to the right platform 5 times.\n\n\nSince this task has consistent conditions, try using Record and Playback to complete it.";
+        TextMesh.text = $"Pick up the block from the left platform and move it to the right platform 5 times. The Grab button will work as long as the clamp is close enough to the block. When the block is grabbed, pressing Grab again will release it.\n\n\nSince this task has consistent conditions, try using Record and Playback to complete it. Record will move the arm into a neutral position, then start recording your inputs. To save the recording, use Stop Rec. Then, you can play it back.";
         PoseGhost.SetActive(false);
         PickPlaceObject.SetActive(true);
     }

@@ -2762,11 +2762,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Let''s get used to moving the arm around.
+  m_text: 'Use the controls by pointing your hand laser at them and pressing the
+    trigger. Play around with the arm for a bit.
 
 
-    Move the end of the arm
-    to the orbs.'
+    When you feel comfortable
+    moving the arm, move the clamp on the end of it into the spheres.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
