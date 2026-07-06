@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class ObjectiveOrderHandler : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
     public GameObject PoseGhost;
     public GameObject PickPlaceObject;
     public PickAndPlaceHandler PickPlaceHandler;
+    public TextMeshProUGUI TextMesh;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -43,6 +45,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void FirstPose()
     {
+        TextMesh.text = "Now, move the arm to match the hologram's poses.";
         PoseGhost.SetActive(true);
         Invoke(nameof(StartPose), 0.01f);
     }
@@ -67,6 +70,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void FirstPickPlace()
     {
+        TextMesh.text = $"Now, pick up the block from the left platform and move it to the right platform 5 times.\n\n\nSince this task has consistent conditions, try using Record and Playback to complete it.";
         PoseGhost.SetActive(false);
         PickPlaceObject.SetActive(true);
     }

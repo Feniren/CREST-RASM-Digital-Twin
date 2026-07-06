@@ -2253,14 +2253,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718235261}
-  m_LocalRotation: {x: -0, y: 0.16514283, z: -0, w: 0.9862697}
+  m_LocalRotation: {x: -0, y: 0.0985594, z: -0, w: 0.9951312}
   m_LocalPosition: {x: 0, y: 0, z: 2.25}
   m_LocalScale: {x: 0.0034402574, y: 0.0054153595, z: 0.001}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 104779842}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 19.011, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 11.312, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 1.53, y: 1.13}
@@ -2654,7 +2654,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3682051730524054333, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.2007983
+      value: -1.74
       objectReference: {fileID: 0}
     - target: {fileID: 3682051730524054333, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2662,7 +2662,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3682051730524054333, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.8883002
+      value: -2.02
       objectReference: {fileID: 0}
     - target: {fileID: 3682051730524054333, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6620,7 +6620,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  triggerOnce: 1
+  triggerOnce: 0
 --- !u!1 &1795075885
 GameObject:
   m_ObjectHideFlags: 0
@@ -6787,14 +6787,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bea962b2351e93d4dbd80b677047f73c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveOrderHandler
-  WaypointRuns: 0
-  PoseRuns: 0
+  WaypointRuns: 1
+  PoseRuns: 1
   PickPlaceRuns: 5
   WaypointHandler: {fileID: 97766975}
   PoseProvider: {fileID: 1352278955}
   PoseGhost: {fileID: 1352278948}
   PickPlaceObject: {fileID: 1789080054}
   PickPlaceHandler: {fileID: 1789080056}
+  TextMesh: {fileID: 778671405}
 --- !u!4 &1797544544
 Transform:
   m_ObjectHideFlags: 0
