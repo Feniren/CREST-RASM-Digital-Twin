@@ -12,6 +12,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
     public GameObject PickPlaceObject;
     public PickAndPlaceHandler PickPlaceHandler;
     public TextMeshProUGUI TextMesh;
+    public AudioSource goalSound;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,6 +40,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     public void WaypointHit()
     {
+        goalSound.Play();
         WaypointRuns--;
         StartWaypoint();
     }
@@ -64,6 +66,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     public void PoseHit()
     {
+        goalSound.Play();
         PoseRuns--;
         StartPose();
     }
@@ -89,6 +92,7 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     public void PickPlaceHit()
     {
+        goalSound.Play();
         PickPlaceRuns--;
         StartPickPlace();
     }
