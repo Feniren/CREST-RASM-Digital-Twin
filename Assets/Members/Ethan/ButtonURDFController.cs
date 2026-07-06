@@ -50,6 +50,9 @@ public class ButtonURDFController : MonoBehaviour
     [Tooltip("Optional: only grab bodies on these layers (0 = all)")]
     public LayerMask grabMask = ~0;
 
+    [Header("Other")]
+    public AudioSource servoSound;
+
     private ArticulationBody[] joints;
     private float[] targetPositions;
     // -1, 0, or +1 per joint; set by button press/release, consumed in Update
@@ -258,6 +261,7 @@ public class ButtonURDFController : MonoBehaviour
             drive.target = neutralPositions[i];
             body.xDrive = drive;
         }
+        if (servoSound != null && !servoSound.isPlaying) servoSound.Play();
     }
 
     private void UpdateHoming()
@@ -279,6 +283,8 @@ public class ButtonURDFController : MonoBehaviour
         }
 
         if (!arrived && homingTimer < homeTimeout) return;
+
+        if (servoSound != null) servoSound.Stop();
 
         // Snap logical targets to neutral so Position mode resumes cleanly.
         for (int i = 0; i < joints.Length; i++)
@@ -311,21 +317,39 @@ public class ButtonURDFController : MonoBehaviour
 
     private void UpdatePlayback()
     {
-        // Consume recorded frames against real elapsed time so playback duration matches recording.
         playClock += Time.deltaTime;
+
+        bool anySignal = false;
 
         while (playIndex < savedRecording.Count && playClock >= savedRecording[playIndex].dt)
         {
             var f = savedRecording[playIndex];
             for (int i = 0; i < joints.Length; i++)
+            {
                 DriveJoint(i, f.signals[i], f.dt);
-            ApplyGrabState(f.grab);   // replay grab toggles
+                if (f.signals[i] != 0f) anySignal = true;
+            }
+            ApplyGrabState(f.grab);
             playClock -= f.dt;
             playIndex++;
         }
 
+        if (playIndex < savedRecording.Count)
+        {
+            var cur = savedRecording[playIndex];
+            for (int i = 0; i < cur.signals.Length && !anySignal; i++)
+                if (cur.signals[i] != 0f) anySignal = true;
+        }
+
+        if (servoSound != null)
+        {
+            if (anySignal && !servoSound.isPlaying) servoSound.Play();
+            else if (!anySignal && servoSound.isPlaying) servoSound.Stop();
+        }
+
         if (playIndex >= savedRecording.Count)
         {
+            if (servoSound != null) servoSound.Stop();
             recState = RecState.Idle;
             ClearInputs();
             if (driveMode == DriveMode.Velocity) ZeroVelocities();
@@ -418,32 +442,32 @@ public class ButtonURDFController : MonoBehaviour
     #region Button Hooks (parameterless)
 
     // Press handlers — start moving. Wire to EventTrigger PointerDown.
-    public void Joint0Plus() { inputs[0] = 1f; }
-    public void Joint0Minus() { inputs[0] = -1f; }
-    public void Joint1Plus() { inputs[1] = 1f; }
-    public void Joint1Minus() { inputs[1] = -1f; }
-    public void Joint2Plus() { inputs[2] = 1f; }
-    public void Joint2Minus() { inputs[2] = -1f; }
-    public void Joint3Plus() { inputs[3] = 1f; }
-    public void Joint3Minus() { inputs[3] = -1f; }
-    public void Joint4Plus() { inputs[4] = 1f; }
-    public void Joint4Minus() { inputs[4] = -1f; }
-    public void Joint5Plus() { inputs[5] = 1f; }
-    public void Joint5Minus() { inputs[5] = -1f; }
+    public void Joint0Plus() { inputs[0] = 1f; servoSound.Play(); }
+    public void Joint0Minus() { inputs[0] = -1f; servoSound.Play(); }
+    public void Joint1Plus() { inputs[1] = 1f; servoSound.Play(); }
+    public void Joint1Minus() { inputs[1] = -1f; servoSound.Play(); }
+    public void Joint2Plus() { inputs[2] = 1f; servoSound.Play(); }
+    public void Joint2Minus() { inputs[2] = -1f; servoSound.Play(); }
+    public void Joint3Plus() { inputs[3] = 1f; servoSound.Play(); }
+    public void Joint3Minus() { inputs[3] = -1f; servoSound.Play(); }
+    public void Joint4Plus() { inputs[4] = 1f; servoSound.Play(); }
+    public void Joint4Minus() { inputs[4] = -1f; servoSound.Play(); }
+    public void Joint5Plus() { inputs[5] = 1f; servoSound.Play(); }
+    public void Joint5Minus() { inputs[5] = -1f; servoSound.Play(); }
 
     // Release handlers — stop moving. Wire to EventTrigger PointerUp (and PointerExit for safety).
-    public void Joint0Stop() { inputs[0] = 0f; }
-    public void Joint1Stop() { inputs[1] = 0f; }
-    public void Joint2Stop() { inputs[2] = 0f; }
-    public void Joint3Stop() { inputs[3] = 0f; }
-    public void Joint4Stop() { inputs[4] = 0f; }
-    public void Joint5Stop() { inputs[5] = 0f; }
+    public void Joint0Stop() { inputs[0] = 0f; servoSound.Stop(); }
+    public void Joint1Stop() { inputs[1] = 0f; servoSound.Stop(); }
+    public void Joint2Stop() { inputs[2] = 0f; servoSound.Stop(); }
+    public void Joint3Stop() { inputs[3] = 0f; servoSound.Stop(); }
+    public void Joint4Stop() { inputs[4] = 0f; servoSound.Stop(); }
+    public void Joint5Stop() { inputs[5] = 0f; servoSound.Stop(); }
 
     // Speed Changers (they change da speed)
-    public void SetSpeed1() { speed = 5f; }
-    public void SetSpeed2() { speed = 10f; }
-    public void SetSpeed3() { speed = 20f; }
-    public void SetSpeed4() { speed = 40f; }
+    public void SetSpeed1() { speed = 10f; servoSound.volume = .2f; }
+    public void SetSpeed2() { speed = 20f; servoSound.volume = .4f; }
+    public void SetSpeed3() { speed = 40f; servoSound.volume = .6f; }
+    public void SetSpeed4() { speed = 60f; servoSound.volume = .8f; }
 
     #endregion
 }
