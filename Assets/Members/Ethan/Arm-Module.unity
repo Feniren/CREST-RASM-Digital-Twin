@@ -209,6 +209,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3282666746881280642, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1352278955}
+    - targetCorrespondingSourceObject: {fileID: 3282666746881280642, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1352278956}
   m_SourcePrefab: {fileID: 100100000, guid: 25d339c1c11e5364ea36ccf6e93cc2ea, type: 3}
 --- !u!1 &97766974
 GameObject:
@@ -242,7 +245,7 @@ MonoBehaviour:
   waypointPrefab: {fileID: 81827865351381372, guid: d8166e1e980a2fd4a921e28017e40a5d, type: 3}
   minRadius: 0.2
   maxRadius: 0.7
-  azimuthRange: 73
+  azimuthRange: 270
   minElevation: -60
   maxElevation: 90
   spawnOnStart: 0
@@ -272,7 +275,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 97766974}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1.845, y: 0.88713, z: 0.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1035,99 +1038,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348148603}
   m_CullTransparentMesh: 1
---- !u!1 &397839821
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 397839823}
-  - component: {fileID: 397839822}
-  m_Layer: 0
-  m_Name: PoseObjectiveHandler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &397839822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 397839821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c59e77d916d22749b2ab4b67cf7a984, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JointComparer
-  pairs:
-  - label: Link1
-    jointA: {fileID: 1474321755}
-    jointB: {fileID: 463585388}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  - label: Link2
-    jointA: {fileID: 1378187687}
-    jointB: {fileID: 614345933}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  - label: Link3
-    jointA: {fileID: 922664309}
-    jointB: {fileID: 739274889}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  - label: Link4
-    jointA: {fileID: 1519861457}
-    jointB: {fileID: 689246314}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  - label: Link5
-    jointA: {fileID: 660821190}
-    jointB: {fileID: 294089556}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  - label: Link6
-    jointA: {fileID: 1882770301}
-    jointB: {fileID: 884200518}
-    positionDelta: 0
-    angleDelta: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-    eulerOffset: {x: 0, y: 0, z: 0}
-  useWorldSpace: 1
-  warnOnThreshold: 0
-  positionThreshold: 0.05
-  angleThreshold: 5
-  drawGizmos: 1
-  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
---- !u!4 &397839823
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 397839821}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.50549, y: 0.05, z: 5.04973}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &403429218
 GameObject:
   m_ObjectHideFlags: 0
@@ -3029,6 +2939,85 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RandomJointPoseProvider
   fallbackMin: -3.14
   fallbackMax: 3.14
+--- !u!114 &1352278956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1352278948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c59e77d916d22749b2ab4b67cf7a984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JointComparer
+  pairs:
+  - label: Link1
+    jointA: {fileID: 1474321755}
+    jointB: {fileID: 463585388}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  - label: Link2
+    jointA: {fileID: 1378187687}
+    jointB: {fileID: 614345933}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  - label: Link3
+    jointA: {fileID: 922664309}
+    jointB: {fileID: 739274889}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  - label: Link4
+    jointA: {fileID: 1519861457}
+    jointB: {fileID: 689246314}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  - label: Link5
+    jointA: {fileID: 660821190}
+    jointB: {fileID: 294089556}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  - label: Link6
+    jointA: {fileID: 1882770301}
+    jointB: {fileID: 884200518}
+    positionDelta: 0
+    angleDelta: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    eulerOffset: {x: 0, y: 0, z: 0}
+  totalDistanceThreshold: 0.1
+  onTotalDistanceTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1797544543}
+        m_TargetAssemblyTypeName: ObjectiveOrderHandler, Assembly-CSharp
+        m_MethodName: PoseHit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  totalDistance: 0
+  triggerDisabled: 0
+  useWorldSpace: 1
+  warnOnThreshold: 0
+  positionThreshold: 0.05
+  angleThreshold: 5
+  drawGizmos: 1
+  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &1360434342
 GameObject:
   m_ObjectHideFlags: 0
@@ -3767,7 +3756,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4943412722579436017, guid: 2e16046ebcbcb6742a86569d82e56cce, type: 3}
       propertyPath: m_LocalScale.y
-      value: 3.1034484
+      value: 4.251289
       objectReference: {fileID: 0}
     - target: {fileID: 4943412722579436017, guid: 2e16046ebcbcb6742a86569d82e56cce, type: 3}
       propertyPath: m_LocalScale.z
@@ -3779,7 +3768,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4943412722579436017, guid: 2e16046ebcbcb6742a86569d82e56cce, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.485
+      value: 0.389
       objectReference: {fileID: 0}
     - target: {fileID: 4943412722579436017, guid: 2e16046ebcbcb6742a86569d82e56cce, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5463,6 +5452,8 @@ MonoBehaviour:
   WaypointRuns: 5
   PoseRuns: 5
   WaypointHandler: {fileID: 97766975}
+  PoseProvider: {fileID: 1352278955}
+  PoseGhost: {fileID: 1352278948}
 --- !u!4 &1797544544
 Transform:
   m_ObjectHideFlags: 0
@@ -6381,8 +6372,7 @@ SceneRoots:
   - {fileID: 426188270}
   - {fileID: 256110030}
   - {fileID: 30198444}
-  - {fileID: 397839823}
-  - {fileID: 97766976}
   - {fileID: 2116641936}
   - {fileID: 1401501634}
+  - {fileID: 97766976}
   - {fileID: 1797544544}

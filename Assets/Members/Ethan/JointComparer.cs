@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class JointComparer : MonoBehaviour
 {
@@ -20,6 +21,19 @@ public class JointComparer : MonoBehaviour
     [Tooltip("Pairs of joints to compare each frame.")]
     public List<JointPair> pairs = new List<JointPair>();
 
+    [Header("Total Distance Trigger")]
+    [Tooltip("Fires when this threshold >= sum of all pair position deltas.")]
+    public float totalDistanceThreshold = 0.1f;
+
+    [Tooltip("Assignable reaction, fires once until reset.")]
+    public UnityEvent onTotalDistanceTrigger;
+
+    [Tooltip("Runtime: sum of all pair position deltas.")]
+    public float totalDistance;
+
+    [Tooltip("True after firing; blocks re-trigger until ResetTrigger().")]
+    public bool triggerDisabled = false;
+
     [Header("Options")]
     [Tooltip("Compare in world space; otherwise local space.")]
     public bool useWorldSpace = true;
@@ -35,8 +49,19 @@ public class JointComparer : MonoBehaviour
 
     void Update()
     {
+        totalDistance = 0f;
         for (int i = 0; i < pairs.Count; i++)
+        {
             Evaluate(pairs[i]);
+            totalDistance += pairs[i].positionDelta;
+        }
+
+        if (!triggerDisabled && totalDistanceThreshold >= totalDistance)
+        {
+            triggerDisabled = true;
+            onTotalDistanceTrigger?.Invoke();
+            Invoke(nameof(ResetTrigger), 2f);
+        }
     }
 
     void Evaluate(JointPair p)
@@ -83,6 +108,12 @@ public class JointComparer : MonoBehaviour
         e.y = Mathf.DeltaAngle(0f, e.y);
         e.z = Mathf.DeltaAngle(0f, e.z);
         return e;
+    }
+
+    /// <summary>Re-arms trigger. Call externally.</summary>
+    public void ResetTrigger()
+    {
+        triggerDisabled = false;
     }
 
     // Query helpers
