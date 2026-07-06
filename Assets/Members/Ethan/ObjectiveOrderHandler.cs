@@ -23,20 +23,20 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void StartWaypoint()
     {
-        WaypointHandler.SpawnWaypoint();
-    }
-
-    public void WaypointHit()
-    {
-        WaypointRuns--;
         if (WaypointRuns > 0)
         {
-            StartWaypoint();
+            WaypointHandler.SpawnWaypoint();
         }
         else
         {
             FirstPose();
         }
+    }
+
+    public void WaypointHit()
+    {
+        WaypointRuns--;
+        StartWaypoint();
     }
 
     void FirstPose()
@@ -47,20 +47,20 @@ public class ObjectiveOrderHandler : MonoBehaviour
 
     void StartPose()
     {
-        PoseProvider.Trigger();
-    }
-
-    public void PoseHit()
-    {
-        PoseRuns--;
         if (PoseRuns > 0)
         {
-            StartPose();
+            PoseProvider.Trigger();
         }
         else
         {
             FirstPickPlace();
         }
+    }
+
+    public void PoseHit()
+    {
+        PoseRuns--;
+        StartPose();
     }
 
     void FirstPickPlace()
