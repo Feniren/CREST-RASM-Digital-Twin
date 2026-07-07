@@ -26,7 +26,6 @@
   <Project Path="PPv2URPConverters.csproj" />
   <Project Path="Unity.XR.CoreUtils.csproj" />
   <Project Path="Unity.Searcher.Editor.csproj" />
-  <Project Path="Unity.Robotics.UrdfImporter.Editor.csproj" />
   <Project Path="UnityEditor.TestRunner.csproj" />
   <Project Path="Unity.VisualScripting.Core.csproj" />
   <Project Path="Unity.RenderPipelines.Universal.Runtime.csproj" />
@@ -37,7 +36,6 @@
   <Project Path="Unity.VisualScripting.Flow.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.Splines.Editor.csproj" />
-  <Project Path="Unity.Robotics.UrdfImporter.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
   <Project Path="Unity.TextMeshPro.csproj" />
   <Project Path="Unity.TextMeshPro.Editor.csproj" />
@@ -70,8 +68,6 @@
   <Project Path="UnityEditor.XR.LegacyInputHelpers.csproj" />
   <Project Path="Unity.ShaderGraph.Utilities.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
-  <Project Path="Unity.EditorCoroutines.Editor.csproj" />
-  <Project Path="vhacd.csproj" />
   <Project Path="Unity.XR.OpenXR.Features.MetaQuestSupport.csproj" />
   <Project Path="Unity.CollabProxy.Editor.csproj" />
   <Project Path="Unity.RenderPipeline.Universal.ShaderLibrary.csproj" />

@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
+  m_Name: M2_Lesson
+  m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
+  Module_Id: M2
+  Scene_Name: Module2_Startup
+  Display_Name: "M2 \u2014 System Startup & Program Execution"
+  Steps:
+  - Step_Id: intro_cell
+    Kind: 0
+    Prompt_Text: "System Startup \u2014 bring the whole cell up from cold.\n\nTwo
+      stations: the ARM station (PC + black-box controller, running SCORBASE) and
+      the MILL station (ProMill 8000, running CNCBase). The robot arm itself isn't
+      shown here \u2014 its state is described as you go.\n\nThree phases: (1) power
+      on every system, (2) launch SCORBASE and CNCBase, (3) bring each machine Active,
+      Home it, then verify. Follow the highlighted control at each step.\n\nPress
+      Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: arm_pc_on
+    Kind: 4
+    Prompt_Text: "Phase 1 \u2014 power on everything. Each station has a dedicated
+      PC; boot it first.\n\n<b>Do:</b> Arm-station PC power button  (the highlighted
+      control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: arm_pc_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: arm_controller_on
+    Kind: 4
+    Prompt_Text: "The black box is the robot controller that drives the arm \u2014
+      SCORBASE talks to it. Power it on.\n\n<b>Do:</b> Robot controller power (the
+      black box)  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: arm_controller_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: mill_pc_on
+    Kind: 4
+    Prompt_Text: 'The mill station needs its own PC running too.
+
+
+      <b>Do:</b>
+      Mill-station PC power button  (the highlighted control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: mill_pc_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: mill_power_on
+    Kind: 4
+    Prompt_Text: 'Switch on the ProMill 8000''s main hardware power. Every system
+      is now powered.
+
+
+      <b>Do:</b> ProMill 8000 main power  (the highlighted
+      control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: mill_power_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: scorbase_launch
+    Kind: 4
+    Prompt_Text: "Phase 2 \u2014 launch the control software. SCORBASE runs the arm
+      station.\n\n<b>Do:</b> Launch SCORBASE  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: scorbase_launch
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: cncbase_launch
+    Kind: 4
+    Prompt_Text: 'CNCBase runs the mill station. Both control programs are now up.
+
+
+      <b>Do:</b>
+      Launch CNCBase  (the highlighted control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: cncbase_launch
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: scorbase_online
+    Kind: 4
+    Prompt_Text: "Phase 3 \u2014 bring each machine active, home it, and verify.
+      In SCORBASE, Control On: only Active sends commands to real hardware.\n\n<b>Do:</b>
+      Control On (go Active)  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: scorbase_online
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: scorbase_home
+    Kind: 4
+    Prompt_Text: "Search Home drives each axis to its home switch, setting the encoder
+      reference. Nothing is trustworthy before homing.\n\n<b>Do:</b> Search Home
+      \u2014 All Axes  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: scorbase_home
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: scorbase_standalone
+    Kind: 4
+    Prompt_Text: 'Standalone = the station runs under its own software. CIM-managed
+      (cell-wide) control is taught in Module 5.
+
+
+      <b>Do:</b> Mode: Standalone 
+      (the highlighted control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: scorbase_standalone
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: verify_arm
+    Kind: 4
+    Prompt_Text: "Jog one axis to prove the arm responds \u2014 Active, homed and
+      Standalone.\n\n<b>Do:</b> Test Move (A1)  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: verify_arm
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: cncbase_online
+    Kind: 4
+    Prompt_Text: 'Now the mill. In CNCBase, connect Active (the real machine), not
+      Simulation.
+
+
+      <b>Do:</b> Connect: Active  (the highlighted control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: cncbase_online
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: cncbase_home
+    Kind: 4
+    Prompt_Text: 'Machine Home sets the mill''s factory reference; all positioning
+      is relative to it.
+
+
+      <b>Do:</b> Machine Home  (the highlighted control).'
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: cncbase_home
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: run_start_fms
+    Kind: 4
+    Prompt_Text: "Run start_fms.nc \u2014 it puts the mill in a wait-loop in local
+      control, ready for cell commands.\n\n<b>Do:</b> start_fms.nc  (the highlighted
+      control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: run_start_fms
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: verify_mill
+    Kind: 4
+    Prompt_Text: "Confirm the status reads Running: start_fms.nc \u2014 the mill
+      is in local control.\n\n<b>Do:</b> Confirm: Running  (the highlighted control)."
+    Practice_Prompt_Text: 'Practice: bring the cell up from cold, in the correct
+      order.'
+    Target_Marker_Id: verify_mill
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: guided_done
+    Kind: 0
+    Prompt_Text: "All systems active.\n\nThe arm is Active, Homed and Standalone;
+      the mill is Homed and running start_fms.nc in local control. The arm has loaded
+      the first workpiece onto the vise.\n\nNext: the practice run \u2014 no highlights.
+      Perform the full cold-start in the correct order. Out-of-order actions are
+      logged as errors.\n\nPress Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  Quiz_Pass_Threshold: 14
+  Practice_Shuffles_Quiz: 0

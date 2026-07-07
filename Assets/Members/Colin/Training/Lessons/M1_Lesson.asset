@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
+  m_Name: M1_Lesson
+  m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
+  Module_Id: M1
+  Scene_Name: Module1_Overview
+  Display_Name: "M1 \u2014 CNC Milling: What & Why"
+  Steps:
+  - Step_Id: intro_role
+    Kind: 0
+    Prompt_Text: "Welcome to the ProMill 8000 \u2014 a 3-axis CNC milling machine,
+      and the machining station of the Intelitek SmartCIM 4.0 cell. Conveyor pallets
+      deliver raw stock and the robot arm loads it into the mill for cutting.\n\nPress
+      Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: intro_operations
+    Kind: 0
+    Prompt_Text: "A mill cuts by feeding a rotating tool into the workpiece. The
+      five core operations are:\n\nFACE \u2014 flatten the top surface\nPOCKET \u2014
+      hollow out a recess\nCONTOUR \u2014 cut an outside profile\nDRILL \u2014 plunge
+      holes\nSLOT \u2014 cut channels\n\nPress Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: intro_axes
+    Kind: 0
+    Prompt_Text: "The mill moves in three axes. Use the right-hand rule: thumb =
+      +X (table left\u2013right), index = +Y (table fore\u2013aft), middle = +Z (spindle
+      up\u2013down).\n\nPress Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: spindle_motor
+    Kind: 1
+    Prompt_Text: "This is the SPINDLE MOTOR \u2014 the motor on top of the head \u2014
+      it spins the spindle and cutting tool.\n\nSelect the highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Spindle Motor'
+    Target_Marker_Id: spindle_motor
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: spindle_head
+    Kind: 1
+    Prompt_Text: "This is the SPINDLE HEAD \u2014 it holds the rotating spindle and
+      cutting tool, and moves up and down in Z.\n\nSelect the highlighted part to
+      continue."
+    Practice_Prompt_Text: 'Select the: Spindle Head'
+    Target_Marker_Id: spindle_head
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: vice
+    Kind: 1
+    Prompt_Text: "This is the VISE \u2014 it clamps the workpiece to the table during
+      cutting.\n\nSelect the highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Vise'
+    Target_Marker_Id: vice
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: guard_door
+    Kind: 1
+    Prompt_Text: "This is the GUARD DOOR \u2014 the perspex shield that must be closed
+      while the spindle is cutting \u2014 opened with the Door Open button in CNCBase.\n\nSelect
+      the highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Guard Door'
+    Target_Marker_Id: guard_door
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: emergency_stop
+    Kind: 1
+    Prompt_Text: "This is the EMERGENCY STOP BUTTON \u2014 the red button on the
+      front \u2014 press it to immediately stop the machine in an emergency.\n\nSelect
+      the highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Emergency Stop Button'
+    Target_Marker_Id: emergency_stop
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: power_on
+    Kind: 1
+    Prompt_Text: "This is the POWER SWITCH \u2014 energizes the machine before any
+      operation \u2014 always the first control you use at start-up.\n\nSelect the
+      highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Power Switch'
+    Target_Marker_Id: power_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: door_unlock
+    Kind: 1
+    Prompt_Text: "This is the DOOR UNLOCK \u2014 releases the guard-door interlock
+      so the doors can slide open for loading and unloading.\n\nSelect the highlighted
+      part to continue."
+    Practice_Prompt_Text: 'Select the: Door Unlock'
+    Target_Marker_Id: door_unlock
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: electronics_cabinet
+    Kind: 1
+    Prompt_Text: "This is the ELECTRONICS CABINET \u2014 the lower cabinet housing
+      the machine's drive and control electronics \u2014 opened with the electrical
+      panel keys.\n\nSelect the highlighted part to continue."
+    Practice_Prompt_Text: 'Select the: Electronics Cabinet'
+    Target_Marker_Id: electronics_cabinet
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: intro_accessories
+    Kind: 0
+    Prompt_Text: "Not shown in this model: the machine also has a right-side connection
+      panel (power, Ethernet, coolant, jog pendant ports) and optional accessories
+      \u2014 a handheld jog pendant and a monitor stand.\n\nPress Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: axis_demo
+    Kind: 2
+    Prompt_Text: "Axis demo \u2014 watch the machine move:\nX: table travels 280
+      mm left\u2013right\nY: table travels 152 mm fore\u2013aft\nZ: spindle travels
+      270 mm up\u2013down"
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: milling_demo
+    Kind: 3
+    Prompt_Text: "Milling demo \u2014 the guard doors open, the spindle plunges into
+      the perspex block, and the table cuts a square pocket: plunge \u2192 square
+      pass \u2192 retract."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: guided_done
+    Kind: 0
+    Prompt_Text: "Guided tour complete!\n\nNext: the practice quiz. Labels and highlights
+      are now off \u2014 identify each component from its name.\n\nYou need at least
+      4 of 6 to pass. Press Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  Quiz_Pass_Threshold: 4
+  Practice_Shuffles_Quiz: 1

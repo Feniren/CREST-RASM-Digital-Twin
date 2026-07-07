@@ -991,6 +991,17 @@
                 },
                 {
                     "name": "",
+                    "id": "648d3125-49a0-4a02-a115-0efad2cca4cc",
+                    "path": "<XRController>{LeftHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "73325635-d9e5-481a-9279-ae7be089422d",
                     "path": "<MetaAimHand>{LeftHand}/indexPressed",
                     "interactions": "",
@@ -1048,6 +1059,17 @@
                     "name": "",
                     "id": "49a23327-a116-48c0-8af9-0d2c50c15a88",
                     "path": "<XRController>{LeftHand}/{Grip}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Value",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aac13c72-7f22-46ad-9175-472b96b2577d",
+                    "path": "<XRController>{LeftHand}/{Trigger}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -2084,6 +2106,17 @@
                 },
                 {
                     "name": "",
+                    "id": "84b94b7f-8bd2-40a9-b613-b9223201c28d",
+                    "path": "<XRController>{RightHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "1d5b47ea-64e3-4b99-b620-de6c360908be",
                     "path": "<MetaAimHand>{RightHand}/indexPressed",
                     "interactions": "",
@@ -2141,6 +2174,17 @@
                     "name": "",
                     "id": "dd433817-216c-46b9-8dd3-f3a4ea1767b9",
                     "path": "<XRController>{RightHand}/{Grip}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Value",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3e0eccb9-b47b-4df9-86e9-e8e8edbf30af",
+                    "path": "<XRController>{RightHand}/{Trigger}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
