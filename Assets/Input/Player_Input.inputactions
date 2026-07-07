@@ -37,7 +37,7 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "110d0845-9e86-438d-b9a5-c4626e21ef9c",
-                    "expectedControlType": "",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -257,59 +257,15 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "2D Vector",
-                    "id": "a4827286-ccbd-47ab-8de2-a2765b6e3cff",
-                    "path": "2DVector",
+                    "name": "",
+                    "id": "43d608e3-6ea6-4c85-b21a-e993f1d01240",
+                    "path": "<XRController>{LeftHand}/{Primary2DAxis}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Move",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "805e6f1b-df47-4a65-9ed1-ff09d4f25fc6",
-                    "path": "<QuestTouchPlusController>{LeftHand}/thumbstick/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "12b7f805-a377-4866-9907-b519304b73f7",
-                    "path": "<QuestTouchPlusController>{LeftHand}/thumbstick/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "9ccffd30-444c-45e0-b8d7-bd43727a931a",
-                    "path": "<QuestTouchPlusController>{LeftHand}/thumbstick/left",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "093ac5ce-9580-4a85-98d7-155021425d49",
-                    "path": "<QuestTouchPlusController>{LeftHand}/thumbstick/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",

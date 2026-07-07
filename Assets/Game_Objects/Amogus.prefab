@@ -1743,7 +1743,7 @@ GameObject:
   - component: {fileID: 1554776646900761460}
   - component: {fileID: 2850182199934974482}
   m_Layer: 6
-  m_Name: Torso
+  m_Name: Amogus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1980,6 +1980,7 @@ MonoBehaviour:
   - {fileID: 8674221161044886542, guid: 1d47530fa054bb742a8acaddf9e024d0, type: 3}
   - {fileID: 8725468208494372366, guid: b20e56e007b223146a602875a7148108, type: 3}
   - {fileID: 8480719488249995161, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
+  - {fileID: 7328209182356697330, guid: 20dcee24e7a4d38468ad5b39db1235d0, type: 3}
 --- !u!114 &1554776646900761460
 MonoBehaviour:
   m_ObjectHideFlags: 0
