@@ -2762,7 +2762,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Use the controls by pointing your hand laser at them and pressing the
+  m_text: 'Use the controls by pointing your controller at them and pressing the
     trigger. Play around with the arm for a bit.
 
 
