@@ -28,6 +28,7 @@ Reset Position - X
 
 ### VR
 Movement - Left Thumbstick
+
 Look - Headset Tracking / Right Thumbstick X
     Can rotate player with Right Thumbstick X axis
 
