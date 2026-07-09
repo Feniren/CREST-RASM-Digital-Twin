@@ -22,10 +22,8 @@ public class Item_Conveyor_Belt : Item_Parent{
     public override void Start(){
         base.Start();
 
-        GameObject[] SlottedTables = GameObject.FindGameObjectsWithTag("Slotted Table");
-
-        for (int i = 0; i < SlottedTables.Length; i++){
-            SlottedTableList.Add(SlottedTables[i]);
+        foreach (Item_Slotted_Table table in GetComponentsInChildren<Item_Slotted_Table>(true)){
+            SlottedTableList.Add(table.gameObject);
         }
     }
 

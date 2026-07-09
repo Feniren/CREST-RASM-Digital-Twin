@@ -59,7 +59,9 @@ public class ASRSArmTester : MonoBehaviour
         for (int i = 0; i < slotsContainer.childCount; i++)
             slotTransforms[i] = slotsContainer.GetChild(i);
 
-        Debug.Log($"[ASRS] Loaded {slotTransforms.Length} slots from '{slotsContainer.name}'.");
+        currentSlotIndex = centerSlotIndex;
+
+        Debug.Log($"[ASRS] Loaded {slotTransforms.Length} slots from '{slotsContainer.name}'. Tracking starts at index {currentSlotIndex}.");
     }
 
     private void Update()
