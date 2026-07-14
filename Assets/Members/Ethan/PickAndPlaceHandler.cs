@@ -19,7 +19,8 @@ public class PickAndPlaceHandler : MonoBehaviour
     public bool triggerOnce = true;
 
     GameObject block;
-    bool triggered;
+	private Rigidbody blockRb;
+	bool triggered;
 
     void Start()
     {
@@ -39,7 +40,8 @@ public class PickAndPlaceHandler : MonoBehaviour
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
-            }
+				blockRb = rb;
+			}
         }
     }
 
@@ -54,8 +56,8 @@ public class PickAndPlaceHandler : MonoBehaviour
         if (!triggered || !triggerOnce)
         {
             Bounds b = new Bounds(objectiveCenter, objectiveSize);
-            if (b.Contains(block.transform.position))
-            {
+			if (b.Contains(block.transform.position) && !blockRb.isKinematic)
+			{
                 triggered = true;
                 onObjectiveReached.Invoke();
             }
