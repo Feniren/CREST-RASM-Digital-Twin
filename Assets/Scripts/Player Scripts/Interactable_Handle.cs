@@ -3,6 +3,12 @@ using UnityEngine;
 public class Interactable_Handle : MonoBehaviour, Interact_Interface{
 	public Entity_Player PlayerReference;
 
+	private BoxCollider BoxColliderReference;
+	private Rigidbody RigidBodyReference;
+
+	private float DampingForce = 80.0f;
+	private float PullForce = 100.0f;
+
 	bool Grabbed;
 	Vector3 Velocity;
 
@@ -10,14 +16,22 @@ public class Interactable_Handle : MonoBehaviour, Interact_Interface{
 	}
 
 	public void Start(){
+		BoxColliderReference = GetComponent<BoxCollider>();
+		RigidBodyReference = GetComponent<Rigidbody>();
 	}
 
 	private void FixedUpdate(){
 		if (Grabbed){
-			Velocity = PlayerReference.ActiveHand.gameObject.transform.position - transform.position;
+			Vector3 HandlePosition = transform.TransformPoint(BoxColliderReference.center);
+			Vector3 Distance = (PlayerReference.ActiveHand.gameObject.transform.position - HandlePosition);
 
-			GetComponent<Rigidbody>().AddForceAtPosition(Velocity, GetComponent<BoxCollider>().center, ForceMode.Impulse);
-			//GetComponent<Rigidbody>().AddForce(Velocity, ForceMode.Impulse);
+			if (Distance.magnitude < 0.01f){
+				Distance = Vector3.zero;
+			}
+
+			Velocity = ((Distance * PullForce) - (RigidBodyReference.GetPointVelocity(HandlePosition) * DampingForce));
+
+			RigidBodyReference.AddForceAtPosition(Velocity, HandlePosition, ForceMode.Force);
 		}
 	}
 

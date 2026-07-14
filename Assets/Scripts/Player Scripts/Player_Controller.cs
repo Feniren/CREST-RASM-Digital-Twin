@@ -67,7 +67,9 @@ public class Player_Controller : Controller{
     }
 
     private void OnDisable(){
-        //InputSystem.Disable();
+		InputSystem.Disable();
+
+		PlayerInput.Disable();
     }
 
     private void FixedUpdate(){
@@ -236,7 +238,7 @@ public class Player_Controller : Controller{
     }
 
     public void ResetPosition(InputAction.CallbackContext Context){
-        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){

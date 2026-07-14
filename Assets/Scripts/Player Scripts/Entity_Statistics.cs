@@ -44,7 +44,7 @@ public class Entity_Statistics{
         HealthNormalized = (HealthCurrent / HealthMax);
 
         if (HealthCurrent <= 0.0f){
-            EntityReference.gameObject.transform.position = EntityReference.RespawnPoint.transform.position;
+            EntityReference.gameObject.transform.position = EntityReference.SpawnPoint.transform.position;
 
             HealthCurrent = HealthMax;
 
