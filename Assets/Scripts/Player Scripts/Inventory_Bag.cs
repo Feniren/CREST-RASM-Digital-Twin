@@ -38,9 +38,9 @@ public class Inventory_Bag : MonoBehaviour, Interact_Interface{
 		Debug.Log(OverlappedObjects.Length);
 
 		for (int Index = 0; Index < OverlappedObjects.Length; Index++){
-			if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>()){
-				if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>().Pickup){
-					Item_Parent Item = OverlappedObjects[Index].GetComponent<Item_Parent>();
+			if (OverlappedObjects[Index].gameObject.GetComponentInParent<Item_Parent>()){
+				if (OverlappedObjects[Index].gameObject.GetComponentInParent<Item_Parent>().Pickup){
+					Item_Parent Item = OverlappedObjects[Index].GetComponentInParent<Item_Parent>();
 
 					Debug.Log("Item exists. Adding to inventory");
 

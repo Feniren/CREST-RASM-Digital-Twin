@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "com.unity.ai.navigation": "2.0.10",
+    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main",
+    "com.unity.cloud.gltfast": "6.19.0",
     "com.unity.collab-proxy": "2.11.3",
     "com.unity.entities.graphics": "1.4.20",
     "com.unity.ide.rider": "3.0.39",
@@ -11,6 +12,7 @@
     "com.unity.multiplayer.playmode": "2.0.2",
     "com.unity.netcode": "1.13.2",
     "com.unity.render-pipelines.universal": "17.3.0",
+    "com.unity.robotics.urdf-importer": "https://github.com/Unity-Technologies/URDF-Importer.git?path=/com.unity.robotics.urdf-importer#v0.5.2",
     "com.unity.services.multiplayer": "2.2.3",
     "com.unity.services.vivox": "16.11.0",
     "com.unity.splines": "2.8.3",

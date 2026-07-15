@@ -67,7 +67,9 @@ public class Player_Controller : Controller{
     }
 
     private void OnDisable(){
-        //InputSystem.Disable();
+		InputSystem.Disable();
+
+		PlayerInput.Disable();
     }
 
     private void FixedUpdate(){
@@ -91,8 +93,8 @@ public class Player_Controller : Controller{
         RaycastHit Hit;
 
         if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-            if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
-                Hit.collider.gameObject.GetComponent<Item_Parent>().Interact(PlayerReference);
+            if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
+                Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
         }
     }   
@@ -101,8 +103,8 @@ public class Player_Controller : Controller{
         RaycastHit Hit;
 
         if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-			if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
-                Hit.collider.gameObject.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
+			if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
+                Hit.collider.gameObject.GetComponentInParent<Item_Parent>().AlternateInteract(PlayerReference);
 			}
         }
     }
@@ -175,7 +177,7 @@ public class Player_Controller : Controller{
 			OverlappedObjects = Physics.OverlapSphere(ActiveHand.transform.position, (ActiveHand.GetComponentInChildren<SphereCollider>().radius * 0.1f));
 
 			for (int Index = 0; Index < OverlappedObjects.Length; Index++){
-				if (OverlappedObjects[Index].gameObject.GetComponent<Interact_Interface>() != null){
+				if (OverlappedObjects[Index].gameObject.GetComponentInParent<Interact_Interface>() != null){
 					ItemList.Add(OverlappedObjects[Index].gameObject);
 				}
 			}
@@ -236,7 +238,7 @@ public class Player_Controller : Controller{
     }
 
     public void ResetPosition(InputAction.CallbackContext Context){
-        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){

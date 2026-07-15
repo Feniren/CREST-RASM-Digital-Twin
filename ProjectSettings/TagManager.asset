@@ -4,6 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - robot
   - Slotted Table
   layers:
   - Default
@@ -23,7 +24,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Ghost
   - 
   - 
   - 

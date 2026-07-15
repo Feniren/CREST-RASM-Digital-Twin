@@ -12,6 +12,13 @@ public class Item_ASRS : Item_Parent
     public Item_Conveyor_Belt conveyor;
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
+public class Item_ASRS : Item_Parent{
+	// public List<Machine_Job> Jobs = new List<Machine_Job>();
+	public RACK_TASK task;
+	public Item_Slotted_Table item = null;
+	public Item_Epoxy_Block material = null;
+	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
+	public List<GameObject> BlockList = new List<GameObject>();
 
     private readonly Dictionary<int, Vector3> anchorPositions = new Dictionary<int, Vector3>();
     private readonly Dictionary<int, Quaternion> anchorRotations = new Dictionary<int, Quaternion>();
