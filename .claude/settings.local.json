@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"&226753598$\\\\|m_GameObject: {fileID: 226753598}\" \"Assets/Scenes/ASRSTraining.unity\")",
+      "Bash(grep -n \"^--- .*&749321896$\" -A 20 \"Assets/Scenes/ASRSTraining.unity\")"
+    ]
+  }
+}

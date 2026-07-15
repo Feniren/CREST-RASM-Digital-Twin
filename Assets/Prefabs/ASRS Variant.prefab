@@ -1037,8 +1037,6 @@ Transform:
   - {fileID: 7931485139275133355}
   - {fileID: 6134441377570957046}
   - {fileID: 1163050074293916610}
-  - {fileID: 3713476828477767483}
-  - {fileID: 8631210671473961373}
   - {fileID: 4183152176671442940}
   - {fileID: 8134488072067852483}
   - {fileID: 124255650205013303}
@@ -1091,8 +1089,6 @@ Transform:
   - {fileID: 2451806764534800547}
   - {fileID: 9045842219403996064}
   - {fileID: 6973695509283853906}
-  - {fileID: 7072450112138387921}
-  - {fileID: 2329062590518592401}
   - {fileID: 8635072479017516478}
   - {fileID: 5680261108215361384}
   - {fileID: 6722124130641711455}
@@ -1314,6 +1310,8 @@ Transform:
   - {fileID: 7399437075188273717}
   - {fileID: 3303916564663609188}
   - {fileID: 2681534559492847593}
+  - {fileID: 5765142849948458811}
+  - {fileID: 8677233671178848318}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &4386695802520010789
@@ -5894,7 +5892,7 @@ GameObject:
   - component: {fileID: 4902246433639865781}
   - component: {fileID: 427660738149308083}
   m_Layer: 0
-  m_Name: 324908_Hand180
+  m_Name: RightDoorHandle36
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5908,12 +5906,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 802332682468997530}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 727172132679966300}
+  m_Father: {fileID: 8677233671178848318}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4902246433639865781
 MeshFilter:
@@ -7874,7 +7872,7 @@ GameObject:
   - component: {fileID: 5385391764093750915}
   - component: {fileID: 1391703116291820434}
   m_Layer: 0
-  m_Name: \X2\05D905D305D905EA\X0  usemtl color_ffc8e3
+  m_Name: LeftDoorHandle36u
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7888,12 +7886,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032491984457913370}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 727172132679966300}
+  m_Father: {fileID: 5765142849948458811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5385391764093750915
 MeshFilter:
@@ -36609,6 +36607,39 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5210180712353047567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8677233671178848318}
+  m_Layer: 0
+  m_Name: DoorHandle36
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8677233671178848318
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5210180712353047567}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3713476828477767483}
+  - {fileID: 8631210671473961373}
+  m_Father: {fileID: 727172132679966300}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5210397987091267140
 GameObject:
   m_ObjectHideFlags: 0
@@ -40041,7 +40072,7 @@ GameObject:
   - component: {fileID: 3995435776346391566}
   - component: {fileID: 2520156398599846026}
   m_Layer: 0
-  m_Name: 324908_Hand181
+  m_Name: LeftDoorHandle36
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40055,12 +40086,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5643894986780672707}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 727172132679966300}
+  m_Father: {fileID: 8677233671178848318}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3995435776346391566
 MeshFilter:
@@ -45577,7 +45608,7 @@ GameObject:
   - component: {fileID: 7318913132472110101}
   - component: {fileID: 3651653935516818354}
   m_Layer: 0
-  m_Name: \X2\05D905D305D905EA\X0\001
+  m_Name: RightDoorHandle36u
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45591,12 +45622,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6340767401086256791}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 727172132679966300}
+  m_Father: {fileID: 5765142849948458811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7318913132472110101
 MeshFilter:
@@ -56739,6 +56770,39 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8019550548713111727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5765142849948458811}
+  m_Layer: 0
+  m_Name: DoorHandle36u
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5765142849948458811
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8019550548713111727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7072450112138387921}
+  - {fileID: 2329062590518592401}
+  m_Father: {fileID: 727172132679966300}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8033742913761077552
 GameObject:
   m_ObjectHideFlags: 0
