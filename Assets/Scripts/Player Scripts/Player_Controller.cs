@@ -10,6 +10,7 @@ public class Player_Controller : Controller{
     public Entity_Player PlayerReference;
     public Rigidbody RigidBodyReference;
 
+	public GameObject Bag;
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
 	public GameObject ItemInstance = null;
@@ -39,6 +40,7 @@ public class Player_Controller : Controller{
 		PlayerInput.Player.Move.performed += Move;
         PlayerInput.Player.Move.canceled += StopMoving;
         PlayerInput.Player.ResetPosition.performed += ResetPosition;
+		PlayerInput.Player.ToggleBag.performed += ToggleBag;
         //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
@@ -49,7 +51,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.XRRightGrab.canceled += GrabEnd;
         PlayerInput.Player.XRLeftGrab.canceled += GrabEnd;
 
-        FirstPersonCameraLocation = new Vector3(0.0f, 0.433f, 0.328f);
+        FirstPersonCameraLocation = new Vector3(0.0f, 1.4968f, 0.328f);
         IsFirstPerson = true;
         ThirdPersonCameraLocation = new Vector3(0.0f, 1.14f, -2.161f);
     }
@@ -67,7 +69,9 @@ public class Player_Controller : Controller{
     }
 
     private void OnDisable(){
-        //InputSystem.Disable();
+		InputSystem.Disable();
+
+		PlayerInput.Disable();
     }
 
     private void FixedUpdate(){
@@ -82,15 +86,17 @@ public class Player_Controller : Controller{
 	}
 
 	private void LateUpdate(){
-		gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
+		if (PlayerReference.PlayerSettings.XREnabled){
+			gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
+		}
 	}
 
     public void Interact(InputAction.CallbackContext Context){
         RaycastHit Hit;
 
         if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-            if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
-                Hit.collider.gameObject.GetComponent<Item_Parent>().Interact(PlayerReference);
+            if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
+                Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
         }
     }   
@@ -99,9 +105,9 @@ public class Player_Controller : Controller{
         RaycastHit Hit;
 
         if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-            if (Hit.collider.gameObject.GetComponent<Item_Parent>()){
-                Hit.collider.gameObject.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
-            }
+			if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
+                Hit.collider.gameObject.GetComponentInParent<Item_Parent>().AlternateInteract(PlayerReference);
+			}
         }
     }
 
@@ -121,7 +127,7 @@ public class Player_Controller : Controller{
 			}
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f), Quaternion.identity);
+					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
 
 					PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
 
@@ -173,7 +179,7 @@ public class Player_Controller : Controller{
 			OverlappedObjects = Physics.OverlapSphere(ActiveHand.transform.position, (ActiveHand.GetComponentInChildren<SphereCollider>().radius * 0.1f));
 
 			for (int Index = 0; Index < OverlappedObjects.Length; Index++){
-				if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>()){
+				if (OverlappedObjects[Index].gameObject.GetComponentInParent<Interact_Interface>() != null){
 					ItemList.Add(OverlappedObjects[Index].gameObject);
 				}
 			}
@@ -223,7 +229,9 @@ public class Player_Controller : Controller{
 			}
 		}
 		else if (Context.canceled){
-			ControlRotation = Vector2.zero;
+			if (PlayerReference.PlayerSettings.XREnabled){
+				ControlRotation = Vector2.zero;
+			}
 		}
 	}
 
@@ -232,7 +240,7 @@ public class Player_Controller : Controller{
     }
 
     public void ResetPosition(InputAction.CallbackContext Context){
-        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){
@@ -297,13 +305,26 @@ public class Player_Controller : Controller{
 				ThrowForce = (ElapsedThrowTime * 10.0f);
 			}
 
-			ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
+			if (ItemInstance){
+				ItemInstance.GetComponent<Rigidbody>().isKinematic = false;
 
-			ItemInstance.transform.SetParent(null, true);
+				ItemInstance.transform.SetParent(null, true);
 
-			ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
+				ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
 
-			ItemInstance = null;
+				ItemInstance = null;
+			}
+		}
+	}
+
+	public void ToggleBag(InputAction.CallbackContext Context){
+		if (Context.performed){
+			if (!Bag.activeSelf){
+				Bag.SetActive(true);
+			}
+			else{
+				Bag.SetActive(false);
+			}
 		}
 	}
 }

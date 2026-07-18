@@ -59,7 +59,7 @@ QualitySettings:
     terrainFadeLength: 5
     terrainMaxTrees: 50
     excludedTargetPlatforms:
-    - Standalone
+    - Android
   - serializedVersion: 5
     name: PC
     pixelLightCount: 2

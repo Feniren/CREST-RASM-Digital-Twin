@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: d45cc93f6bad37a4287e4da9dffdc572, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e82563b8417c76042a9694efe1471f71, type: 2}
     - target: {fileID: 919132149155446097, guid: d45cc93f6bad37a4287e4da9dffdc572, type: 3}
       propertyPath: m_Name
       value: RobotStand

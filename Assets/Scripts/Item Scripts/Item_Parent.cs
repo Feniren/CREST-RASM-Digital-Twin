@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class Item_Parent : MonoBehaviour{
+public class Item_Parent : MonoBehaviour, Interact_Interface{
     public bool AutomaticActivation;
     public GameObject Owner;
     public bool Pickup;
     public int Quantity;
     public string Name;
+	
+	public UnityEvent OnGrabbed;
 
     [SerializeField]
     private string ID;

@@ -1,8 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Entity_XR_Hand : MonoBehaviour{
-	GameObject ItemReference;
+	public GameObject ItemReference;
+	public UnityEvent OnGrabEnd;
+
 	Vector3 PreviousPosition;
 	Vector3 Velocity;
 	
@@ -19,35 +22,59 @@ public class Entity_XR_Hand : MonoBehaviour{
 		PreviousPosition = transform.position;
 	}
 	
-	public void GrabStart(Entity_Player PlayerReference, GameObject Item){
-		ItemReference = Item;
+	public void GrabStart(Entity_Player PlayerReference, GameObject Interactable){
+		PlayerReference.ActiveHand = this;
 
-		if (ItemReference.GetComponent<Item_Parent>().Pickup){
-			ItemReference.transform.SetParent(gameObject.transform);
-
-			ItemReference.layer = 3;
-
-			ItemReference.GetComponent<Rigidbody>().isKinematic = true;
+		if (Interactable.GetComponent<Interactable_Handle>()){
+			Interactable.GetComponentInParent<Interact_Interface>().AlternateInteract(PlayerReference);
 
 			GetComponent<Collider>().enabled = false;
 		}
+		else if (Interactable.GetComponentInParent<Item_Parent>()){
+			ItemReference = Interactable.GetComponentInParent<Item_Parent>().gameObject;
+
+			if (ItemReference.GetComponent<Item_Parent>().Pickup){
+				HoldItem();
+			}
+			else{
+				ItemReference.GetComponent<Interact_Interface>().AlternateInteract(PlayerReference);
+			}
+
+			ItemReference.GetComponent<Item_Parent>().OnGrabbed.Invoke();
+		}
 		else{
-			ItemReference.GetComponent<Item_Parent>().AlternateInteract(PlayerReference);
+			Interactable.GetComponentInParent<Interact_Interface>().AlternateInteract(PlayerReference);
+
+			GetComponent<Collider>().enabled = false;
 		}
 	}
 
 	public void GrabEnd(){
 		if (!GetComponent<Collider>().enabled){
-			if (ItemReference.transform.parent == gameObject.transform){
-				ItemReference.transform.SetParent(null, true);
+			if (ItemReference){
+				if (ItemReference.transform.parent == gameObject.transform){
+					ItemReference.transform.SetParent(null, true);
 
-				ItemReference.layer = 1;
+					ItemReference.layer = 1;
 
-				ItemReference.GetComponent<Rigidbody>().isKinematic = false;
-				ItemReference.GetComponent<Rigidbody>().linearVelocity = Velocity;
+					ItemReference.GetComponent<Rigidbody>().isKinematic = false;
+					ItemReference.GetComponent<Rigidbody>().linearVelocity = Velocity;
 
-				GetComponent<Collider>().enabled = true;
+					GetComponent<Collider>().enabled = true;
+				}
 			}
+
+			OnGrabEnd.Invoke();
 		}
+	}
+
+	public void HoldItem(){
+		ItemReference.transform.SetParent(gameObject.transform);
+
+		ItemReference.layer = 3;
+
+		ItemReference.GetComponent<Rigidbody>().isKinematic = true;
+
+		GetComponent<Collider>().enabled = false;
 	}
 }

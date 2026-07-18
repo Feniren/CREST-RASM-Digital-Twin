@@ -9,6 +9,8 @@ public class Item_Slotted_Table : Item_Parent{
     public GameObject Text;
     public string TableID;
 
+    public RACK_TASK task;
+
     public Item_Slotted_Table(){
         Name = "Slotted Table";
         Pickup = false;
