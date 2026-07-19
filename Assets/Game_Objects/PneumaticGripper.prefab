@@ -52,6 +52,78 @@ PrefabInstance:
       propertyPath: m_Name
       value: PneumaticGripper
       objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3724510751962918759, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284675715651395691, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565464939317279218, guid: cb6ab952b20b8584bbc816cb6f92b48c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
