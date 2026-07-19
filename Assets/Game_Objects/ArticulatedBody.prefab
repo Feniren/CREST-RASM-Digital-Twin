@@ -1739,11 +1739,10 @@ GameObject:
   - component: {fileID: 7692987299606131942}
   - component: {fileID: 8535134499384648863}
   - component: {fileID: 4540730180810923974}
-  - component: {fileID: 5209255796292638208}
   - component: {fileID: 1554776646900761460}
   - component: {fileID: 2850182199934974482}
   m_Layer: 6
-  m_Name: Amogus
+  m_Name: ArticulatedBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1961,26 +1960,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InstancedInventory: []
---- !u!114 &5209255796292638208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4042314620155725101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b99b60ca04764814b98fc4d17738e5ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemLibrary:
-  - {fileID: 9190643362145016517, guid: 56bb2f7dd3185c54cb5dfa62967d5d61, type: 3}
-  - {fileID: 4431180394155176565, guid: 7437c89c63342b748a84ac3f26610ec3, type: 3}
-  - {fileID: 1897709982746590369, guid: 6a6449fa7346cc347bdf592411265192, type: 3}
-  - {fileID: 8674221161044886542, guid: 1d47530fa054bb742a8acaddf9e024d0, type: 3}
-  - {fileID: 8725468208494372366, guid: b20e56e007b223146a602875a7148108, type: 3}
-  - {fileID: 8480719488249995161, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
-  - {fileID: 7328209182356697330, guid: 20dcee24e7a4d38468ad5b39db1235d0, type: 3}
 --- !u!114 &1554776646900761460
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Data_Loader
   FileName: savegame.game
+  ItemLibraryReference: {fileID: 11400000, guid: b0040105f104e8041b5ee833181574e9, type: 2}

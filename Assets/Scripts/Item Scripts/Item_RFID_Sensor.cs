@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Item_RFID_Sensor : Item_Parent{
 	public Item_Conveyor_Belt ConveyorBeltReference;
+	public Item_CNC_Machine CNCMachineReference;
 
-	GameObject Previous;
+	public Item_Parent TargetItem;
 
 	public Item_RFID_Sensor(){
 		Name = "RFID Sensor";
@@ -15,14 +16,19 @@ public class Item_RFID_Sensor : Item_Parent{
 	public void OnTriggerEnter(Collider OverlappedCollider){
 		GameObject OverlappedObject = OverlappedCollider.gameObject;
 
-		if (OverlappedObject.GetComponent<Item_Plate>()){
-			if (OverlappedObject != Previous){
+		if (!CNCMachineReference.ProcessingItem){
+			if (OverlappedObject.GetComponent<Item_Plate>()){
 				if (OverlappedObject.GetComponent<Item_Plate>().Item){
-					Previous = OverlappedObject;
-
 					ConveyorBeltReference.ToggleMovement();
 
+					Destroy(OverlappedObject.GetComponent<Item_Plate>().Item);
+
 					Invoke(nameof(PauseConveyorBelt), 3.0f);
+
+					GameObject NewItem = Instantiate(FindFirstObjectByType<Data_Loader>().ItemLibraryReference.GetItemFromName("Epoxy Penholder"), Vector3.zero, Quaternion.identity);
+
+					OverlappedObject.GetComponent<Item_Plate>().Item = NewItem;
+					OverlappedObject.GetComponent<Item_Plate>().SetItem();
 				}
 			}
 		}

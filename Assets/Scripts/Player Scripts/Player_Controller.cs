@@ -116,8 +116,6 @@ public class Player_Controller : Controller{
 			if (ItemInstance){
 				Item_Parent Item = ItemInstance.GetComponent<Item_Parent>();
 
-				Debug.Log("Item exists. Adding to inventory");
-
 				PlayerReference.InventoryReference.AddToInventory(Item.Name, 1);
 
 				Destroy(ItemInstance);
@@ -127,7 +125,7 @@ public class Player_Controller : Controller{
 			}
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
+					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.GetItemFromName(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
 
 					PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
 
