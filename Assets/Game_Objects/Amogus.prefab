@@ -1783,7 +1783,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4042314620155725101}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1801,7 +1801,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e01324b768bab96488262de8fe4b280e, type: 2}
+  - {fileID: 2100000, guid: 068bacf70ba99c14e89bffb554ea5f5b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1898,6 +1898,7 @@ MonoBehaviour:
     m_Flags: 0
   PlayerReference: {fileID: 8535134499384648863}
   RigidBodyReference: {fileID: 2120160080895076850}
+  Bag: {fileID: 5783155463243069370}
   PhysicalProjectilePrefab: {fileID: 4610076021856063648, guid: 04fcbbcea4d9af54b967bb6a3086229d, type: 3}
   SpellProjectilePrefab: {fileID: 4610076021856063648, guid: 2b815ceebcd72274baa2e47328540deb, type: 3}
   ItemInstance: {fileID: 0}
@@ -1944,6 +1945,8 @@ MonoBehaviour:
     LookSpeedX: 0
     LookSpeedY: 0
     XREnabled: 0
+  DesktopEventSystem: {fileID: 0}
+  VREventSystem: {fileID: 0}
   ActiveHand: {fileID: 0}
 --- !u!114 &4540730180810923974
 MonoBehaviour:
@@ -2222,7 +2225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3065021691011289864
 Transform:
   m_ObjectHideFlags: 0
@@ -2232,8 +2235,8 @@ Transform:
   m_GameObject: {fileID: 5783155463243069370}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.091, z: -0.644}
-  m_LocalScale: {x: 0.8, y: 0.4, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0.273, z: -0.644}
+  m_LocalScale: {x: 0.4, y: 0.1, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2738678207354795693}

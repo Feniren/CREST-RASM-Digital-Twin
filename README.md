@@ -27,6 +27,9 @@ Throw Item - LeftClick
 Reset Position - X
     Spawns above platform
 
+Toggle Bag - B
+    Enables and disables the inventory bag
+
 ### VR
 Movement - Left Thumbstick
 
@@ -35,6 +38,9 @@ Look - Headset Tracking / Right Thumbstick X
 
 Jump - A
     Can jump twice
+
+Toggle Bag - B
+    Enables and disables the inventory bag
 
 Equip Item - Backpack
     Reach into red backpack behind player to equip item

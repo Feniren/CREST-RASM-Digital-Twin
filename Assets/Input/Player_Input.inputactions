@@ -97,6 +97,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ToggleBag",
+                    "type": "Button",
+                    "id": "17b5d276-74f8-4880-8f1e-28aa366f2c40",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "XRControllerLeftPosition",
                     "type": "Value",
                     "id": "65041af2-887e-4a7e-b0e7-558966591108",
@@ -627,6 +636,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "XRRightGrab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7deb4c2-cdf6-4873-bd59-df0cc6c9fdcf",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleBag",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e58cad6c-d528-486d-bc41-aa4033985de8",
+                    "path": "<XRController>{RightHand}/{SecondaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleBag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
