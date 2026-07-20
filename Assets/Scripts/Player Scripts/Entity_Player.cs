@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
+using UnityEngine.XR.Interaction.Toolkit.UI;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.InputSystem.XR;
 
 public class Entity_Player : Entity, Save_Data_Interface{
@@ -15,43 +17,27 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public Health_Bar HealthBarReference;
     public Item_Library ItemLibraryReference;
     public Player_Settings PlayerSettings;
+
+	public InputSystemUIInputModule DesktopEventSystem;
+	public XRUIInputModule VREventSystem;
 	
 	public Entity_XR_Hand ActiveHand;
 
-    List<XRDisplaySubsystem> XRList = new List<XRDisplaySubsystem>();
+    List<InputDevice> XRList = new List<InputDevice>();
 
     void Awake(){
         PlayerSettings = new Player_Settings();
 
         PlayerSettings.LookSpeedX = 0.5f;
         PlayerSettings.LookSpeedY = 0.5f;
+
+		GetComponent<Rigidbody>().useGravity = false;
     }
 
     public override void Start(){
         base.Start();
 
-        SubsystemManager.GetSubsystems<XRDisplaySubsystem>(XRList);
-
-        for (int i = 0; i < XRList.Count; i++){
-            if (XRList[i].running){
-                Debug.Log("XR Device running");
-
-                PlayerSettings.XREnabled = false;
-
-                CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
-                LeftHandAnchor.SetActive(true);
-                RightHandAnchor.SetActive(true);
-            }
-        }
-
-        PlayerSettings.XREnabled = false;
-
-        if (!PlayerSettings.XREnabled){
-            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
-
-			LeftHandAnchor.SetActive(false);
-			RightHandAnchor.SetActive(false);
-		}
+		StartCoroutine(LaunchXR(0.1f));
 
         ItemLibraryReference = GetComponent<Item_Library>();
 
@@ -59,15 +45,58 @@ public class Entity_Player : Entity, Save_Data_Interface{
         Cursor.visible = false;
 
         Instantiate(HUDReference);
-    }
+	}
 
     void Update(){
     }
+
+	private IEnumerator LaunchXR(float Timeout){
+		yield return new WaitForSeconds(Timeout);
+
+		VREventSystem = FindFirstObjectByType<XRUIInputModule>();
+		DesktopEventSystem = FindFirstObjectByType<InputSystemUIInputModule>();
+
+		if (XRSettings.isDeviceActive){
+			VREventSystem.enabled = true;
+			DesktopEventSystem.enabled = false;
+
+			PlayerSettings.XREnabled = true;
+
+			CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
+			LeftHandAnchor.SetActive(true);
+			RightHandAnchor.SetActive(true);
+
+			Debug.Log("XR Device running");
+		}
+		else{
+			XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+
+			VREventSystem.enabled = false;
+			DesktopEventSystem.enabled = true;
+
+			PlayerSettings.XREnabled = false;
+
+			LeftHandAnchor.SetActive(false);
+			RightHandAnchor.SetActive(false);
+
+			Debug.Log("XR Device not detected");
+		}
+
+		SpawnPoint = FindFirstObjectByType<Spawn_Point>().gameObject;
+
+		gameObject.transform.position = SpawnPoint.transform.position;
+
+		Debug.Log("New Scene loaded. Player position adjusted");
+
+		GetComponent<Rigidbody>().useGravity = true;
+	}
 
     public void LoadData(Save_Data SaveData){
         gameObject.transform.position = SaveData.PlayerLocation;
         gameObject.transform.rotation = SaveData.PlayerRotation;
         gameObject.transform.localScale = SaveData.PlayerScale;
+
+		Debug.Log("Save Data Loaded");
     }
 
     public void SaveData(ref Save_Data SaveData){
