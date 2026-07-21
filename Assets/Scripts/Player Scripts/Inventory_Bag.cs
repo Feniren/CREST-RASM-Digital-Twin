@@ -25,22 +25,27 @@ public class Inventory_Bag : MonoBehaviour, Interact_Interface{
 			PlayerReference.ActiveHand.ItemReference = ItemInstance;
 
 			PlayerReference.ActiveHand.HoldItem();
+
+			Debug.Log("Item found in bag. Holding");
+		}
+		else{
+			Debug.Log("No Items found in bag");
 		}
 	}
 
 	public void OnGrabEnd(){
 		Collider[] OverlappedObjects;
 
-		Debug.Log("OnGrab end invoked");
+		Debug.Log("OnGrab end invoked, trying to add to bag");
 
 		OverlappedObjects = Physics.OverlapBox(transform.position, new Vector3(0.5f, 2.0f, 0.5f));
 
-		Debug.Log(OverlappedObjects.Length);
+		Debug.Log("Bag overlapped with " + OverlappedObjects.Length + " objects");
 
 		for (int Index = 0; Index < OverlappedObjects.Length; Index++){
-			if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>()){
-				if (OverlappedObjects[Index].gameObject.GetComponent<Item_Parent>().Pickup){
-					Item_Parent Item = OverlappedObjects[Index].GetComponent<Item_Parent>();
+			if (OverlappedObjects[Index].gameObject.GetComponentInParent<Item_Parent>()){
+				if (OverlappedObjects[Index].gameObject.GetComponentInParent<Item_Parent>().Pickup){
+					Item_Parent Item = OverlappedObjects[Index].GetComponentInParent<Item_Parent>();
 
 					Debug.Log("Item exists. Adding to inventory");
 
