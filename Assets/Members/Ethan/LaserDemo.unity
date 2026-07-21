@@ -1591,7 +1591,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+  - {fileID: -1580535799172915004, guid: adf695e81179d454c8947d6457e29f94, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1653,8 +1653,8 @@ Transform:
   m_GameObject: {fileID: 699879436}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0013906064, y: -0.0030982082, z: -0.00010223152, w: -0.9999943}
-  m_LocalPosition: {x: 0.63, y: -0.018, z: 0.023999989}
-  m_LocalScale: {x: 0.09804998, y: 0.0735, z: 1.0337548}
+  m_LocalPosition: {x: 0.627, y: -0.018, z: -0.004999995}
+  m_LocalScale: {x: 0.09804998, y: 0.0735, z: 1.114}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 767929512}
@@ -1669,8 +1669,8 @@ PositionConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_TranslationAtRest: {x: 0.63, y: -0.018, z: 0.023999989}
-  m_TranslationOffset: {x: 0.009899616, y: 0.018000014, z: 0.5201004}
+  m_TranslationAtRest: {x: 0.627, y: -0.018, z: -0.004999995}
+  m_TranslationOffset: {x: 0.0068995953, y: 0.018000014, z: 0.49110043}
   m_AffectTranslationX: 1
   m_AffectTranslationY: 0
   m_AffectTranslationZ: 0
@@ -1737,7 +1737,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d1f766ff59532284a9338364847c278e, type: 2}
+  - {fileID: -1580535799172915004, guid: adf695e81179d454c8947d6457e29f94, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1975,7 +1975,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -6120684963264713621, guid: 9fb4f055c7cce7549acad5bc1ad2356d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.627
       objectReference: {fileID: 0}
     - target: {fileID: -6120684963264713621, guid: 9fb4f055c7cce7549acad5bc1ad2356d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1983,11 +1983,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5949851106601767442, guid: 9fb4f055c7cce7549acad5bc1ad2356d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.627
       objectReference: {fileID: 0}
     - target: {fileID: -5949851106601767442, guid: 9fb4f055c7cce7549acad5bc1ad2356d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9fb4f055c7cce7549acad5bc1ad2356d, type: 3}
       propertyPath: m_Name
