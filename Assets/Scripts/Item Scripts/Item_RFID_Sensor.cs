@@ -1,11 +1,16 @@
 using System.Collections;
+
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Item_RFID_Sensor : Item_Parent{
 	public Item_Conveyor_Belt ConveyorBeltReference;
 	public Item_CNC_Machine CNCMachineReference;
 
 	public Item_Parent TargetItem;
+	public Item_Plate SensedPlate;
+
+	public UnityEvent OnTargetFound;
 
 	public Item_RFID_Sensor(){
 		Name = "RFID Sensor";
@@ -18,19 +23,30 @@ public class Item_RFID_Sensor : Item_Parent{
 
 		if (!CNCMachineReference.ProcessingItem){
 			if (OverlappedObject.GetComponent<Item_Plate>()){
-				if (OverlappedObject.GetComponent<Item_Plate>().Item){
-					ConveyorBeltReference.ToggleMovement();
+				SensedPlate = OverlappedObject.GetComponent<Item_Plate>();
 
-					Destroy(OverlappedObject.GetComponent<Item_Plate>().Item);
+				if (TargetItem){
+					if (SensedPlate.Item){
+						if (SensedPlate.Item.GetComponentInParent<Item_Parent>().GetType() == TargetItem.GetType()){
+							ConveyorBeltReference.ToggleMovement();
 
-					Invoke(nameof(PauseConveyorBelt), 3.0f);
+							TargetItem = null;
 
-					GameObject NewItem = Instantiate(FindFirstObjectByType<Data_Loader>().ItemLibraryReference.GetItemFromName("Epoxy Penholder"), Vector3.zero, Quaternion.identity);
+							OnTargetFound.Invoke();
 
-					OverlappedObject.GetComponent<Item_Plate>().Item = NewItem;
-					OverlappedObject.GetComponent<Item_Plate>().SetItem();
+							Invoke(nameof(PauseConveyorBelt), 3.0f);
+						}
+					}
 				}
 			}
+		}
+	}
+
+	public void OnTriggerExit(Collider OverlappedCollider){
+		GameObject OverlappedObject = OverlappedCollider.gameObject;
+
+		if (OverlappedObject.GetComponent<Item_Plate>()){
+			SensedPlate = null;
 		}
 	}
 

@@ -30,6 +30,6 @@ public class MapSelectWidget : MonoBehaviour{
 	public void Cancel(){
 		GameObject NewWidget = Instantiate(PreviousWidget, transform.position, transform.rotation);
 
-		//Destroy(gameObject);
+		Destroy(gameObject);
 	}
 }

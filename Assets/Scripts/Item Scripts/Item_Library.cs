@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game/Item List")]
+[CreateAssetMenu(menuName = "Item/Item Library")]
 public class Item_Library : ScriptableObject{
 	[SerializeField]
 	private List<GameObject> Items = new List<GameObject>();
