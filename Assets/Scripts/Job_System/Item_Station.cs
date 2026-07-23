@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Item_Station : Item_Parent{
+public abstract class Item_Station : Item_CNC_Machine{
 	public Item_Slotted_Table ActiveTable;
 
 	public abstract bool IsProcessing { get; }
