@@ -12,6 +12,9 @@ public class Data_Loader : MonoBehaviour{
     [SerializeField]
     private string FileName;
 
+	[SerializeField]
+	public Item_Library ItemLibraryReference;
+
     public Data_Loader Instance{get; private set;}
 
     private void Awake(){
