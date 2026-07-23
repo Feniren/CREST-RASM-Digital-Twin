@@ -545,6 +545,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8859316282993015926}
   - component: {fileID: 5756582785634938689}
+  - component: {fileID: 5994810043413343020}
   - component: {fileID: 2919071021001313036}
   - component: {fileID: 6310508555864533712}
   m_Layer: 0
@@ -597,6 +598,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &5994810043413343020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4516605154635008142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &2919071021001313036
 MonoBehaviour:
   m_ObjectHideFlags: 0

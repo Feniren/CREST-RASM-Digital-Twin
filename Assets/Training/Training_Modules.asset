@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a4a3920ad4f8084fb4ec706a1087711, type: 3}
+  m_Name: Training_Modules
+  m_EditorClassIdentifier: Assembly-CSharp::Training_Module_Registry
+  Bootstrap_Scene_Path: Assets/Members/Colin/Scenes/Bootstrap.unity
+  Modules:
+  - Lesson: {fileID: 11400000, guid: 347ae1e0a6ecfd145a9045e5f0ba5116, type: 2}
+    Scene_Path: Assets/Members/Colin/Scenes/Module1_Overview.unity
+    Placeholder_Label: 
+  - Lesson: {fileID: 11400000, guid: 1ec24b0c82d24a4498db78242452c450, type: 2}
+    Scene_Path: Assets/Members/Colin/Scenes/Module2_Startup.unity
+    Placeholder_Label: 

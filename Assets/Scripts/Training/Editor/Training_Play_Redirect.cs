@@ -8,17 +8,12 @@ using UnityEngine.SceneManagement;
 // Pressing Play in a module scene therefore yields a dead scene. This redirect
 // makes Play start Bootstrap instead and auto-enters the module that was open,
 // through the normal Lesson_Controller.Start_Module path.
+// Scene paths come from the Training_Module_Registry asset — no hardcoded list.
 // Note: playModeStartScene is ignored if "Enter Play Mode Options -> Reload
 // Scene" is ever disabled — the redirect silently stops working in that case.
 [InitializeOnLoad]
 public static class Training_Play_Redirect{
-    private const string BootstrapScenePath = "Assets/Members/Colin/Scenes/Bootstrap.unity";
     private const string AutoStartKey = "Training.AutoStartScene";
-
-    private static readonly string[] ModuleScenePaths = {
-        "Assets/Members/Colin/Scenes/Module1_Overview.unity",
-        "Assets/Members/Colin/Scenes/Module2_Startup.unity",
-    };
 
     private static bool autoStartHooked;
     private static bool autoStartDone;
@@ -34,11 +29,27 @@ public static class Training_Play_Redirect{
             Refresh();
     }
 
+    private static Training_Module_Registry LoadRegistry(){
+        string[] guids = AssetDatabase.FindAssets("t:Training_Module_Registry");
+        return guids.Length > 0
+            ? AssetDatabase.LoadAssetAtPath<Training_Module_Registry>(AssetDatabase.GUIDToAssetPath(guids[0]))
+            : null;
+    }
+
+    private static bool IsModuleScene(Training_Module_Registry registry, string scenePath){
+        foreach (Training_Module_Registry.Entry entry in registry.Modules)
+            if (!string.IsNullOrEmpty(entry.Scene_Path) && entry.Scene_Path == scenePath)
+                return true;
+
+        return false;
+    }
+
     private static void Refresh(){
         Scene activeScene = SceneManager.GetActiveScene();
+        Training_Module_Registry registry = LoadRegistry();
 
-        if (System.Array.IndexOf(ModuleScenePaths, activeScene.path) >= 0){
-            EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootstrapScenePath);
+        if (registry != null && !string.IsNullOrEmpty(activeScene.name) && IsModuleScene(registry, activeScene.path)){
+            EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(registry.Bootstrap_Scene_Path);
             SessionState.SetString(AutoStartKey, activeScene.name);
         }
         else{
@@ -67,7 +78,9 @@ public static class Training_Play_Redirect{
     }
 
     private static void HookAutoStart(){
-        if (autoStartHooked || autoStartDone || SessionState.GetString(AutoStartKey, null) == null)
+        // IsNullOrEmpty, not null: a stale/aborted session can leave "" behind,
+        // which would otherwise trigger a doomed auto-start lookup.
+        if (autoStartHooked || autoStartDone || string.IsNullOrEmpty(SessionState.GetString(AutoStartKey, null)))
             return;
 
         autoStartHooked = true;

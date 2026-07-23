@@ -69,8 +69,14 @@ public class Component_Marker : MonoBehaviour{
             LabelRoot.SetActive(visible);
     }
 
-    private void OnSelectEntered(SelectEnterEventArgs args){
+    // Selection entry point shared by XRI select and Desktop_Click_Select —
+    // the lesson flow must not depend on an XRI interactor being present.
+    public void Notify_Selected(){
         Selected?.Invoke(this);
+    }
+
+    private void OnSelectEntered(SelectEnterEventArgs args){
+        Notify_Selected();
     }
 
     private void OnHoverEntered(HoverEnterEventArgs args){

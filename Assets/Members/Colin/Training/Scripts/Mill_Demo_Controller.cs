@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using ProMill8000;
 
-public class Mill_Demo_Controller : MonoBehaviour{
+public class Mill_Demo_Controller : Training_Demo_Controller{
     [Header("Mill (machine-axis naming: X table, Y saddle, Z spindle)")]
     [SerializeField] private AxisMovement WorktableX;
     [SerializeField] private AxisMovement SaddleY;
@@ -22,7 +21,14 @@ public class Mill_Demo_Controller : MonoBehaviour{
     [SerializeField] private float ZTravel = 0.27f;
     [SerializeField] private float DoorSeconds = 1f;
 
-    public event Action Demo_Finished;
+    public override void Play(Lesson_Step step){
+        if (step.Kind == Lesson_Step_Kind.Axis_Demo)
+            Play_Axis_Demo();
+        else if (step.Kind == Lesson_Step_Kind.Milling_Demo)
+            Play_Milling_Demo();
+        else
+            Debug.LogWarning($"Mill_Demo_Controller: no demo for step kind {step.Kind}");
+    }
 
     public void Play_Axis_Demo(){
         StartCoroutine(AxisDemo());
@@ -36,7 +42,7 @@ public class Mill_Demo_Controller : MonoBehaviour{
         yield return RunAxis(XIndicator, WorktableX, new[]{ XTravel, -XTravel, 0f });
         yield return RunAxis(YIndicator, SaddleY, new[]{ YTravel, -YTravel, 0f });
         yield return RunAxis(ZIndicator, SpindleZ, new[]{ -ZTravel, 0f });
-        Demo_Finished?.Invoke();
+        Raise_Demo_Finished();
     }
 
     private IEnumerator MillingDemo(){
@@ -56,7 +62,7 @@ public class Mill_Demo_Controller : MonoBehaviour{
             yield return new WaitForSeconds(DoorSeconds);
         }
 
-        Demo_Finished?.Invoke();
+        Raise_Demo_Finished();
     }
 
     private IEnumerator RunAxis(GameObject indicator, AxisMovement axis, float[] offsets){

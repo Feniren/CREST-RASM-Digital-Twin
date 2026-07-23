@@ -52,8 +52,14 @@ public class Action_Interactable : MonoBehaviour{
         Refresh();
     }
 
-    private void OnSelectEntered(SelectEnterEventArgs args){
+    // Click entry point shared by XRI select and Desktop_Click_Select —
+    // the action pipeline must not depend on an XRI interactor being present.
+    public void Notify_Clicked(){
         Clicked?.Invoke(Action_Id);
+    }
+
+    private void OnSelectEntered(SelectEnterEventArgs args){
+        Notify_Clicked();
     }
 
     private void OnHoverEntered(HoverEnterEventArgs args){

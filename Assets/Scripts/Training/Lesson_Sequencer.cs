@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Lesson_Sequencer : MonoBehaviour{
     [SerializeField] private Marker_Registry Registry;
-    [SerializeField] private Mill_Demo_Controller DemoController;
+    [SerializeField] private Training_Demo_Controller DemoController;
 
     [Header("Prompt UI")]
     [SerializeField] private GameObject PromptPanel;
@@ -145,8 +145,17 @@ public class Lesson_Sequencer : MonoBehaviour{
     private void OnDemoFinished(){
         Lesson_Step step = Current_Step;
 
-        if (step != null && (step.Kind == Lesson_Step_Kind.Axis_Demo || step.Kind == Lesson_Step_Kind.Milling_Demo))
+        if (step != null && Is_Demo_Kind(step.Kind))
             Advance();
+    }
+
+    // Anything that isn't Info / Select_Component / Panel_Action is a demo-style
+    // step: the sequencer hands it to the scene's Training_Demo_Controller and
+    // waits for Demo_Finished. New Lesson_Step_Kind values need no changes here.
+    private static bool Is_Demo_Kind(Lesson_Step_Kind kind){
+        return kind != Lesson_Step_Kind.Info
+            && kind != Lesson_Step_Kind.Select_Component
+            && kind != Lesson_Step_Kind.Panel_Action;
     }
 
     private void Advance(){
@@ -164,10 +173,8 @@ public class Lesson_Sequencer : MonoBehaviour{
 
         Step_Changed?.Invoke(step, stepIndex, steps.Count);
 
-        if (step.Kind == Lesson_Step_Kind.Axis_Demo && DemoController != null)
-            DemoController.Play_Axis_Demo();
-        else if (step.Kind == Lesson_Step_Kind.Milling_Demo && DemoController != null)
-            DemoController.Play_Milling_Demo();
+        if (Is_Demo_Kind(step.Kind) && DemoController != null)
+            DemoController.Play(step);
     }
 
     private void Complete(){
