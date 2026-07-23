@@ -1,10 +1,16 @@
 using System.Collections;
+
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Item_RFID_Sensor : Item_Parent{
 	public Item_Conveyor_Belt ConveyorBeltReference;
+	public Item_CNC_Machine CNCMachineReference;
 
-	GameObject Previous;
+	public Item_Parent TargetItem;
+	public Item_Plate SensedPlate;
+
+	public UnityEvent OnTargetFound;
 
 	public Item_RFID_Sensor(){
 		Name = "RFID Sensor";
@@ -15,16 +21,32 @@ public class Item_RFID_Sensor : Item_Parent{
 	public void OnTriggerEnter(Collider OverlappedCollider){
 		GameObject OverlappedObject = OverlappedCollider.gameObject;
 
-		if (OverlappedObject.GetComponent<Item_Plate>()){
-			if (OverlappedObject != Previous){
-				if (OverlappedObject.GetComponent<Item_Plate>().Item){
-					Previous = OverlappedObject;
+		if (!CNCMachineReference.ProcessingItem){
+			if (OverlappedObject.GetComponent<Item_Plate>()){
+				SensedPlate = OverlappedObject.GetComponent<Item_Plate>();
 
-					ConveyorBeltReference.ToggleMovement();
+				if (TargetItem){
+					if (SensedPlate.Item){
+						if (SensedPlate.Item.GetComponentInParent<Item_Parent>().GetType() == TargetItem.GetType()){
+							ConveyorBeltReference.ToggleMovement();
 
-					Invoke(nameof(PauseConveyorBelt), 3.0f);
+							TargetItem = null;
+
+							OnTargetFound.Invoke();
+
+							Invoke(nameof(PauseConveyorBelt), 3.0f);
+						}
+					}
 				}
 			}
+		}
+	}
+
+	public void OnTriggerExit(Collider OverlappedCollider){
+		GameObject OverlappedObject = OverlappedCollider.gameObject;
+
+		if (OverlappedObject.GetComponent<Item_Plate>()){
+			SensedPlate = null;
 		}
 	}
 

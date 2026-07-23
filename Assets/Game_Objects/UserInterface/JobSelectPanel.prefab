@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 1221250348166341132}
   - component: {fileID: 1617601388842066086}
   m_Layer: 5
-  m_Name: DigitalTwin
+  m_Name: Penholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,7 +112,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 15.7}
+  m_AnchoredPosition: {x: 0, y: 15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8149531033139550083
@@ -197,9 +197,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5634170387625223909}
-        m_TargetAssemblyTypeName: MapSelectWidget, Assembly-CSharp
-        m_MethodName: LoadDigitalTwin
+      - m_Target: {fileID: 333090114256840042}
+        m_TargetAssemblyTypeName: JobSelectWidget, Assembly-CSharp
+        m_MethodName: QueuePenholderJob
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 1364036103352602747}
   - component: {fileID: 8719830470822259879}
   m_Layer: 5
-  m_Name: DigitalTwinText
+  m_Name: PenholderText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Digital Twin
+  m_text: Penholder
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -359,9 +359,9 @@ GameObject:
   - component: {fileID: 7834885251304694076}
   - component: {fileID: 7610705521141925827}
   - component: {fileID: 1233625388162685855}
-  - component: {fileID: 5634170387625223909}
+  - component: {fileID: 333090114256840042}
   m_Layer: 5
-  m_Name: MapSelectPanel
+  m_Name: JobSelectPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -432,7 +432,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &7610705521141925827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -469,7 +469,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
---- !u!114 &5634170387625223909
+--- !u!114 &333090114256840042
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -478,10 +478,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1670477113955323098}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8c3148dc6232b343ad380338ffed010, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fb04f40debe38b468ada31eac1b9d28, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapSelectWidget
+  m_EditorClassIdentifier: Assembly-CSharp::JobSelectWidget
   PreviousWidget: {fileID: 2818358263241952346, guid: b4afa464b7905b14e96879f189b9c712, type: 3}
+  JobManager: {fileID: 0}
 --- !u!1 &1922436305488340843
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,7 +519,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.22833, y: -19.8}
+  m_AnchoredPosition: {x: 0.22833, y: -22}
   m_SizeDelta: {x: 239.23, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8324323654732875878
@@ -603,9 +604,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5634170387625223909}
+      - m_Target: {fileID: 1670477113955323098}
         m_TargetAssemblyTypeName: MapSelectWidget, Assembly-CSharp
-        m_MethodName: LoadMainMenu
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -680,7 +681,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Main Menu
+  m_text: Upcoming Job
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -764,7 +765,7 @@ GameObject:
   - component: {fileID: 2834705150628271041}
   - component: {fileID: 1835613427124539657}
   m_Layer: 5
-  m_Name: Map Select
+  m_Name: JobSelect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -817,7 +818,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Map Select
+  m_text: Job Select
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1010,7 +1011,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5634170387625223909}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: MapSelectWidget, Assembly-CSharp
         m_MethodName: Cancel
         m_Mode: 1
@@ -1087,7 +1088,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Robot Arm Module
+  m_text: Upcoming Job
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1305,7 +1306,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Mill Module
+  m_text: Upcoming Job
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1586,7 +1587,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.22833, y: -9.6}
+  m_AnchoredPosition: {x: 0.22833, y: -10}
   m_SizeDelta: {x: 239.23, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &60271105289831679
@@ -1671,9 +1672,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5634170387625223909}
+      - m_Target: {fileID: 1670477113955323098}
         m_TargetAssemblyTypeName: MapSelectWidget, Assembly-CSharp
-        m_MethodName: LoadRobotArmModule
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1719,7 +1720,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 2.6}
+  m_AnchoredPosition: {x: 0, y: 3}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &337713067389852696
@@ -1804,9 +1805,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5634170387625223909}
+      - m_Target: {fileID: 1670477113955323098}
         m_TargetAssemblyTypeName: MapSelectWidget, Assembly-CSharp
-        m_MethodName: LoadMillModule
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
