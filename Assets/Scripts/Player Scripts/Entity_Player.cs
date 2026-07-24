@@ -84,8 +84,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
 		gameObject.transform.position = SpawnPoint.transform.position;
 
-		Debug.Log("New Scene loaded. Player position adjusted");
-
 		GetComponent<Rigidbody>().useGravity = true;
 	}
 

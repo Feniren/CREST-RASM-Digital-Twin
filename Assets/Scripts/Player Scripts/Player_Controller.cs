@@ -41,7 +41,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Move.canceled += StopMoving;
         PlayerInput.Player.ResetPosition.performed += ResetPosition;
 		PlayerInput.Player.ToggleBag.performed += ToggleBag;
-        //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
+        PlayerInput.Player.ShootPhysical.performed += LeftClick;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
         PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
@@ -98,7 +98,7 @@ public class Player_Controller : Controller{
             if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
-        }
+		}
     }   
 
     public void AlternateInteract(InputAction.CallbackContext Context){
@@ -209,6 +209,16 @@ public class Player_Controller : Controller{
             }
         }
     }
+
+	public void LeftClick(InputAction.CallbackContext Context){
+		RaycastHit Hit;
+
+		if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+			if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+				Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+			}
+		}
+	}
 
 	public void Look(InputAction.CallbackContext Context){
 		if (Context.performed){
