@@ -1,20 +1,19 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.Events;
-
-// Drives a step-by-step "click the highlighted part" sequence.
-// Put this on a single Managers object in the scene, then fill in
-// the Steps array in the Inspector, in the order you want them taught.
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+// Drives a step-by-step "click the part" sequence.
+// Only the current step's part is active/visible in the scene —
+// every other part is hidden until it's its turn.
+// Put this on a single Managers object, then fill in the Steps array
+// in the Inspector, in the order you want them taught.
 public class SequenceManager : MonoBehaviour
 {
     [System.Serializable]
     public class Step
     {
-        [Tooltip("The part's XR Simple Interactable (the clickable object)")]
-        public UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable target;
-
-        [Tooltip("The green highlight object for this part (e.g. the HighlightProxy cube)")]
-        public GameObject highlightVisual;
+        [Tooltip("The part's GameObject. Must have an XR Simple Interactable on it. This object will be shown/hidden by the sequence.")]
+        public GameObject target;
 
         [Tooltip("Text shown in the info panel while this step is active")]
         [TextArea(2, 4)]
@@ -32,24 +31,31 @@ public class SequenceManager : MonoBehaviour
     public UnityEvent onSequenceComplete; // hook the quiz start here in the Inspector
 
     private int currentIndex = 0;
-    private UnityAction<SelectEnterEventArgs>[] listeners;
+    private XRBaseInteractable[] interactables;
+    private UnityEngine.Events.UnityAction<SelectEnterEventArgs>[] listeners;
 
     private void Start()
     {
-        // Turn off every highlight to start clean
-        foreach (var step in steps)
-        {
-            if (step.highlightVisual != null)
-                step.highlightVisual.SetActive(false);
-        }
+        interactables = new XRBaseInteractable[steps.Length];
+        listeners = new UnityEngine.Events.UnityAction<SelectEnterEventArgs>[steps.Length];
 
-        // Subscribe each step's target with a listener that remembers its own index
-        listeners = new UnityAction<SelectEnterEventArgs>[steps.Length];
         for (int i = 0; i < steps.Length; i++)
         {
+            if (steps[i].target == null) continue;
+
+            // Hide every part to start clean
+            steps[i].target.SetActive(false);
+
+            interactables[i] = steps[i].target.GetComponent<XRBaseInteractable>();
+            if (interactables[i] == null)
+            {
+                Debug.LogError($"[SequenceManager] Step {i} target '{steps[i].target.name}' has no XR Simple Interactable attached.");
+                continue;
+            }
+
             int capturedIndex = i; // avoid closure bug — capture per-iteration copy
             listeners[i] = (args) => OnPartClicked(capturedIndex);
-            steps[i].target.selectEntered.AddListener(listeners[i]);
+            interactables[i].selectEntered.AddListener(listeners[i]);
         }
 
         ActivateStep(0);
@@ -57,21 +63,23 @@ public class SequenceManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (listeners == null) return;
-        for (int i = 0; i < steps.Length; i++)
+        if (interactables == null) return;
+        for (int i = 0; i < interactables.Length; i++)
         {
-            if (steps[i].target != null)
-                steps[i].target.selectEntered.RemoveListener(listeners[i]);
+            if (interactables[i] != null && listeners[i] != null)
+                interactables[i].selectEntered.RemoveListener(listeners[i]);
         }
     }
 
     private void OnPartClicked(int index)
     {
+        Debug.Log($"[SequenceManager] selectEntered fired for step {index} ({steps[index].target.name}); currentIndex is {currentIndex}");
+
         // Ignore clicks on parts that aren't the current active step
         if (index != currentIndex) return;
 
-        if (steps[currentIndex].highlightVisual != null)
-            steps[currentIndex].highlightVisual.SetActive(false);
+        if (steps[currentIndex].target != null)
+            steps[currentIndex].target.SetActive(false);
 
         ActivateStep(currentIndex + 1);
     }
@@ -87,8 +95,8 @@ public class SequenceManager : MonoBehaviour
             return;
         }
 
-        if (steps[index].highlightVisual != null)
-            steps[index].highlightVisual.SetActive(true);
+        if (steps[index].target != null)
+            steps[index].target.SetActive(true);
 
         if (infoPanel != null)
             infoPanel.UpdateText(steps[index].infoText);

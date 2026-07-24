@@ -8,17 +8,12 @@ public class Item_ASRS : Item_Parent
     public Item_Slotted_Table item = null;
     public Item_Epoxy_Block material = null;
     public List<GameObject> BlockList = new List<GameObject>();
-    public Spline_Animate spline;
+    public Spline_Animate splineAnimate;
     public Item_Conveyor_Belt conveyor;
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
-public class Item_ASRS : Item_Parent{
 	// public List<Machine_Job> Jobs = new List<Machine_Job>();
-	public RACK_TASK task;
-	public Item_Slotted_Table item = null;
-	public Item_Epoxy_Block material = null;
 	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
-	public List<GameObject> BlockList = new List<GameObject>();
 
     private readonly Dictionary<int, Vector3> anchorPositions = new Dictionary<int, Vector3>();
     private readonly Dictionary<int, Quaternion> anchorRotations = new Dictionary<int, Quaternion>();
@@ -34,8 +29,6 @@ public class Item_ASRS : Item_Parent{
     {
         base.Start();
 
-        Debug.Log("ASRS Start() running...");
-
         anchorPositions.Clear();
         anchorRotations.Clear();
         TableMap.Clear();
@@ -48,30 +41,18 @@ public class Item_ASRS : Item_Parent{
         HashSet<string> conveyorTableIDs = new HashSet<string>();
         List<GameObject> conveyorList = conveyor != null ? conveyor.GetSlottedTableList() : new List<GameObject>();
 
-        Debug.Log($"ASRS DEBUG: conveyorList.Count = {conveyorList.Count}");
-
         foreach (GameObject obj in conveyorList)
         {
             if (obj == null)
-            {
-                Debug.Log("ASRS DEBUG: conveyorList contains a null entry");
                 continue;
-            }
 
             Item_Slotted_Table table = obj.GetComponent<Item_Slotted_Table>();
             if (table == null)
-            {
-                Debug.Log($"ASRS DEBUG: conveyor object '{obj.name}' has no Item_Slotted_Table component");
                 continue;
-            }
-
-            Debug.Log($"ASRS DEBUG: conveyor object '{obj.name}' has TableID '[{table.TableID}]'");
 
             if (!string.IsNullOrWhiteSpace(table.TableID))
                 conveyorTableIDs.Add(table.TableID);
         }
-
-        Debug.Log($"ASRS DEBUG: conveyorTableIDs = [{string.Join(", ", conveyorTableIDs)}]");
 
         foreach (Item_Slotted_Table table in GetComponentsInChildren<Item_Slotted_Table>(true))
         {
@@ -99,8 +80,6 @@ public class Item_ASRS : Item_Parent{
             bool isOnConveyor = conveyorTableIDs.Contains(table.TableID);
             bool isVacantRow = row == 5;
 
-            Debug.Log($"ASRS DEBUG: rack table '{table.name}' TableID '[{table.TableID}]' row={row} isOnConveyor={isOnConveyor} isVacantRow={isVacantRow}");
-
             anchorPositions[index] = table.transform.position;
             anchorRotations[index] = table.transform.rotation;
 
@@ -111,27 +90,20 @@ public class Item_ASRS : Item_Parent{
                 table.task = RACK_TASK.RETRIEVE;
 
                 SetTableVisibility(table.gameObject, false);
-                Debug.Log($"Slot {index} → EMPTY (Row 5)");
             }
             else if (isOnConveyor)
             {
                 TableMap[index] = null;
 
                 SetTableVisibility(table.gameObject, false);
-                Debug.Log($"Slot {index} → EMPTY (on conveyor: {table.TableID})");
             }
             else
             {
                 TableMap[index] = table;
 
                 SetTableVisibility(table.gameObject, true);
-                Debug.Log($"Slot {index} → OCCUPIED ({table.TableID})");
             }
         }
-
-        Debug.Log($"ASRS: Total anchors saved: {anchorPositions.Count}");
-        Debug.Log($"ASRS: TableMap entries: {TableMap.Count}");
-        Debug.Log($"ASRS: Vacant slots: {CountVacantSlots()}");
     }
 
     private void SetTableVisibility(GameObject obj, bool isVisible)
