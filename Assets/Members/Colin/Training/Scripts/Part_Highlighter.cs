@@ -15,14 +15,23 @@ public class Part_Highlighter : MonoBehaviour{
     }
 
     private void Start(){
-        foreach (Component_Marker marker in Registry.All)
+        foreach (Component_Marker marker in Registry.All){
             marker.Hover_Changed += OnHoverChanged;
+            marker.Set_Interactable(false);
+        }
     }
 
     private void OnStepChanged(Lesson_Step step, int index, int count){
         ClearTarget();
 
-        if (Sequencer.Mode != Lesson_Mode.Guided || step.Kind != Lesson_Step_Kind.Select_Component)
+        // Practice mode has no highlighted target — every marker must stay
+        // clickable so a wrong guess is possible.
+        if (Sequencer.Mode != Lesson_Mode.Guided){
+            Set_All_Interactable(true);
+            return;
+        }
+
+        if (step.Kind != Lesson_Step_Kind.Select_Component)
             return;
 
         currentTarget = Registry.Resolve(step.Target_Marker_Id);
@@ -30,7 +39,13 @@ public class Part_Highlighter : MonoBehaviour{
         if (currentTarget != null){
             currentTarget.Set_Persistent_Glow(true, TargetGlow);
             currentTarget.Set_Label_Visible(true);
+            currentTarget.Set_Interactable(true);
         }
+    }
+
+    private void Set_All_Interactable(bool value){
+        foreach (Component_Marker marker in Registry.All)
+            marker.Set_Interactable(value);
     }
 
     private void OnLessonCompleted(Lesson_Result result){
@@ -51,6 +66,7 @@ public class Part_Highlighter : MonoBehaviour{
         if (currentTarget != null){
             currentTarget.Set_Persistent_Glow(false, TargetGlow);
             currentTarget.Set_Label_Visible(false);
+            currentTarget.Set_Interactable(false);
         }
 
         currentTarget = null;

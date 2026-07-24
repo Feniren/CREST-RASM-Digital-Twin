@@ -67,6 +67,7 @@ public class Lesson_Sequencer : MonoBehaviour{
 
     public void Notify_Marker_Selected(Component_Marker marker){
         Lesson_Step step = Current_Step;
+        Debug.Log($"Lesson_Sequencer: Notify_Marker_Selected('{marker.Marker_Id}') — current step target is '{step?.Target_Marker_Id}' (kind {step?.Kind}).");
 
         if (step == null || step.Kind != Lesson_Step_Kind.Select_Component)
             return;

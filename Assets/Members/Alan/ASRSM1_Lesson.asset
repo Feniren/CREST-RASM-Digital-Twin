@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
   m_Name: ASRSM1_Lesson
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   Module_Id: ASRS
-  Scene_Name: DigitalTwin 1
+  Scene_Name: ASRSModule1
   Display_Name: ASRS Walkthrough
   Steps:
   - Step_Id: asrs
     Kind: 1
-    Prompt_Text: "This is the ASRS \u2014 Automated Storage and Retrieval System.
+    Prompt_Text: "This is the ASRS — Automated Storage and Retrieval System.
       It stores raw materials, work-in-progress parts, and finished goods as they
       move through the CIM cell."
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: ASRS
     Narration: {fileID: 0}
     Include_In_Quiz: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
     Kind: 1
     Prompt_Text: The conveyor belt carries pallets between stations. Once the ASRS
       releases a pallet, the conveyor moves it to the next step in the process.
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: Conveyor
     Narration: {fileID: 0}
     Include_In_Quiz: 0
@@ -38,16 +38,16 @@ MonoBehaviour:
     Prompt_Text: "\"This is the slotted table buffer. It holds pallets temporarily
       when a station isn't ready to receive them yet, preventing a backup in the
       line."
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: SlottedTable
     Narration: {fileID: 0}
     Include_In_Quiz: 0
   - Step_Id: epoxy_block
     Kind: 1
-    Prompt_Text: "\"This is the epoxy block \u2014 one of the standard parts used
+    Prompt_Text: "\"This is the epoxy block — one of the standard parts used
       in this CIM cell. Its template is shaped specifically to hold this part and
       no other.\""
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: EpoxyBlock
     Narration: {fileID: 0}
     Include_In_Quiz: 0
@@ -55,52 +55,17 @@ MonoBehaviour:
     Kind: 1
     Prompt_Text: "\"This is the RFID sensor. It scans each pallet's tag as it passes,
       so the system always knows which part is where.\""
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: RFIDSensor
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
-  - Step_Id: door_36
-    Kind: 1
-    Prompt_Text: "\"Both the ASRS-36 and ASRS-36u have access doors with handles
-      like this. Opening either door during operation immediately halts the robot
-      for safety.\""
-    Practice_Prompt_Text: 
-    Target_Marker_Id: Door_36
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
-  - Step_Id: door_36u
-    Kind: 1
-    Prompt_Text: "\"Both the ASRS-36 and ASRS-36u have access doors with handles
-      like this. Opening either door during operation immediately halts the robot
-      for safety.\""
-    Practice_Prompt_Text: 
-    Target_Marker_Id: Door_36u
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
-  - Step_Id: gripper
-    Kind: 1
-    Prompt_Text: "\"This is the gripper \u2014 sometimes called the hand. It's mounted
-      on the robotic arm and physically picks up and places templates as they move
-      between the rack and the conveyor.\""
-    Practice_Prompt_Text: 
-    Target_Marker_Id: Gripper
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
-  - Step_Id: estop_36
-    Kind: 1
-    Prompt_Text: "\"Every ASRS station has an emergency stop button like this one.
-      Pressing it stops all motion immediately, on either the 36 or the 36u.\""
-    Practice_Prompt_Text: 
-    Target_Marker_Id: EStop_36
     Narration: {fileID: 0}
     Include_In_Quiz: 0
   - Step_Id: estop_36u
     Kind: 1
     Prompt_Text: "\"Every ASRS station has an emergency stop button like this one.
       Pressing it stops all motion immediately, on either the 36 or the 36u.\""
-    Practice_Prompt_Text: 
+    Practice_Prompt_Text:
     Target_Marker_Id: EStop_36u
     Narration: {fileID: 0}
     Include_In_Quiz: 0
-  Quiz_Pass_Threshold: 7
+  Quiz_Pass_Threshold: 6
   Practice_Shuffles_Quiz: 1

@@ -25,6 +25,10 @@ public class Component_Marker : MonoBehaviour{
     private void Awake(){
         block = new MaterialPropertyBlock();
         interactable = GetComponent<XRSimpleInteractable>();
+
+        if (interactable == null)
+            Debug.LogError($"Component_Marker: no XRSimpleInteractable on '{name}' — this marker can never be clicked.", this);
+
         Refresh();
     }
 
@@ -69,11 +73,20 @@ public class Component_Marker : MonoBehaviour{
             LabelRoot.SetActive(visible);
     }
 
+    // Fully disables the marker — not just "ignored by the sequencer" but the
+    // whole GameObject deactivated, so a wrong-marker click can't hover, select,
+    // or even register a hit while it isn't the active step's target.
+    public void Set_Interactable(bool value){
+        gameObject.SetActive(value);
+    }
+
     private void OnSelectEntered(SelectEnterEventArgs args){
+        Debug.Log($"Component_Marker: selectEntered on '{Marker_Id}' ({name}) by '{args.interactorObject}'.", this);
         Selected?.Invoke(this);
     }
 
     private void OnHoverEntered(HoverEnterEventArgs args){
+        Debug.Log($"Component_Marker: hoverEntered on '{Marker_Id}' ({name}) by '{args.interactorObject}'.", this);
         Hover_Changed?.Invoke(this, true);
     }
 

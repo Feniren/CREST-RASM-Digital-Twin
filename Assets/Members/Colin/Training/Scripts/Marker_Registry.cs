@@ -10,9 +10,13 @@ public class Marker_Registry : MonoBehaviour{
     public IReadOnlyCollection<Component_Marker> All => markers.Values;
 
     private void Awake(){
-        foreach (Component_Marker marker in MarkersRoot.GetComponentsInChildren<Component_Marker>(true)){
+        Component_Marker[] found = MarkersRoot.GetComponentsInChildren<Component_Marker>(true);
+        Debug.Log($"Marker_Registry: found {found.Length} Component_Marker(s) under '{MarkersRoot.name}'.", this);
+
+        foreach (Component_Marker marker in found){
             markers[marker.Marker_Id] = marker;
             marker.Selected += Sequencer.Notify_Marker_Selected;
+            Debug.Log($"Marker_Registry: wired '{marker.Marker_Id}' ({marker.name}).", marker);
         }
     }
 
