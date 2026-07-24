@@ -397,6 +397,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""379157a8-807d-4b3b-b685-7699f4230770"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryTrigger}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootPhysical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""dc5c5473-3ad5-46e0-80ed-50e62cec8607"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
