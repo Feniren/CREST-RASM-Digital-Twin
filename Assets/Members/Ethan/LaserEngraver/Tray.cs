@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Tray : MonoBehaviour
@@ -20,15 +19,13 @@ public class Tray : MonoBehaviour
         baseY = rb.position.y;
     }
 
-    void Update()
-    {
-        var kb = Keyboard.current;
-        if (kb == null) { dir = 0f; return; }
 
-        dir = 0f;
-        if (kb.upArrowKey.isPressed) dir = 1f;
-        else if (kb.downArrowKey.isPressed) dir = -1f;
-    }
+    public void Raise() => dir = 1f;  // for PointerDown on a VR button
+    public void Lower() => dir = -1f; // this too
+
+    public void StopMove() => dir = 0f; // for PointerUp
+
+    void OnDisable() => dir = 0f;
 
     void FixedUpdate()
     {
