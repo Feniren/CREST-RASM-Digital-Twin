@@ -1336,6 +1336,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 435620178}
+        m_TargetAssemblyTypeName: ObjectiveManager, Assembly-CSharp
+        m_MethodName: StartObjectives
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 751327272}
         m_TargetAssemblyTypeName: DriverPanel, Assembly-CSharp
         m_MethodName: ShowZSetPanel
@@ -1736,6 +1748,8 @@ MonoBehaviour:
   targetObject: {fileID: 1836645827}
   zoneCenter: {x: -0.664, y: 0.54, z: 2.662}
   zoneRadius: 0.15
+  visualHeight: 0.02
+  detectionHeight: 3
   zoneColor: {r: 0, g: 1, b: 0.4, a: 0.35}
   checkedObject: {fileID: 957957067}
   requiredY: 1.13
@@ -3844,6 +3858,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 435620178}
+        m_TargetAssemblyTypeName: ObjectiveManager, Assembly-CSharp
+        m_MethodName: ResetObjectives
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 751327272}
         m_TargetAssemblyTypeName: DriverPanel, Assembly-CSharp
         m_MethodName: ShowMainPanel
