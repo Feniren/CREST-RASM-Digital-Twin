@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ObjectiveManager : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class ObjectiveManager : MonoBehaviour
     public Transform checkedObject;
     public float requiredY = 2f;
     public float tolerance = 0.1f;
-    public InputActionReference confirmAction;
 
     const int IDLE = -1;
     int stage = IDLE;
@@ -34,21 +32,6 @@ public class ObjectiveManager : MonoBehaviour
         marker.GetComponent<MeshRenderer>().material = mat;
 
         marker.SetActive(false);
-    }
-
-    void OnEnable()
-    {
-        if (confirmAction != null)
-        {
-            confirmAction.action.Enable();
-            confirmAction.action.performed += OnConfirm;
-        }
-    }
-
-    void OnDisable()
-    {
-        if (confirmAction != null)
-            confirmAction.action.performed -= OnConfirm;
     }
 
     public void StartObjectives()
@@ -81,7 +64,7 @@ public class ObjectiveManager : MonoBehaviour
         }
     }
 
-    void OnConfirm(InputAction.CallbackContext ctx)
+    public void ConfirmObjective()
     {
         if (stage != 1) return;
 
@@ -94,5 +77,7 @@ public class ObjectiveManager : MonoBehaviour
         {
             Debug.Log("Not right yet: y = " + checkedObject.position.y);
         }
+
+        ResetObjectives();
     }
 }

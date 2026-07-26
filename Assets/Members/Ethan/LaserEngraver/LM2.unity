@@ -1752,9 +1752,8 @@ MonoBehaviour:
   detectionHeight: 10
   zoneColor: {r: 0, g: 1, b: 0.4, a: 0.35}
   checkedObject: {fileID: 957957067}
-  requiredY: 1.13
+  requiredY: 1.055
   tolerance: 0.1
-  confirmAction: {fileID: 3751311794953128841, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
 --- !u!1 &465100333
 GameObject:
   m_ObjectHideFlags: 0
@@ -3886,7 +3885,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 435620178}
         m_TargetAssemblyTypeName: ObjectiveManager, Assembly-CSharp
-        m_MethodName: ResetObjectives
+        m_MethodName: ConfirmObjective
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
