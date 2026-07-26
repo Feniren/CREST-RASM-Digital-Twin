@@ -204,6 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 78509842}
   - component: {fileID: 78509845}
+  - component: {fileID: 78509846}
   - component: {fileID: 78509844}
   - component: {fileID: 78509843}
   m_Layer: 0
@@ -285,12 +286,29 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &78509846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 78509841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &125332285
 GameObject:
   m_ObjectHideFlags: 0
@@ -2559,6 +2577,10 @@ PrefabInstance:
       value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 5756582785634938689, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
+      propertyPath: m_VertexColorAlwaysGammaSpace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5756582785634938689, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
@@ -2645,7 +2667,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4516605154635008142, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 1430116023}
   m_SourcePrefab: {fileID: 100100000, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
 --- !u!114 &1430116020 stripped
 MonoBehaviour:
@@ -2674,6 +2699,23 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4516605154635008142, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
   m_PrefabInstance: {fileID: 1430116019}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1430116023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1430116022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &1467394060
 PrefabInstance:
   m_ObjectHideFlags: 0

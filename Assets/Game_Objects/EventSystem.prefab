@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2259032994879690885
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3164114713879855456}
+  - component: {fileID: 4610106726777348142}
+  - component: {fileID: 6932214382623268711}
+  - component: {fileID: 5410704843515430079}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3164114713879855456
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259032994879690885}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.003000021, z: -3.938}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4610106726777348142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259032994879690885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!114 &6932214382623268711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259032994879690885}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_PointAction: {fileID: -1143470903023398324, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_MoveAction: {fileID: 532362825731948580, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_SubmitAction: {fileID: -3011294745573965936, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_CancelAction: {fileID: 4029545553658915375, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_LeftClickAction: {fileID: 2838134549985316361, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_MiddleClickAction: {fileID: -2148880955647628745, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_RightClickAction: {fileID: -8406448332346800013, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_ScrollWheelAction: {fileID: -8655613782749584578, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_TrackedDevicePositionAction: {fileID: -6572604964215957672, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1264575611975588523, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 1
+  m_ScrollDeltaPerTick: 6
+--- !u!114 &5410704843515430079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259032994879690885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab68ce6587aab0146b8dabefbd806791, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.UI.XRUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_ClickSpeed: 0.3
+  m_MoveDeadzone: 0.6
+  m_RepeatDelay: 0.5
+  m_RepeatRate: 0.1
+  m_TrackedDeviceDragThresholdMultiplier: 2
+  m_TrackedScrollDeltaMultiplier: 5
+  m_BypassUIToolkitEvents: 0
+  m_ActiveInputMode: 0
+  m_EnableXRInput: 1
+  m_EnableMouseInput: 1
+  m_EnableTouchInput: 1
+  m_EnableGamepadInput: 1
+  m_EnableJoystickInput: 1
+  m_PointAction: {fileID: -1143470903023398324, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_LeftClickAction: {fileID: 2838134549985316361, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_MiddleClickAction: {fileID: -2148880955647628745, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_RightClickAction: {fileID: -8406448332346800013, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_ScrollWheelAction: {fileID: -8655613782749584578, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_NavigateAction: {fileID: 532362825731948580, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_SubmitAction: {fileID: -3011294745573965936, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_CancelAction: {fileID: 4029545553658915375, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  m_EnableBuiltinActionsAsFallback: 0
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
