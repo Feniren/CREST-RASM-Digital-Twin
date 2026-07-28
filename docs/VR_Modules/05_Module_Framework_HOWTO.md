@@ -20,7 +20,7 @@ that scene and lesson agree — which is what generation used to guarantee.
 | `Assets/Scripts/Training/` | Runtime lesson engine (`Lesson_*`, `Module_Loader`, `Component_Marker`, `Marker_Registry`, `Action_Button_Registry`, `Startup_Action_Button`, `Action_Interactable`, `Panel_Tab_Group`, `Part_Highlighter`, `Marker_State_Toggle`, `Wrist_HUD`, `Face_Camera`, `Screen_Fader`, `Desktop_Click_Select`, `Training_Demo_Controller`) | shared — don't put module content here |
 | `Assets/Scripts/Training/Editor/` | `Training_Validator` (Training/7), `Training_Debug` (play-mode drivers), `Training_Play_Redirect` (press Play in a module scene) | shared |
 | `Assets/Training/` | Committed framework assets: `Prompt_Panel.prefab`, `Component_Marker.prefab`, `Module_Button.prefab`, `Marker_Glow.mat` | shared (committed) |
-| `Assets/Members/<You>/Training/Editor/` | Optional module-specific debug menu items (`M1_Debug_Menu.cs` is the model) | you |
+| `Assets/Members/<You>/Training/Editor/` | Optional module-specific debug menu items (`M1_Debug_Menu.cs` is the model — marker click simulators plus `Training/9 Dump Mill Diagnostics`) | you |
 | `Assets/Members/<You>/Training/Lessons/`, `Scenes/` | Your lesson asset(s) and your hand-authored module scene — committed artifacts | you |
 | `Assets/Members/<You>/Training/Scripts/` | Your module-specific runtime scripts (e.g. Colin's `Mill_Demo_Controller`, `Startup_State_Controller`, `Door_Click_Toggle`) | you |
 
@@ -76,8 +76,9 @@ automatically (`Desktop_Click_Select` raycasts when no headset is active).
    - your machine/props;
    - a `Lesson_Manager` object with a `Lesson_Sequencer`: **`Lesson` = your
      lesson asset**, `PromptPanel` (instance of
-     `Assets/Training/Prefabs/Prompt_Panel.prefab`; `PromptText` /
-     `ContinueButton` are its children), `ResultsPanel` + `ResultsText` +
+     `Assets/Training/Prefabs/Prompt_Panel.prefab`; its `Prompt_Text` and
+     `Continue_Button` children fill the `PromptText` / `ContinueButton`
+     slots), `ResultsPanel` + `ResultsText` +
      `RetryButton` + `ReturnButton` (a world-space canvas — no prefab, copy one
      from an existing scene). `Registry` is only required when the lesson has
      `Select_Component` steps (M2 has none and leaves it empty);
@@ -121,7 +122,13 @@ automatically (`Desktop_Click_Select` raycasts when no headset is active).
 5. **Test without a headset**: open your scene and press Play — the redirect
    boots Bootstrap and auto-enters your module. Use the **Training/8 Debug**
    menu items (`Auto Step`, `Auto Run To Completion`, wrong-answer, retry) to
-   drive the flow, and left-click markers/buttons directly.
+   drive the flow, and left-click markers/buttons directly. Two quirks:
+   - The redirect relies on **Enter Play Mode Options → Reload Scene** staying
+     enabled — disable it and the redirect silently stops working.
+   - `Auto Run To Completion` steps the whole lesson in one editor frame, which
+     can log a harmless XRI `KeyNotFoundException` from
+     `TrackedDeviceGraphicRaycaster.OnDisable` — ignore it if the run still
+     reports `completed=True`.
 
 ## Custom step kinds (demos, animations)
 
