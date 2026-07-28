@@ -15,6 +15,10 @@ public class Mill_Demo_Controller : Training_Demo_Controller{
     [SerializeField] private GameObject YIndicator;
     [SerializeField] private GameObject ZIndicator;
 
+    // Written by M1_Module_Builder (M1_Mill_Rig.cs) via Training_Builder_Core.SetVal,
+    // from the same constants that clamp the axes — the values below are only the
+    // fallback for a hand-placed controller. Renaming a field breaks that wiring
+    // silently apart from an error on the next Training/3.
     [Header("Travel (meters)")]
     [SerializeField] private float XTravel = 0.14f;
     [SerializeField] private float YTravel = 0.04f;
