@@ -1,5 +1,14 @@
 # Migration: generated module scenes → hand-authored scenes
 
+> **Superseded (2026-07-28).** Steps 5–7 landed more aggressively than written: the
+> builders, step factories, lesson generators, `Training_Builder_Core`,
+> `Training_Module_Registry` and `Training_Modules.asset` were deleted outright.
+> Lesson content is Inspector-authored on the `Lesson_Definition` assets; the Bootstrap
+> menu is runtime-generated from `Lesson_Controller.AvailableModules`; each module
+> scene's `Lesson_Sequencer.Lesson` references its lesson. Current workflow:
+> `05_Module_Framework_HOWTO.md`. Still outstanding from this doc: the `YTravel`
+> 0.04 → 0.076 fix (step 3).
+
 **Decision (2026-07-27): stop generating module scenes. Commit them as authored artifacts.**
 The runtime framework stays exactly as it is. Supersedes the scene-building half of
 `05_Module_Framework_HOWTO.md`; that doc was rewritten around the authored-scene
@@ -94,6 +103,11 @@ field, not four — the scene already holds `XTravel: 0.14`, `ZTravel: 0.27`,
    the core strip and the template rewrite remain.)*
 
 ## What stays and what goes
+
+*(2026-07-28: overtaken by events — everything below, both columns, was deleted
+except `Training_Validator`, `Training_Debug`, `M1_Debug_Menu` (now standalone)
+and `Training_Play_Redirect` (now registry-free). Lesson content moved into the
+lesson assets themselves.)*
 
 | Goes (~800 lines) | Stays (~250 lines) |
 |---|---|
