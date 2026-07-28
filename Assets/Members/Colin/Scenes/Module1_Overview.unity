@@ -7525,6 +7525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edab23a0c8a6c0f4e811b7d27bb29a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lesson_Sequencer
+  Lesson: {fileID: 11400000, guid: 347ae1e0a6ecfd145a9045e5f0ba5116, type: 2}
   Registry: {fileID: 1758252714}
   DemoController: {fileID: 1758252712}
   PromptPanel: {fileID: 1159278514}

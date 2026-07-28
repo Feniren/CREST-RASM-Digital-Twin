@@ -5,6 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Lesson_Sequencer : MonoBehaviour{
+    // The lesson this scene implements. Bootstrap still pushes the definition via
+    // Begin(); this is the scene's own record of it — Training_Validator and the
+    // debug menus read it, and Begin() warns if the two ever disagree.
+    public Lesson_Definition Lesson;
+
     [SerializeField] private Marker_Registry Registry;
     [SerializeField] private Training_Demo_Controller DemoController;
 
@@ -48,6 +53,9 @@ public class Lesson_Sequencer : MonoBehaviour{
     }
 
     public void Begin(Lesson_Definition def, Lesson_Mode mode){
+        if (Lesson != null && def != Lesson)
+            Debug.LogWarning($"Lesson_Sequencer: began '{def.name}' but this scene's Lesson is '{Lesson.name}' — Bootstrap and the scene disagree.");
+
         definition = def;
         Mode = mode;
         steps = mode == Lesson_Mode.Guided ? def.Steps : def.Build_Practice_Steps(new System.Random());

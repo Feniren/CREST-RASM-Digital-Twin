@@ -1303,6 +1303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edab23a0c8a6c0f4e811b7d27bb29a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lesson_Sequencer
+  Lesson: {fileID: 11400000, guid: 1ec24b0c82d24a4498db78242452c450, type: 2}
   Registry: {fileID: 0}
   DemoController: {fileID: 0}
   PromptPanel: {fileID: 2100107489}
@@ -11676,6 +11677,10 @@ PrefabInstance:
     - target: {fileID: 5205788125076215690, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5532029146448448814, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 5756582785634938689, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag

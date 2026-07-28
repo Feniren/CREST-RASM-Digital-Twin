@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
     [SerializeField] private Data_Loader DataLoader;
     [SerializeField] private Module_Loader ModuleLoader;
     [SerializeField] private List<Lesson_Definition> AvailableModules;
     [SerializeField] private TMP_Text MenuStatusText;
+    [SerializeField] private Button ModuleButtonPrefab;
+    [SerializeField] private Transform ModuleButtonContainer;
 
     public bool Module_Active { get; private set; }
     public int Step_Index { get; private set; }
@@ -27,6 +30,7 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
     }
 
     private void Start(){
+        BuildModuleButtons();
         UpdateMenuStatus();
     }
 
@@ -36,6 +40,17 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
 
         activeDefinition = AvailableModules[index];
         ModuleLoader.Load_Module(activeDefinition.Scene_Name);
+    }
+
+    // Called by Training_Play_Redirect after a module-scene Play redirect.
+    public bool Start_Module_By_Scene(string sceneName){
+        for (int i = 0; i < AvailableModules.Count; i++)
+            if (AvailableModules[i] != null && AvailableModules[i].Scene_Name == sceneName){
+                Start_Module(i);
+                return true;
+            }
+
+        return false;
     }
 
     public void Restart_Phase(){
@@ -137,6 +152,32 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
 
     private int GetScore(string moduleId){
         return quizScores.TryGetValue(moduleId, out int value) ? value : 0;
+    }
+
+    // Menu buttons are generated from AvailableModules — adding a module to that
+    // list is the only step needed to put it on the menu.
+    private void BuildModuleButtons(){
+        if (ModuleButtonPrefab == null || ModuleButtonContainer == null){
+            Debug.LogError("Lesson_Controller: ModuleButtonPrefab/ModuleButtonContainer not assigned — menu will be empty.");
+            return;
+        }
+
+        for (int i = 0; i < AvailableModules.Count; i++){
+            Lesson_Definition def = AvailableModules[i];
+
+            if (def == null)
+                continue;
+
+            Button button = Instantiate(ModuleButtonPrefab, ModuleButtonContainer);
+            button.gameObject.name = def.Module_Id + "_Button";
+            TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+
+            if (label != null)
+                label.text = def.Display_Name;
+
+            int index = i;
+            button.onClick.AddListener(() => Start_Module(index));
+        }
     }
 
     private void UpdateMenuStatus(){
