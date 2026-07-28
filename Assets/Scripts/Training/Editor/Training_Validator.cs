@@ -23,17 +23,24 @@ public static class Training_Validator{
         List<string> errors = new List<string>();
         List<string> warnings = new List<string>();
 
-        Lesson_Definition lesson = FindLessonForScene(scene.path, errors);
         Lesson_Sequencer sequencer = Object.FindFirstObjectByType<Lesson_Sequencer>(FindObjectsInactive.Include);
+        Lesson_Definition lesson = null;
 
-        if (sequencer == null)
+        if (sequencer == null){
             errors.Add($"no Lesson_Sequencer in '{scene.name}' — the scene cannot run a lesson.");
+        }
+        else{
+            lesson = FindLesson(sequencer, scene, errors);
+            CheckSequencerRefs(sequencer, lesson, errors);
+        }
 
-        if (sequencer != null)
-            CheckSequencerRefs(sequencer, errors);
+        CheckBuildSettings(scene, errors);
+        CheckDuplicateModuleIds(errors);
 
-        if (lesson != null && sequencer != null)
+        if (lesson != null){
+            CheckBootstrapReferences(lesson, warnings);
             CheckStepTargets(lesson, errors, warnings);
+        }
 
         foreach (string error in errors)
             Debug.LogError("Training_Validator: " + error);
@@ -47,34 +54,78 @@ public static class Training_Validator{
             Debug.Log($"Training_Validator: '{scene.name}' — {errors.Count} error(s), {warnings.Count} warning(s).");
     }
 
-    private static Lesson_Definition FindLessonForScene(string scenePath, List<string> errors){
-        string[] guids = AssetDatabase.FindAssets("t:Training_Module_Registry");
+    // The scene's own Lesson reference replaces the deleted module registry as the
+    // scene -> lesson mapping.
+    private static Lesson_Definition FindLesson(Lesson_Sequencer sequencer, Scene scene, List<string> errors){
+        Lesson_Definition lesson = sequencer.Lesson;
 
-        if (guids.Length == 0){
-            errors.Add("no Training_Module_Registry asset found.");
+        if (lesson == null){
+            errors.Add("Lesson_Sequencer.Lesson is empty — assign this module's Lesson_Definition asset.");
             return null;
         }
 
-        Training_Module_Registry registry = AssetDatabase.LoadAssetAtPath<Training_Module_Registry>(AssetDatabase.GUIDToAssetPath(guids[0]));
+        if (lesson.Scene_Name != scene.name)
+            errors.Add($"'{lesson.name}' has Scene_Name '{lesson.Scene_Name}' but the open scene is '{scene.name}' — Bootstrap loads by that name, so it would start a different scene.");
 
-        foreach (Training_Module_Registry.Entry entry in registry.Modules){
-            if (entry.Scene_Path != scenePath)
-                continue;
-
-            if (entry.Lesson == null)
-                errors.Add($"registry entry for '{scenePath}' has no Lesson_Definition.");
-
-            return entry.Lesson;
-        }
-
-        errors.Add($"'{scenePath}' is not in the module registry — it will never appear in the Bootstrap menu.");
-        return null;
+        return lesson;
     }
 
-    // Every one of these is dereferenced without a null check somewhere in
-    // Lesson_Sequencer.Awake or Begin, so an empty slot is a play-mode exception.
-    private static void CheckSequencerRefs(Lesson_Sequencer sequencer, List<string> errors){
-        string[] required = { "PromptPanel", "PromptText", "ContinueButton", "ResultsPanel", "ResultsText", "Registry" };
+    // Module_Loader.Load_Module uses LoadSceneAsync by name — the scene must be an
+    // enabled Build Settings entry or loading fails in a build. The list is
+    // hand-maintained and shared with other members' scenes; never regenerate it.
+    private static void CheckBuildSettings(Scene scene, List<string> errors){
+        foreach (EditorBuildSettingsScene entry in EditorBuildSettings.scenes){
+            if (entry.path != scene.path)
+                continue;
+
+            if (!entry.enabled)
+                errors.Add($"'{scene.path}' is in Build Settings but disabled — Module_Loader cannot load it in a build.");
+
+            return;
+        }
+
+        errors.Add($"'{scene.path}' is not in Build Settings — Module_Loader cannot load it. Add it by hand (File > Build Settings); do not touch other members' entries.");
+    }
+
+    // Module_Id is the save-file key: two lessons sharing an id silently read and
+    // write the same progress/score slot, so the menu shows the wrong per-module
+    // status with no error anywhere.
+    private static void CheckDuplicateModuleIds(List<string> errors){
+        Dictionary<string, string> seen = new Dictionary<string, string>();
+
+        foreach (string guid in AssetDatabase.FindAssets("t:Lesson_Definition")){
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            Lesson_Definition def = AssetDatabase.LoadAssetAtPath<Lesson_Definition>(path);
+
+            if (def == null || string.IsNullOrEmpty(def.Module_Id))
+                continue;
+
+            if (seen.TryGetValue(def.Module_Id, out string other))
+                errors.Add($"Module_Id '{def.Module_Id}' is used by both '{other}' and '{path}' — duplicate save keys silently share one progress/score slot.");
+            else
+                seen.Add(def.Module_Id, path);
+        }
+    }
+
+    // A lesson that validates clean but is not in Lesson_Controller.AvailableModules
+    // never appears on the menu — the old registry check covered this; a GUID scan
+    // of the committed Bootstrap scene covers it now.
+    private static void CheckBootstrapReferences(Lesson_Definition lesson, List<string> warnings){
+        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(lesson));
+
+        if (!System.IO.File.Exists(Training_Play_Redirect.BootstrapScenePath))
+            return;
+
+        if (!System.IO.File.ReadAllText(Training_Play_Redirect.BootstrapScenePath).Contains(guid))
+            warnings.Add($"'{lesson.name}' is not referenced by Bootstrap.unity — add it to Lesson_Controller.AvailableModules or it will never appear in the menu.");
+    }
+
+    // Every unconditional field here is dereferenced without a null check somewhere
+    // in Lesson_Sequencer.Awake or Begin, so an empty slot is a play-mode exception.
+    // Registry is null-guarded at runtime and only needed by Select_Component steps
+    // (M2 has none and legitimately leaves it empty).
+    private static void CheckSequencerRefs(Lesson_Sequencer sequencer, Lesson_Definition lesson, List<string> errors){
+        string[] required = { "PromptPanel", "PromptText", "ContinueButton", "ResultsPanel", "ResultsText" };
         SerializedObject so = new SerializedObject(sequencer);
 
         foreach (string field in required){
@@ -84,6 +135,15 @@ public static class Training_Validator{
                 errors.Add($"Lesson_Sequencer has no field '{field}' — this validator is out of date with the runtime.");
             else if (prop.objectReferenceValue == null)
                 errors.Add($"Lesson_Sequencer.{field} is empty.");
+        }
+
+        if (lesson != null && lesson.Steps.Exists(s => s.Kind == Lesson_Step_Kind.Select_Component)){
+            SerializedProperty registryProp = so.FindProperty("Registry");
+
+            if (registryProp == null)
+                errors.Add("Lesson_Sequencer has no field 'Registry' — this validator is out of date with the runtime.");
+            else if (registryProp.objectReferenceValue == null)
+                errors.Add("Lesson_Sequencer.Registry is empty but the lesson has Select_Component steps.");
         }
 
         if (sequencer.RetryButton == null) errors.Add("Lesson_Sequencer.RetryButton is empty.");

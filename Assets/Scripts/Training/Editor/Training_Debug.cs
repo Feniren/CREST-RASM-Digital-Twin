@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 // Play-mode debug drivers for no-headset flow testing. Module-agnostic — they
 // operate on whatever Lesson_Sequencer / registries are live. Module-specific
-// click helpers (doors, power switches, ...) live in each member's builder.
+// click helpers (doors, power switches, ...) live in each member's debug menu.
 public static class Training_Debug{
     [MenuItem("Training/8 Debug - Start Module 1")]
     public static void DebugStartModule1(){ StartModule(0); }

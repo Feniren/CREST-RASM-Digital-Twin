@@ -8,12 +8,16 @@ using UnityEngine.SceneManagement;
 // Pressing Play in a module scene therefore yields a dead scene. This redirect
 // makes Play start Bootstrap instead and auto-enters the module that was open,
 // through the normal Lesson_Controller.Start_Module path.
-// Scene paths come from the Training_Module_Registry asset — no hardcoded list.
+// A module scene is recognized by containing a Lesson_Sequencer (Bootstrap does
+// not); Bootstrap's path is the single const below.
 // Note: playModeStartScene is ignored if "Enter Play Mode Options -> Reload
 // Scene" is ever disabled — the redirect silently stops working in that case.
 [InitializeOnLoad]
 public static class Training_Play_Redirect{
     private const string AutoStartKey = "Training.AutoStartScene";
+
+    // Shared with Training_Validator's Bootstrap-reference check.
+    internal const string BootstrapScenePath = "Assets/Members/Colin/Scenes/Bootstrap.unity";
 
     private static bool autoStartHooked;
     private static bool autoStartDone;
@@ -29,16 +33,14 @@ public static class Training_Play_Redirect{
             Refresh();
     }
 
-    private static Training_Module_Registry LoadRegistry(){
-        string[] guids = AssetDatabase.FindAssets("t:Training_Module_Registry");
-        return guids.Length > 0
-            ? AssetDatabase.LoadAssetAtPath<Training_Module_Registry>(AssetDatabase.GUIDToAssetPath(guids[0]))
-            : null;
-    }
+    // Mirrors Lesson_Controller.OnModuleLoaded: a module scene is one with a
+    // Lesson_Sequencer in it.
+    private static bool IsModuleScene(Scene scene){
+        if (!scene.IsValid() || !scene.isLoaded)
+            return false;
 
-    private static bool IsModuleScene(Training_Module_Registry registry, string scenePath){
-        foreach (Training_Module_Registry.Entry entry in registry.Modules)
-            if (!string.IsNullOrEmpty(entry.Scene_Path) && entry.Scene_Path == scenePath)
+        foreach (GameObject root in scene.GetRootGameObjects())
+            if (root.GetComponentInChildren<Lesson_Sequencer>(true) != null)
                 return true;
 
         return false;
@@ -46,10 +48,18 @@ public static class Training_Play_Redirect{
 
     private static void Refresh(){
         Scene activeScene = SceneManager.GetActiveScene();
-        Training_Module_Registry registry = LoadRegistry();
 
-        if (registry != null && !string.IsNullOrEmpty(activeScene.name) && IsModuleScene(registry, activeScene.path)){
-            EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(registry.Bootstrap_Scene_Path);
+        if (IsModuleScene(activeScene)){
+            SceneAsset bootstrap = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootstrapScenePath);
+
+            if (bootstrap == null){
+                Debug.LogError($"Training_Play_Redirect: no scene at '{BootstrapScenePath}' — update BootstrapScenePath.");
+                EditorSceneManager.playModeStartScene = null;
+                SessionState.EraseString(AutoStartKey);
+                return;
+            }
+
+            EditorSceneManager.playModeStartScene = bootstrap;
             SessionState.SetString(AutoStartKey, activeScene.name);
         }
         else{
@@ -105,17 +115,7 @@ public static class Training_Play_Redirect{
             return;
         }
 
-        SerializedProperty modules = new SerializedObject(controller).FindProperty("AvailableModules");
-
-        for (int i = 0; i < modules.arraySize; i++){
-            Lesson_Definition definition = modules.GetArrayElementAtIndex(i).objectReferenceValue as Lesson_Definition;
-
-            if (definition != null && definition.Scene_Name == sceneName){
-                controller.Start_Module(i);
-                return;
-            }
-        }
-
-        Debug.LogError($"Training_Play_Redirect: no Lesson_Definition with Scene_Name '{sceneName}' on Lesson_Controller");
+        if (!controller.Start_Module_By_Scene(sceneName))
+            Debug.LogError($"Training_Play_Redirect: no Lesson_Definition with Scene_Name '{sceneName}' on Lesson_Controller.");
     }
 }

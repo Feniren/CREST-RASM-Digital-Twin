@@ -1,18 +1,24 @@
 using UnityEditor;
 using UnityEngine;
-using static Training_Builder_Core;
 
 // Module 1 — play-mode debug commands and the model diagnostics dump. These invoke
-// handlers on an already-built scene; none of them runs during a build, so nothing
-// here can affect the generated scene. Generic equivalents live in Training_Debug.
-public partial class M1_Module_Builder{
+// handlers on a running scene. Generic equivalents live in Training_Debug.
+public static class M1_Debug_Menu{
+    // Mirror the Target_Marker_Id strings in M1_Lesson.asset — Training/7 is what
+    // checks the scene side of the contract.
+    private const string MarkerGuardDoor = "guard_door";
+    private const string MarkerDoorUnlock = "door_unlock";
+    private const string MarkerPowerOn = "power_on";
+    private const string MarkerEmergencyStop = "emergency_stop";
+    private const string MillWrapperName = "PM8000_Training";
+
     [MenuItem("Training/8 Debug - Begin Practice Directly")]
     public static void DebugBeginPractice(){
         if (!Application.isPlaying) return;
         Lesson_Sequencer sequencer = Object.FindFirstObjectByType<Lesson_Sequencer>();
-        Lesson_Definition def = AssetDatabase.LoadAssetAtPath<Lesson_Definition>(Colin_Training_Paths.M1LessonPath);
-        if (sequencer == null){ Debug.LogError("M1_Debug_Menu: no Lesson_Sequencer (load Module 1 first)."); return; }
-        sequencer.Begin(def, Lesson_Mode.Practice);
+        if (sequencer == null){ Debug.LogError("M1_Debug_Menu: no Lesson_Sequencer (load a module first)."); return; }
+        if (sequencer.Lesson == null){ Debug.LogError("M1_Debug_Menu: Lesson_Sequencer.Lesson is not assigned in this scene."); return; }
+        sequencer.Begin(sequencer.Lesson, Lesson_Mode.Practice);
     }
 
     [MenuItem("Training/8 Debug - Click Guard Door")]
@@ -65,10 +71,10 @@ public partial class M1_Module_Builder{
 
     [MenuItem("Training/9 Dump Mill Diagnostics")]
     public static void DumpDiagnostics(){
-        GameObject wrapper = GameObject.Find(Colin_Training_Paths.MillWrapperName);
+        GameObject wrapper = GameObject.Find(MillWrapperName);
 
         if (wrapper == null){
-            Debug.LogError($"M1_Debug_Menu: no {Colin_Training_Paths.MillWrapperName} in open scene.");
+            Debug.LogError($"M1_Debug_Menu: no {MillWrapperName} in open scene.");
             return;
         }
 
@@ -94,5 +100,27 @@ public partial class M1_Module_Builder{
         }
 
         Debug.Log("M1_Debug_Menu diagnostics:\n" + sb);
+    }
+
+    private static Transform FindChild(Transform root, string name){
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
+            if (t.name == name)
+                return t;
+
+        return null;
+    }
+
+    private static Bounds RendererBounds(Transform root){
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0)
+            return new Bounds(root.position, Vector3.one * 0.1f);
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        return bounds;
     }
 }
