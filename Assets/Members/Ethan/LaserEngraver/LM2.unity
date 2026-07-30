@@ -3116,11 +3116,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4042314620155725101, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8535134499384648863, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
       propertyPath: PlayerSettings.XREnabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

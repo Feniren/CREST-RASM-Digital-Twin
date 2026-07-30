@@ -17,12 +17,6 @@ public class DriverPanel : MonoBehaviour
 
     readonly List<Sprite> runtimeSprites = new();
 
-    public void Start()
-    {
-        // demo test
-        ShowZSetPanel();
-    }
-
     public void ShowMainPanel()
     {
         mainPanel.SetActive(true);
