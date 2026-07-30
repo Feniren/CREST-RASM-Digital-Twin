@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Interactable_Handle : MonoBehaviour, Interact_Interface{
+public class Interactable_Handle : Interactable_Parent{
 	public Entity_Player PlayerReference;
 
 	private BoxCollider BoxColliderReference;
@@ -35,10 +35,13 @@ public class Interactable_Handle : MonoBehaviour, Interact_Interface{
 		}
 	}
 
-	public void Interact(Entity_Player PlayerReference){
+	public override void Interact(Entity_Player PlayerReference){
+		base.Interact(PlayerReference);
 	}
 
-	public void AlternateInteract(Entity_Player PlayerReference){
+	public override void AlternateInteract(Entity_Player PlayerReference){
+		base.Interact(PlayerReference);
+
 		this.PlayerReference = PlayerReference;
 
 		PlayerReference.LeftHandAnchor.GetComponentInChildren<Entity_XR_Hand>().OnGrabEnd.AddListener(OnGrabEnd);

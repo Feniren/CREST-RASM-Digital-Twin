@@ -1,18 +1,24 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MapSelectWidget : MonoBehaviour{
+public class JobSelectWidget : MonoBehaviour{
 	public GameObject PreviousWidget;
 
-	public MapSelectWidget(){
+	public Job_Manager JobManager;
+
+	public JobSelectWidget(){
+	}
+
+	public void Start(){
+		JobManager = FindFirstObjectByType<Job_Manager>();
 	}
 
 	public void LoadMap(string Name){
 		SceneManager.LoadScene(Name);
 	}
 
-	public void LoadDigitalTwin(){
-		LoadMap("DigitalTwin");
+	public void QueuePenholderJob(){
+		JobManager.QueueJob("Mill Epoxy Penholder");
 	}
 
 	public void LoadMillModule(){
@@ -30,6 +36,6 @@ public class MapSelectWidget : MonoBehaviour{
 	public void Cancel(){
 		GameObject NewWidget = Instantiate(PreviousWidget, transform.position, transform.rotation);
 
-		Destroy(gameObject);
+		//Destroy(gameObject);
 	}
 }

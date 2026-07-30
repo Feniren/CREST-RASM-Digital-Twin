@@ -15,15 +15,13 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
     public Camera CameraReference;
     public Health_Bar HealthBarReference;
-    public Item_Library ItemLibraryReference;
-    public Player_Settings PlayerSettings;
+	public Item_Library ItemLibraryReference;
+	public Player_Settings PlayerSettings;
 
 	public InputSystemUIInputModule DesktopEventSystem;
 	public XRUIInputModule VREventSystem;
 	
 	public Entity_XR_Hand ActiveHand;
-
-    List<InputDevice> XRList = new List<InputDevice>();
 
     void Awake(){
         PlayerSettings = new Player_Settings();
@@ -39,7 +37,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
 		StartCoroutine(LaunchXR(0.1f));
 
-        ItemLibraryReference = GetComponent<Item_Library>();
+        ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibraryReference;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -85,8 +83,6 @@ public class Entity_Player : Entity, Save_Data_Interface{
 		SpawnPoint = FindFirstObjectByType<Spawn_Point>().gameObject;
 
 		gameObject.transform.position = SpawnPoint.transform.position;
-
-		Debug.Log("New Scene loaded. Player position adjusted");
 
 		GetComponent<Rigidbody>().useGravity = true;
 	}
