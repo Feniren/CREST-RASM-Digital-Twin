@@ -32,6 +32,8 @@ public class ObjectiveManager : MonoBehaviour
         marker.GetComponent<MeshRenderer>().material = mat;
 
         marker.SetActive(false);
+
+        StartObjectives();
     }
 
     public void StartObjectives()

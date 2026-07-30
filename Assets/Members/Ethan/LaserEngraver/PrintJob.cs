@@ -21,39 +21,44 @@ public class PrintJob
 		DPI = dpi;
 	}
 
-	/// <summary>
-	/// Loads a raster image (PNG/JPG) and treats it as a grayscale burn mask.
-	/// White = full burn, black = no burn (easy to invert).
-	/// </summary>
-	public static PrintJob FromImage(byte[] fileData, float widthInches, int dpi)
-	{
-		Texture2D source = new Texture2D(2, 2);
-		source.LoadImage(fileData);
-		source.filterMode = FilterMode.Point;
+    /// <summary>
+    /// Loads a raster image (PNG/JPG) and treats it as a grayscale burn mask.
+    /// White = full burn, black = no burn (easy to invert).
+    /// </summary>
+    public static PrintJob FromImage(byte[] fileData, float widthInches, int dpi)
+    {
+        Texture2D source = new Texture2D(2, 2);
+        source.LoadImage(fileData);
+        return FromImage(source, widthInches, dpi);
+    }
 
-		float heightInches = widthInches * ((float)source.height / source.width);
+    public static PrintJob FromImage(Texture2D source, float widthInches, int dpi)
+    {
+        source.filterMode = FilterMode.Point;
 
-		// Convert to single-channel alpha mask
-		Texture2D mask = new Texture2D(source.width, source.height, TextureFormat.Alpha8, false);
-		Color[] pixels = source.GetPixels();
+        float heightInches = widthInches * ((float)source.height / source.width);
 
-		for (int i = 0; i < pixels.Length; i++)
-		{
-			float lum = pixels[i].grayscale; // BLACK = BURN: 1 - pixels instead
-			pixels[i] = new Color(0, 0, 0, lum);
-		}
+        // Convert to single-channel alpha mask
+        Texture2D mask = new Texture2D(source.width, source.height, TextureFormat.Alpha8, false);
+        Color[] pixels = source.GetPixels();
 
-		mask.SetPixels(pixels);
-		mask.Apply();
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            float lum = pixels[i].grayscale; // BLACK = BURN: 1 - pixels instead
+            pixels[i] = new Color(0, 0, 0, lum);
+        }
 
-		return new PrintJob(mask, widthInches, heightInches, dpi);
-	}
+        mask.SetPixels(pixels);
+        mask.Apply();
 
-	/// <summary>
-	/// Returns the mask resampled to match a target atlas resolution.
-	/// targetPixelsPerInch = atlas pixels per inch of machine space.
-	/// </summary>
-	public Texture2D GetResampledMask(float targetPixelsPerInch)
+        return new PrintJob(mask, widthInches, heightInches, dpi);
+    }
+
+    /// <summary>
+    /// Returns the mask resampled to match a target atlas resolution.
+    /// targetPixelsPerInch = atlas pixels per inch of machine space.
+    /// </summary>
+    public Texture2D GetResampledMask(float targetPixelsPerInch)
 	{
 		int targetW = Mathf.RoundToInt(WidthInches * targetPixelsPerInch);
 		int targetH = Mathf.RoundToInt(HeightInches * targetPixelsPerInch);
