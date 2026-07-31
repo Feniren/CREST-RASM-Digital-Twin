@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class LaserEngraver : MonoBehaviour
 {
-    public PrintJob readyJob;
+    public Laser_Head laserHeadRef;
+    public EngraveMask readyMask;
+
+    void OnEnable(){
+        laserHeadRef = FindFirstObjectByType<Laser_Head>();
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        readyJob = null;
+        readyMask = null;
     }
 
     // Update is called once per frame
@@ -16,10 +21,18 @@ public class LaserEngraver : MonoBehaviour
         
     }
 
-    public void DownloadJob(PrintJob job)
+    public void DownloadMask(EngraveMask mask)
     {
-        readyJob = job;
-        Debug.Log($"Downloaded print job: {job.WidthInches} x {job.HeightInches} inches at {job.DPI} DPI");
+        readyMask = mask;
+        Debug.Log($"Downloaded print job: {mask.WidthInches} x {mask.HeightInches} inches at {mask.DPI} DPI");
+    }
+
+    public void StartJob()
+    {
+        // TEMP: Laser_Head manages application of job; in the future,
+        //       it should only be in charge of applying the reveal mask.
+        laserHeadRef.LoadMask(readyMask);
+        laserHeadRef.TryApplyJob();
     }
 
 }

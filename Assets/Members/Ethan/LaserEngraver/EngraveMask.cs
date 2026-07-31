@@ -1,10 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Represents a resolved laser engraving job as a raster mask
+/// Represents a resolved laser engraving raster mask
 /// ready to be stamped onto a target atlas.
 /// </summary>
-public class PrintJob
+public class EngraveMask
 {
 	public Texture2D RasterMask { get; private set; }
 
@@ -13,7 +13,7 @@ public class PrintJob
 	public float HeightInches { get; private set; }
 	public int DPI { get; private set; }
 
-	public PrintJob(Texture2D mask, float widthInches, float heightInches, int dpi)
+	public EngraveMask(Texture2D mask, float widthInches, float heightInches, int dpi)
 	{
 		RasterMask = mask;
 		WidthInches = widthInches;
@@ -25,14 +25,14 @@ public class PrintJob
     /// Loads a raster image (PNG/JPG) and treats it as a grayscale burn mask.
     /// White = full burn, black = no burn (easy to invert).
     /// </summary>
-    public static PrintJob FromImage(byte[] fileData, float widthInches, int dpi)
+    public static EngraveMask FromImage(byte[] fileData, float widthInches, int dpi)
     {
         Texture2D source = new Texture2D(2, 2);
         source.LoadImage(fileData);
         return FromImage(source, widthInches, dpi);
     }
 
-    public static PrintJob FromImage(Texture2D source, float widthInches, int dpi)
+    public static EngraveMask FromImage(Texture2D source, float widthInches, int dpi)
     {
         source.filterMode = FilterMode.Point;
 
@@ -51,7 +51,7 @@ public class PrintJob
         mask.SetPixels(pixels);
         mask.Apply();
 
-        return new PrintJob(mask, widthInches, heightInches, dpi);
+        return new EngraveMask(mask, widthInches, heightInches, dpi);
     }
 
     /// <summary>

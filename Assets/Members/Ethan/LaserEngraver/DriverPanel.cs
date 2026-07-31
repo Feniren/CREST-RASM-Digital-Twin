@@ -7,6 +7,7 @@ public class DriverPanel : MonoBehaviour
     public GameObject mainPanel;
     public GameObject zSetPanel;
     public GameObject imagePanel;
+    public JobLaserEngrave managedJob;
     public List<Texture2D> images;
 
     [SerializeField] Transform imageContent;
@@ -16,6 +17,11 @@ public class DriverPanel : MonoBehaviour
     bool built;
 
     readonly List<Sprite> runtimeSprites = new();
+
+    public void OnEnable()
+    {
+        managedJob = GetComponentInChildren<JobLaserEngrave>();
+    }
 
     public void ShowMainPanel()
     {
@@ -77,6 +83,5 @@ public class DriverPanel : MonoBehaviour
     void OnImageClicked(int index)
     {
         // TODO: Add height/width settings for the print job
-        engraver.DownloadJob(PrintJob.FromImage(images[index], 100, 100));
     }
 }

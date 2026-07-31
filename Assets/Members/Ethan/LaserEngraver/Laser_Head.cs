@@ -4,8 +4,7 @@ using UnityEngine;
 public class Laser_Head : MonoBehaviour
 {
 	public float intensity = 100f;
-	public Texture2D testShape;
-	public PrintJob ActiveJob;
+	public EngraveMask ActiveMask;
 
 	public float atlasPixelsPerInch = 100f;
 
@@ -41,11 +40,11 @@ public class Laser_Head : MonoBehaviour
     }
 
     /// <summary>
-    /// Stamps the job atlas immediately and resets the reveal mask.
+    /// Stamps the mask atlas immediately and resets the reveal mask.
     /// Engraving becomes visible as the head moves over the block.
     /// </summary>
     [ContextMenu("Try to Apply Job")]
-	void TryApplyJob()
+	public void TryApplyJob()
     {
         if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
             return;
@@ -57,16 +56,16 @@ public class Laser_Head : MonoBehaviour
         int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
 
         block.ClearRevealMask();
-        Texture2D mask = ActiveJob.GetResampledMask(atlasPixelsPerInch);
-        block.PaintShape(mask, originX, originY, intensity);
+        Texture2D mask = ActiveMask.GetResampledMask(atlasPixelsPerInch);
+        block.PaintShape	(mask, originX, originY, intensity);
 
         if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
         _engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
     }
 
-    public void LoadJob(PrintJob job)
+    public void LoadMask(EngraveMask mask)
 	{
-		ActiveJob = job;
+		ActiveMask = mask;
 		if (_engraveCoroutine != null)
 		{
 			StopCoroutine(_engraveCoroutine);
@@ -74,24 +73,6 @@ public class Laser_Head : MonoBehaviour
 		}
 	}
 
-	[ContextMenu("Test Printing Shape")]
-	void TestPrintShape()
-	{
-		if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-			return;
-
-		Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
-		if (block == null)
-		{
-			Debug.LogWarning("Tried to print shape but didn't hit an engravable object.");
-			return;
-		}
-
-		int x = block.Atlas.width / 2;
-		int y = block.Atlas.height / 2;
-
-		block.PaintShape(testShape, x, y, intensity);
-	}
 
 	/// <summary>
 	/// Moves the laser head back and forth (X-axis) while stepping down (Z-axis).

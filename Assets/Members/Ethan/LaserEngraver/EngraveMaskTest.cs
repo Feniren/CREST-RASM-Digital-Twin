@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-public class PrintJobTest : MonoBehaviour
+public class EngraveMaskTest : MonoBehaviour
 {
 	public Laser_Head laserHead;
 	public string testImagePath = "Assets/Members/Ethan/TestImage.png";
@@ -22,7 +22,7 @@ public class PrintJobTest : MonoBehaviour
 		}
 
 		byte[] data = File.ReadAllBytes(fullPath);
-		PrintJob job = PrintJob.FromImage(data, jobWidthInches, jobDPI);
-		laserHead.LoadJob(job);
+		EngraveMask job = EngraveMask.FromImage(data, jobWidthInches, jobDPI);
+		laserHead.LoadMask(job);
 	}
 }
