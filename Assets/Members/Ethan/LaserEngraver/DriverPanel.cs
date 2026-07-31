@@ -83,5 +83,7 @@ public class DriverPanel : MonoBehaviour
     void OnImageClicked(int index)
     {
         // TODO: Add height/width settings for the print job
+        managedJob.Image2Engrave = EngraveMask.FromImage(images[index], 100, 100);
+        managedJob.DownloadJob();
     }
 }
