@@ -8,7 +8,10 @@ public class Laser_Head : MonoBehaviour
 
 	public float atlasPixelsPerInch = 100f;
 
-	[Tooltip("Reveal brush radius in UV space (0-1). Tune to match beam width.")]
+	[Tooltip("Only layers containing engraving proxy colliders.")]
+	public LayerMask engravingLayerMask;
+
+	[Tooltip("Reveal brush radius in UV space (0-1).")]
 	public float revealRadiusUV = 0.02f;
 
 	[Tooltip("Brush edge softness.")]
@@ -17,55 +20,100 @@ public class Laser_Head : MonoBehaviour
 
 	[Header("Movement Settings")]
 	public float moveSpeed = 2f;
+
 	[Tooltip("How far the laser head moves down on the Z axis per pass.")]
 	public float stepSize = 0.005f;
 
 	private Coroutine _engraveCoroutine;
 
-	void Update()
+	private void Update()
 	{
 		Debug.DrawRay(transform.position, Vector3.down * 100f, Color.red);
 	}
 
-    private void UpdateEngraving()
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-        {
-            Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
-            if (block != null)
-            {
-                block.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Stamps the mask atlas immediately and resets the reveal mask.
-    /// Engraving becomes visible as the head moves over the block.
-    /// </summary>
-    [ContextMenu("Try to Apply Job")]
-	public void TryApplyJob()
-    {
-        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 100f))
-            return;
-
-        Item_Epoxy_Block block = hit.collider.GetComponent<Item_Epoxy_Block>();
-        if (block == null) return;
-
-        int originX = Mathf.FloorToInt(hit.textureCoord.x * block.Atlas.width);
-        int originY = Mathf.FloorToInt(hit.textureCoord.y * block.Atlas.height);
-
-        block.ClearRevealMask();
-        Texture2D mask = ActiveMask.GetResampledMask(atlasPixelsPerInch);
-        block.PaintShape	(mask, originX, originY, intensity);
-
-        if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
-        _engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
-    }
-
-    public void LoadMask(EngraveMask mask)
+	private bool TryGetEngravable(out EngravableSurface surface, out RaycastHit hit)
 	{
+		surface = null;
+
+		if (!Physics.Raycast(transform.position, Vector3.down, out hit, 100f, engravingLayerMask, QueryTriggerInteraction.Collide))
+		{
+			Debug.Log($"[Laser_Head] Raycast from {transform.position} hit nothing on layer mask {engravingLayerMask.value}.", this);
+			return false;
+		}
+
+		Debug.Log($"[Laser_Head] Raycast hit '{hit.collider.name}' at {hit.point}, uv={hit.textureCoord}.", this);
+
+		EngraveDetector detector = hit.collider.GetComponent<EngraveDetector>();
+
+		if (detector == null)
+		{
+			Debug.LogWarning($"[Laser_Head] Hit collider '{hit.collider.name}' has no EngraveDetector component.", this);
+			return false;
+		}
+
+		surface = detector.Owner;
+
+		if (surface == null)
+			Debug.LogWarning($"[Laser_Head] EngraveDetector on '{hit.collider.name}' has no owning EngravableSurface configured.", this);
+
+		return surface != null;
+	}
+
+	private void UpdateEngraving()
+	{
+		if (TryGetEngravable(out EngravableSurface surface, out RaycastHit hit))
+		{
+			Debug.Log($"[Laser_Head] Painting reveal on '{surface.name}' at uv={hit.textureCoord}, radius={revealRadiusUV}.", this);
+			surface.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
+		}
+	}
+
+	[ContextMenu("Try to Apply Job")]
+	public void TryApplyJob()
+	{
+		if (ActiveMask == null)
+		{
+			Debug.LogWarning("[Laser_Head] TryApplyJob aborted: no ActiveMask assigned.", this);
+			return;
+		}
+
+		if (!TryGetEngravable(out EngravableSurface surface, out RaycastHit hit))
+		{
+			Debug.LogWarning("[Laser_Head] TryApplyJob aborted: no engravable surface found below the laser head.", this);
+			return;
+		}
+
+		int originX = Mathf.FloorToInt(hit.textureCoord.x * surface.Atlas.width);
+
+		int originY = Mathf.FloorToInt(hit.textureCoord.y * surface.Atlas.height);
+
+		Debug.Log($"[Laser_Head] Applying job at atlas pixel ({originX}, {originY}).", this);
+
+		surface.ClearRevealMask();
+
+		Texture2D mask = ActiveMask.GetResampledMask(atlasPixelsPerInch);
+
+		if (mask == null)
+		{
+			Debug.LogError("[Laser_Head] TryApplyJob aborted: ActiveMask.GetResampledMask returned null.", this);
+			return;
+		}
+
+		surface.PaintShape(mask, originX, originY, intensity);
+
+		if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
+
+		Debug.Log($"[Laser_Head] Starting raster scan movement over bounds {hit.collider.bounds}.", this);
+
+		_engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
+	}
+
+	public void LoadMask(EngraveMask mask)
+	{
+		Debug.Log($"[Laser_Head] LoadMask called.", this);
+
 		ActiveMask = mask;
+
 		if (_engraveCoroutine != null)
 		{
 			StopCoroutine(_engraveCoroutine);
@@ -73,12 +121,10 @@ public class Laser_Head : MonoBehaviour
 		}
 	}
 
-
-	/// <summary>
-	/// Moves the laser head back and forth (X-axis) while stepping down (Z-axis).
-	/// </summary>
 	private IEnumerator RasterScanMovement(Bounds targetBounds)
 	{
+		Debug.Log($"[Laser_Head] RasterScanMovement started. Bounds={targetBounds}, moveSpeed={moveSpeed}, stepSize={stepSize}.", this);
+
 		float minX = targetBounds.min.x;
 		float maxX = targetBounds.max.x;
 
@@ -86,9 +132,11 @@ public class Laser_Head : MonoBehaviour
 		float minZ = targetBounds.min.z;
 
 		Vector3 startCorner = new Vector3(minX, transform.position.y, currentZ);
+
 		while (Vector3.Distance(transform.position, startCorner) > 0.001f)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, startCorner, moveSpeed * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, startCorner, moveSpeed *
+													 Time.deltaTime);
 			yield return null;
 		}
 
@@ -97,21 +145,23 @@ public class Laser_Head : MonoBehaviour
 		while (currentZ >= minZ)
 		{
 			float targetX = movingRight ? maxX : minX;
+
 			Vector3 passTarget = new Vector3(targetX, transform.position.y, currentZ);
 
 			while (Vector3.Distance(transform.position, passTarget) > 0.001f)
 			{
 				transform.position = Vector3.MoveTowards(transform.position, passTarget, moveSpeed * Time.deltaTime);
-                UpdateEngraving();
-                yield return null;
+				UpdateEngraving();
+				yield return null;
 			}
 
 			currentZ -= stepSize;
-			movingRight = !movingRight; // Reverse direction for the next pass
+			movingRight = !movingRight;
 
 			if (currentZ >= minZ)
 			{
 				Vector3 stepDownTarget = new Vector3(transform.position.x, transform.position.y, currentZ);
+
 				while (Vector3.Distance(transform.position, stepDownTarget) > 0.001f)
 				{
 					transform.position = Vector3.MoveTowards(transform.position, stepDownTarget, moveSpeed * Time.deltaTime);
