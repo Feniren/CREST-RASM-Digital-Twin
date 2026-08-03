@@ -66,9 +66,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 170d3a8418370fe4c934cfa48d587828, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3787551989844118027}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 170d3a8418370fe4c934cfa48d587828, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8576154174200218739}
   m_SourcePrefab: {fileID: 100100000, guid: 170d3a8418370fe4c934cfa48d587828, type: 3}
 --- !u!1 &5848687157432659005 stripped
 GameObject:
@@ -111,17 +108,3 @@ MonoBehaviour:
   OnInteractBegin:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8576154174200218739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5848687157432659005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a07d4cb79488c145bb523d30be43425, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DEMO_Interactable
-  BlueGlass: {fileID: 2100000, guid: 134e9be1892da544a912c7aabdb9a755, type: 2}
-  RedMaterial: {fileID: 2100000, guid: e01324b768bab96488262de8fe4b280e, type: 2}

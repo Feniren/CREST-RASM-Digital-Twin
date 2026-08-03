@@ -16,23 +16,6 @@ MonoBehaviour:
   Scene_Name: ASRSModule1
   Display_Name: ASRS Walkthrough
   Steps:
-  - Step_Id: asrs
-    Kind: 1
-    Prompt_Text: "This is the ASRS — Automated Storage and Retrieval System.
-      It stores raw materials, work-in-progress parts, and finished goods as they
-      move through the CIM cell."
-    Practice_Prompt_Text:
-    Target_Marker_Id: ASRS
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
-  - Step_Id: conveyor
-    Kind: 1
-    Prompt_Text: The conveyor belt carries pallets between stations. Once the ASRS
-      releases a pallet, the conveyor moves it to the next step in the process.
-    Practice_Prompt_Text:
-    Target_Marker_Id: Conveyor
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
   - Step_Id: slotted_table
     Kind: 1
     Prompt_Text: "\"This is the slotted table buffer. It holds pallets temporarily
@@ -40,6 +23,14 @@ MonoBehaviour:
       line."
     Practice_Prompt_Text:
     Target_Marker_Id: SlottedTable
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: rfid_tag
+    Kind: 1
+    Prompt_Text: "\"This is the RFID tag on the slotted table. It's what the RFID
+      sensor reads to identify this pallet as it passes by.\""
+    Practice_Prompt_Text:
+    Target_Marker_Id: RFIDTag
     Narration: {fileID: 0}
     Include_In_Quiz: 0
   - Step_Id: epoxy_block

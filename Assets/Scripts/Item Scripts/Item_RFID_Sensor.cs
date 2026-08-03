@@ -23,9 +23,9 @@ public class Item_RFID_Sensor : Item_Parent{
 	public void OnTriggerEnter(Collider OverlappedCollider){
 		GameObject OverlappedObject = OverlappedCollider.gameObject;
 
-		if (OverlappedObject.GetComponent<Item_Plate>()){
+		if (OverlappedObject.GetComponent<Item_Slotted_Table>()){
 			if (OverlappedObject != Previous){
-				if (OverlappedObject.GetComponent<Item_Plate>().Item){
+				if (OverlappedObject.GetComponent<Item_Slotted_Table>().Item){
 					Previous = OverlappedObject;
 
 					ConveyorBeltReference.ToggleMovement();

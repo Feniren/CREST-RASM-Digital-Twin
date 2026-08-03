@@ -23,14 +23,28 @@ public class Item_Slotted_Table : Item_Parent{
         Text.GetComponent<TextMeshPro>().SetText(TableID);
 
         if (Item){
-            Item.transform.SetParent(AnchorPoint.transform, true);
-            Item.transform.position = AnchorPoint.transform.position;
-            Item.transform.rotation = Quaternion.LookRotation(AnchorPoint.transform.forward);
+            SetItem();
         }
 
         StartCoroutine(DrawLine());
     }
-    
+
+    public void OnTriggerEnter(Collider OverlappedCollider){
+        if (Item == null){
+            if (OverlappedCollider.gameObject.GetComponentInParent<Item_Parent>()){
+                Item_Parent OverlappedItem = OverlappedCollider.gameObject.GetComponentInParent<Item_Parent>();
+
+                if (OverlappedItem.Pickup){
+                    if (OverlappedItem.gameObject.transform.parent == null){
+                        Item = OverlappedItem.gameObject;
+
+                        SetItem();
+                    }
+                }
+            }
+        }
+    }
+
     IEnumerator DrawLine(){
         while (true){
             Debug.DrawLine(AnchorPoint.transform.position, AnchorPoint.transform.position + (AnchorPoint.transform.forward * 0.5f), Color.aliceBlue, 3.0f, false);
@@ -46,10 +60,28 @@ public class Item_Slotted_Table : Item_Parent{
 
                 PlayerReference.gameObject.GetComponent<Player_Controller>().ItemInstance = null;
 
-                Item.transform.SetParent(AnchorPoint.transform, false);
-                Item.transform.position = AnchorPoint.transform.position;
-                Item.transform.rotation = Quaternion.LookRotation(AnchorPoint.transform.forward);
+                SetItem();
             }
         }
+    }
+
+    public void SetItem(){
+        if (Item){
+            GetComponent<Collider>().enabled = false;
+
+            Item.GetComponent<Rigidbody>().isKinematic = true;
+            Item.transform.SetParent(AnchorPoint.transform, true);
+            Item.transform.position = AnchorPoint.transform.position;
+            Item.transform.rotation = Quaternion.LookRotation(AnchorPoint.transform.forward);
+            Item.GetComponent<Item_Parent>().OnGrabbed.AddListener(UnSetItem);
+        }
+    }
+
+    public void UnSetItem(){
+        GetComponent<Collider>().enabled = true;
+
+        Item.GetComponent<Item_Parent>().OnGrabbed.RemoveListener(UnSetItem);
+
+        Item = null;
     }
 }
