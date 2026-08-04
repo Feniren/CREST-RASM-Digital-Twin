@@ -7,12 +7,15 @@ public class Item_ASRS : Item_Parent
     public RACK_TASK task;
     public Item_Slotted_Table item = null;
     public Item_Epoxy_Block material = null;
-    public List<GameObject> BlockList = new List<GameObject>();
     public Spline_Animate splineAnimate;
     public Item_Conveyor_Belt conveyor;
 
-    [Tooltip("Prefab instantiated onto each empty table's AnchorPoint by LoadEpoxyBlocks().")]
+    [Tooltip("Default/fallback material prefab. Used for any row with no entry in MaterialList (or once MaterialList runs out).")]
     public GameObject EpoxyBlockPrefab;
+
+    [Tooltip("Materials loaded onto the rack by row: index 0 -> row 1, index 1 -> row 2, etc. " +
+             "A row past the end of this list, or with a blank entry, falls back to EpoxyBlockPrefab.")]
+    public List<GameObject> MaterialList = new List<GameObject>();
 
     [Header("Rack Generation")]
     [Tooltip("Item_Slotted_Table prefab (e.g. SlottedTableSingleBuffer) instantiated for every rack slot by GenerateRackTables(). Only used when the rack has no slotted tables yet.")]
@@ -213,9 +216,9 @@ public class Item_ASRS : Item_Parent
         Debug.Log($"Item_ASRS: Generated {RackRows * RackCols} rack tables.");
     }
 
-    // Instantiates EpoxyBlockPrefab onto every currently-empty table, then hands
-    // it to Item_Slotted_Table.SetItem() — reusing its existing anchor-snap,
-    // collider, and kinematic/grab-listener setup instead of duplicating it here.
+    // Instantiates a material onto every currently-empty table, then hands it to
+    // Item_Slotted_Table.SetItem() — reusing its existing anchor-snap, collider,
+    // and kinematic/grab-listener setup instead of duplicating it here.
     public void LoadEpoxyBlocks()
     {
         if (EpoxyBlockPrefab == null)
@@ -231,12 +234,27 @@ public class Item_ASRS : Item_Parent
             if (table == null || table.Item != null || table.AnchorPoint == null)
                 continue;
 
-            GameObject block = Instantiate(EpoxyBlockPrefab);
+            GameObject block = Instantiate(GetMaterialForTable(table));
             table.Item = block;
             table.SetItem();
 
             materialLocations[block] = kvp.Key;
         }
+    }
+
+    // Row 1 draws MaterialList[0], row 2 draws MaterialList[1], etc. Falls back to
+    // EpoxyBlockPrefab once the row runs past the list, or where an entry was left blank.
+    private GameObject GetMaterialForTable(Item_Slotted_Table table)
+    {
+        if (!string.IsNullOrWhiteSpace(table.TableID) && int.TryParse(table.TableID, out int rawTableID))
+        {
+            int rowIndex = (rawTableID / 10000) - 1;
+
+            if (rowIndex >= 0 && rowIndex < MaterialList.Count && MaterialList[rowIndex] != null)
+                return MaterialList[rowIndex];
+        }
+
+        return EpoxyBlockPrefab;
     }
 
     private int CountVacantSlots()
