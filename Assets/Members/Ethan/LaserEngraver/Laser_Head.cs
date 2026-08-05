@@ -24,7 +24,19 @@ public class Laser_Head : MonoBehaviour
 	[Tooltip("How far the laser head moves down on the Z axis per pass.")]
 	public float stepSize = 0.005f;
 
+	[Tooltip("Largest UV gap that is still treated as one continuous stroke. " +
+			 "Larger jumps start a new stroke instead of drawing a streak across the surface.")]
+	public float maxStrokeGapUV = 0.25f;
+
+	[Tooltip("Logs every raycast and reveal. Very noisy during an engrave job.")]
+	public bool verboseLogging = false;
+
 	private Coroutine _engraveCoroutine;
+
+	// Where the beam was when the reveal mask was last painted.
+	private EngravableSurface _strokeSurface;
+	private Vector2 _strokeUV;
+	private bool _strokeActive;
 
 	private void Update()
 	{
@@ -37,11 +49,14 @@ public class Laser_Head : MonoBehaviour
 
 		if (!Physics.Raycast(transform.position, Vector3.down, out hit, 100f, engravingLayerMask, QueryTriggerInteraction.Collide))
 		{
-			Debug.Log($"[Laser_Head] Raycast from {transform.position} hit nothing on layer mask {engravingLayerMask.value}.", this);
+			if (verboseLogging)
+				Debug.Log($"[Laser_Head] Raycast from {transform.position} hit nothing on layer mask {engravingLayerMask.value}.", this);
+
 			return false;
 		}
 
-		Debug.Log($"[Laser_Head] Raycast hit '{hit.collider.name}' at {hit.point}, uv={hit.textureCoord}.", this);
+		if (verboseLogging)
+			Debug.Log($"[Laser_Head] Raycast hit '{hit.collider.name}' at {hit.point}, uv={hit.textureCoord}.", this);
 
 		EngraveDetector detector = hit.collider.GetComponent<EngraveDetector>();
 
@@ -59,13 +74,40 @@ public class Laser_Head : MonoBehaviour
 		return surface != null;
 	}
 
+	/// <summary>
+	/// Reveals the span the beam covered since the previous call.
+	/// </summary>
 	private void UpdateEngraving()
 	{
-		if (TryGetEngravable(out EngravableSurface surface, out RaycastHit hit))
+		if (!TryGetEngravable(out EngravableSurface surface, out RaycastHit hit))
 		{
-			Debug.Log($"[Laser_Head] Painting reveal on '{surface.name}' at uv={hit.textureCoord}, radius={revealRadiusUV}.", this);
-			surface.PaintReveal(hit.textureCoord, revealRadiusUV, revealHardness);
+			EndStroke();
+			return;
 		}
+
+		Vector2 uv = hit.textureCoord;
+
+		bool continuous = _strokeActive && surface == _strokeSurface &&
+						  Vector2.Distance(_strokeUV, uv) <= maxStrokeGapUV;
+
+		if (verboseLogging)
+			Debug.Log($"[Laser_Head] Painting reveal on '{surface.name}' at uv={uv}, radius={revealRadiusUV}.", this);
+
+		surface.PaintRevealStroke(continuous ? _strokeUV : uv, uv, revealRadiusUV, revealHardness);
+
+		_strokeSurface = surface;
+		_strokeUV = uv;
+		_strokeActive = true;
+	}
+
+	/// <summary>
+	/// Breaks stroke continuity so the next reveal does not connect back to the
+	/// last one. Called whenever the beam is off, such as between raster passes.
+	/// </summary>
+	private void EndStroke()
+	{
+		_strokeActive = false;
+		_strokeSurface = null;
 	}
 
 	[ContextMenu("Try to Apply Job")]
@@ -103,6 +145,8 @@ public class Laser_Head : MonoBehaviour
 
 		if (_engraveCoroutine != null) StopCoroutine(_engraveCoroutine);
 
+		EndStroke();
+
 		Debug.Log($"[Laser_Head] Starting raster scan movement over bounds {hit.collider.bounds}.", this);
 
 		_engraveCoroutine = StartCoroutine(RasterScanMovement(hit.collider.bounds));
@@ -119,6 +163,8 @@ public class Laser_Head : MonoBehaviour
 			StopCoroutine(_engraveCoroutine);
 			_engraveCoroutine = null;
 		}
+
+		EndStroke();
 	}
 
 	private IEnumerator RasterScanMovement(Bounds targetBounds)
@@ -133,12 +179,9 @@ public class Laser_Head : MonoBehaviour
 
 		Vector3 startCorner = new Vector3(minX, transform.position.y, currentZ);
 
-		while (Vector3.Distance(transform.position, startCorner) > 0.001f)
-		{
-			transform.position = Vector3.MoveTowards(transform.position, startCorner, moveSpeed *
-													 Time.deltaTime);
-			yield return null;
-		}
+		EndStroke();
+
+		yield return MoveTo(startCorner, engrave: false);
 
 		bool movingRight = true;
 
@@ -148,29 +191,60 @@ public class Laser_Head : MonoBehaviour
 
 			Vector3 passTarget = new Vector3(targetX, transform.position.y, currentZ);
 
-			while (Vector3.Distance(transform.position, passTarget) > 0.001f)
-			{
-				transform.position = Vector3.MoveTowards(transform.position, passTarget, moveSpeed * Time.deltaTime);
-				UpdateEngraving();
-				yield return null;
-			}
+			yield return MoveTo(passTarget, engrave: true);
 
 			currentZ -= stepSize;
 			movingRight = !movingRight;
+
+			// The beam is off while stepping down, so the next pass starts fresh.
+			EndStroke();
 
 			if (currentZ >= minZ)
 			{
 				Vector3 stepDownTarget = new Vector3(transform.position.x, transform.position.y, currentZ);
 
-				while (Vector3.Distance(transform.position, stepDownTarget) > 0.001f)
-				{
-					transform.position = Vector3.MoveTowards(transform.position, stepDownTarget, moveSpeed * Time.deltaTime);
-					yield return null;
-				}
+				yield return MoveTo(stepDownTarget, engrave: false);
 			}
 		}
 
 		Debug.Log("Laser Engraving Finished.");
 		_engraveCoroutine = null;
+	}
+
+	/// <summary>
+	/// Moves to a target over the exact time the distance takes at moveSpeed.
+	/// Interpolating against accumulated elapsed time keeps the head on the same
+	/// path at any frame rate, with no per-frame rounding drift and no chance of
+	/// stalling near the target.
+	/// </summary>
+	private IEnumerator MoveTo(Vector3 target, bool engrave)
+	{
+		Vector3 start = transform.position;
+
+		float distance = Vector3.Distance(start, target);
+
+		float duration = distance / Mathf.Max(moveSpeed, 0.0001f);
+
+		if (duration <= 0f)
+		{
+			transform.position = target;
+
+			if (engrave) UpdateEngraving();
+
+			yield break;
+		}
+
+		float elapsed = 0f;
+
+		while (elapsed < duration)
+		{
+			elapsed = Mathf.Min(elapsed + Time.deltaTime, duration);
+
+			transform.position = Vector3.Lerp(start, target, elapsed / duration);
+
+			if (engrave) UpdateEngraving();
+
+			yield return null;
+		}
 	}
 }

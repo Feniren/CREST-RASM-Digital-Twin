@@ -209,20 +209,28 @@ public sealed class EngravableSurface : MonoBehaviour
     }
 
     /// <summary>
-    /// Paints a reveal circle at a UV coordinate.
+    /// Paints a reveal stroke swept between two UV coordinates.
     /// Radius is measured in normalized 0-1 UV space.
+    ///
+    /// Callers pass the span covered since their last sample.
     /// </summary>
-    public void PaintReveal(Vector2 uv, float radiusUV, float hardness = 0.8f)
+    public void PaintRevealStroke(
+        Vector2 uvFrom,
+        Vector2 uvTo,
+        float radiusUV,
+        float hardness = 0.8f)
     {
         if (_revealBrushMaterial == null || RevealMask == null)
         {
-            Debug.LogWarning($"[EngravableSurface] '{name}' PaintReveal skipped: " +
+            Debug.LogWarning($"[EngravableSurface] '{name}' PaintRevealStroke skipped: " +
                 $"revealBrushMaterial={(_revealBrushMaterial != null ? "set" : "null")}, " +
                 $"RevealMask={(RevealMask != null ? "set" : "null")}.", this);
             return;
         }
 
-        _revealBrushMaterial.SetVector("_BrushPos", new Vector4(uv.x, uv.y, 0f, 0f));
+        _revealBrushMaterial.SetVector("_BrushPos", new Vector4(uvFrom.x, uvFrom.y, 0f, 0f));
+
+        _revealBrushMaterial.SetVector("_BrushPosEnd", new Vector4(uvTo.x, uvTo.y, 0f, 0f));
 
         _revealBrushMaterial.SetFloat("_BrushRadius", Mathf.Max(0f, radiusUV));
 
@@ -230,17 +238,7 @@ public sealed class EngravableSurface : MonoBehaviour
             "_Hardness",
             Mathf.Clamp01(hardness));
 
-        /*
-         * Blitting from a RenderTexture back into itself can have undefined
-         * results. Use a temporary texture as the source.
-         */
-        RenderTexture temporary = RenderTexture.GetTemporary(
-            RevealMask.descriptor);
-
-        Graphics.Blit(RevealMask, temporary);
-        Graphics.Blit(temporary, RevealMask, _revealBrushMaterial);
-
-        RenderTexture.ReleaseTemporary(temporary);
+        Graphics.Blit(Texture2D.whiteTexture, RevealMask, _revealBrushMaterial);
     }
 
     /// <summary>
@@ -264,11 +262,7 @@ public sealed class EngravableSurface : MonoBehaviour
     /// originX and originY are atlas pixel coordinates.
     /// The stamp is counter-rotated so it remains aligned with world space.
     /// </summary>
-    public void PaintShape(
-        Texture2D shape,
-        int originX,
-        int originY,
-        float intensity)
+    public void PaintShape(Texture2D shape, int originX, int originY, float intensity)
     {
         if (shape == null || Atlas == null)
         {
@@ -320,15 +314,9 @@ public sealed class EngravableSurface : MonoBehaviour
                 float offsetX = pixelX - originX;
                 float offsetY = pixelY - originY;
 
-                float shapeX =
-                offsetX * cos -
-                offsetY * sin +
-                halfWidth;
+                float shapeX = offsetX * cos - offsetY * sin + halfWidth;
 
-                float shapeY =
-                offsetX * sin +
-                offsetY * cos +
-                halfHeight;
+                float shapeY = offsetX * sin + offsetY * cos + halfHeight;
 
                 int sampleX = Mathf.RoundToInt(shapeX);
                 int sampleY = Mathf.RoundToInt(shapeY);
