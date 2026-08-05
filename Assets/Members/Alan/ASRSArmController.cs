@@ -16,12 +16,23 @@ public class ASRSArmController : MonoBehaviour
     private float? targetX;
     private float? targetYaw;
 
+    private float homeZ;
+    private float homeY;
+    private float homeX;
+
     public Transform ArmZ => armZ;
     public Transform ArmY => armY;
     public Transform ArmX => armX;
 
     public bool IsMoving =>
         targetZ.HasValue || targetY.HasValue || targetX.HasValue || targetYaw.HasValue;
+
+    private void Awake()
+    {
+        if (armZ != null) homeZ = armZ.localPosition.z;
+        if (armY != null) homeY = armY.localPosition.y;
+        if (armX != null) homeX = armX.localPosition.x;
+    }
 
     private void Update()
     {
@@ -31,19 +42,23 @@ public class ASRSArmController : MonoBehaviour
         RotateYaw();
     }
 
+    // localZ/Y/X are offsets from whichever position the assigned Transform
+    // started at (recorded in Awake), not raw absolute local-space values —
+    // so "MoveY(1)" always means "1 unit up from home", regardless of what
+    // object ends up plugged into the Arm Y field or where it happens to sit.
     public void MoveZ(float localZ)
     {
-        targetZ = localZ;
+        targetZ = homeZ + localZ;
     }
 
     public void MoveY(float localY)
     {
-        targetY = localY;
+        targetY = homeY + localY;
     }
 
     public void MoveX(float localX)
     {
-        targetX = localX;
+        targetX = homeX + localX;
     }
 
     public void RotateY(float angle = 180f)

@@ -288,7 +288,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b44a5338-89e9-4313-9a66-1bc5882e3563"",
-                    ""path"": ""<XRController>{RightHand}/{PrimaryTrigger}"",
+                    ""path"": ""<XRController>{RightHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -398,7 +398,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""379157a8-807d-4b3b-b685-7699f4230770"",
-                    ""path"": ""<XRController>{RightHand}/{PrimaryTrigger}"",
+                    ""path"": ""<XRController>{RightHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -464,7 +464,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0a3fb1ca-fe49-4b9b-8a53-f9036e810e4c"",
-                    ""path"": ""<XRController>{LeftHand}/{PrimaryTrigger}"",
+                    ""path"": ""<XRController>{LeftHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
