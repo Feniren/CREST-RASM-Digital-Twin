@@ -138,7 +138,6 @@ public class Player_Controller : Controller{
 					Debug.Log("Item created at " + ItemInstance.transform.position);
 
 					PlayerInput.ItemEquipped.Enable();
-					PlayerInput.Player.ShootPhysical.Disable();
 				}
 			}
 		}
