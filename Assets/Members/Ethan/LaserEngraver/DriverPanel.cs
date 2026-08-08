@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class DriverPanel : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class DriverPanel : MonoBehaviour
     public GameObject imagePanel;
     public JobLaserEngrave managedJob;
     public List<Texture2D> images;
+    public TextMeshProUGUI operationModeText;
+
+    // TODO: Get rid of this as soon as LM2ObjManager is replaced
+    public ObjectiveManager manager;
 
     [SerializeField] Transform imageContent;
     [SerializeField] GameObject imageButtonPrefab; // Button + RawImage
@@ -85,5 +90,13 @@ public class DriverPanel : MonoBehaviour
         // TODO: Add height/width settings for the print job
         managedJob.Image2Engrave = EngraveMask.FromImage(images[index], 100, 100);
         managedJob.DownloadJob();
+        // TODO: Change logic below when LM2ObjManager is replaced
+        manager.PrintFileDownloaded();
+    }
+
+    public void OnOperationModeClicked()
+    {
+        // TODO: Do more than set to manual
+        operationModeText.text = "Manual";
     }
 }

@@ -1,8 +1,22 @@
 using UnityEngine;
+using TMPro;
 
 public class ObjectiveManager : MonoBehaviour
 {
-    [Header("Objective 1: Move object to zone")]
+    [Header("UI")]
+    public TextMeshProUGUI objectiveText;
+    [TextArea]
+    public string[] stageMessages = new string[]
+    {
+        "Set mode to manual",
+        "Download print file",
+        "Move gauge under laser carriage",
+        "Set zero point",
+        "Press RUN"
+    };
+    public string wrongHeightMessage = "Not at zero point yet";
+
+    [Header("Objective 3: Move object to zone")]
     public Transform targetObject;
     public Vector3 zoneCenter;
     public float zoneRadius = 1f;
@@ -10,12 +24,19 @@ public class ObjectiveManager : MonoBehaviour
     public float detectionHeight = 3f;
     public Color zoneColor = new Color(0f, 1f, 0.4f, 0.35f);
 
-    [Header("Objective 2: Height check")]
+    [Header("Objective 4: Height check (zero point)")]
     public Transform checkedObject;
     public float requiredY = 2f;
     public float tolerance = 0.1f;
 
     const int IDLE = -1;
+    const int MANUAL_MODE = 0;
+    const int DOWNLOAD_PRINT_FILE = 1;
+    const int MOVE_TO_ZONE = 2;
+    const int HEIGHT_CHECK = 3;
+    const int RUN = 4;
+    const int COMPLETE = 5;
+
     int stage = IDLE;
     GameObject marker;
 
@@ -38,8 +59,9 @@ public class ObjectiveManager : MonoBehaviour
 
     public void StartObjectives()
     {
-        stage = 0;
-        if (marker != null) marker.SetActive(true);
+        stage = MANUAL_MODE;
+        if (marker != null) marker.SetActive(false);
+        UpdateText();
     }
 
     public void ResetObjectives()
@@ -48,9 +70,35 @@ public class ObjectiveManager : MonoBehaviour
         if (marker != null) marker.SetActive(false);
     }
 
-    void Update()
+    void UpdateText()
     {
-        if (stage != 0) return;
+        if (objectiveText == null) return;
+        if (stage >= 0 && stage < stageMessages.Length)
+            objectiveText.text = stageMessages[stage];
+        else
+            objectiveText.text = "";
+    }
+
+    public void ManualSet()
+    {
+        if (stage != MANUAL_MODE) return;
+        Debug.Log("Objective 1 complete: manual mode set");
+        stage = DOWNLOAD_PRINT_FILE;
+        UpdateText();
+    }
+
+    public void PrintFileDownloaded()
+    {
+        if (stage != DOWNLOAD_PRINT_FILE) return;
+        Debug.Log("Objective 2 complete: print file downloaded");
+        stage = MOVE_TO_ZONE;
+        if (marker != null) marker.SetActive(true);
+        UpdateText();
+    }
+
+    void Update() // includes objective 3 logic
+    {
+        if (stage != MOVE_TO_ZONE) return;
 
         Vector3 p = targetObject.position;
         float dy = p.y - zoneCenter.y;
@@ -60,26 +108,35 @@ public class ObjectiveManager : MonoBehaviour
         Vector2 b = new Vector2(zoneCenter.x, zoneCenter.z);
         if (Vector2.Distance(a, b) <= zoneRadius)
         {
-            Debug.Log("Objective 1 complete");
+            Debug.Log("Objective 3 complete: object in zone");
             marker.SetActive(false);
-            stage = 1;
+            stage = HEIGHT_CHECK;
+            UpdateText();
         }
     }
 
     public void ConfirmObjective()
     {
-        if (stage != 1) return;
+        if (stage != HEIGHT_CHECK) return;
 
         if (Mathf.Abs(checkedObject.position.y - requiredY) <= tolerance)
         {
-            Debug.Log("Objective 2 complete");
-            stage = 2;
+            Debug.Log("Objective 4 complete: zero point confirmed");
+            stage = RUN;
+            UpdateText();
         }
         else
         {
             Debug.Log("Not right yet: y = " + checkedObject.position.y);
+            if (objectiveText != null) objectiveText.text = wrongHeightMessage;
         }
+    }
 
-        ResetObjectives();
+    public void RunTriggered()
+    {
+        if (stage != RUN) return;
+        Debug.Log("Objective 5 complete: run started");
+        stage = COMPLETE;
+        UpdateText();
     }
 }

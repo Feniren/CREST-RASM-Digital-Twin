@@ -2186,6 +2186,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8103256146342a6478ef7a96afb22c02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LM2ObjManager
+  objectiveText: {fileID: 1697776479}
+  stageMessages:
+  - Set mode to manual
+  - Download print file
+  - Move object to zone
+  - Set zero point
+  - RUN and print
+  wrongHeightMessage: Incorrect zero point height
   targetObject: {fileID: 868555379}
   zoneCenter: {x: -0.664, y: 0.54, z: 2.662}
   zoneRadius: 0.15
@@ -3472,6 +3480,8 @@ MonoBehaviour:
   managedJob: {fileID: 0}
   images:
   - {fileID: 2800000, guid: 351776f8a24f08941816d0761dc5659d, type: 3}
+  operationModeText: {fileID: 215568995}
+  manager: {fileID: 435620178}
   imageContent: {fileID: 1110749530}
   imageButtonPrefab: {fileID: 6157620973783047914, guid: 2e879ffa80e50134a85838e012120da8, type: 3}
   engraver: {fileID: 957957061}
@@ -3958,6 +3968,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 435620178}
+        m_TargetAssemblyTypeName: ObjectiveManager, Assembly-CSharp
+        m_MethodName: RunTriggered
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &882215656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4058,7 +4080,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 905790930}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 435620178}
+        m_TargetAssemblyTypeName: ObjectiveManager, Assembly-CSharp
+        m_MethodName: ManualSet
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 751327272}
+        m_TargetAssemblyTypeName: DriverPanel, Assembly-CSharp
+        m_MethodName: OnOperationModeClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &905790930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6546,6 +6592,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
+--- !u!114 &1697776479 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1895462541305201175, guid: 34a206139b07232439b6a5334e4fc80a, type: 3}
+  m_PrefabInstance: {fileID: 1697776478}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1729657991 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8480719488249995161, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
