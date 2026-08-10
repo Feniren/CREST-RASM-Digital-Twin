@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
+using UnityEngine.InputSystem.XR;
 
 public class Player_Controller : Controller{
     public InputAction InputSystem;
@@ -212,9 +214,30 @@ public class Player_Controller : Controller{
 	public void LeftClick(InputAction.CallbackContext Context){
 		RaycastHit Hit;
 
-		if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-			if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
-				Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
+			}
+		}
+		else{
+			GameObject ActiveHand;
+
+			if (Context.control.device.usages.IndexOf(x => x == CommonUsages.LeftHand) >= 0){
+				ActiveHand = LeftHand;
+			}
+			else if (Context.control.device.usages.IndexOf(x => x == CommonUsages.RightHand) >= 0){
+				ActiveHand = RightHand;
+			}
+			else{
+				return;
+			}
+
+			if (Physics.Raycast(ActiveHand.transform.position, ActiveHand.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
 			}
 		}
 	}
