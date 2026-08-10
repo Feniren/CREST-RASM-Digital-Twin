@@ -84,12 +84,18 @@ MonoBehaviour:
   Owner: {fileID: 0}
   Pickup: 0
   Quantity: 0
-  Name: 
+  Name: RFID Sensor
   OnGrabbed:
     m_PersistentCalls:
       m_Calls: []
   ID: 
   ConveyorBeltReference: {fileID: 0}
+  CNCMachineReference: {fileID: 0}
+  TargetItem: {fileID: 0}
+  SensedPlate: {fileID: 0}
+  OnTargetFound:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &5205922366926106133
 BoxCollider:
   m_ObjectHideFlags: 0
