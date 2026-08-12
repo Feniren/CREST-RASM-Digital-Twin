@@ -11,19 +11,22 @@ public class SequenceManager : MonoBehaviour
     [System.Serializable]
     public class Step
     {
-        [Tooltip("The part GameObjects for this step. Each must have a Marker_Interactable on it. All are shown together; the step advances once every one of them has been clicked.")]
+        [Tooltip("The part GameObjects for this step. Each must have a Marker_Interactable on it. All become visible and clickable as soon as this step begins (alongside infoText) — the step advances once every one of them has been clicked.")]
         public GameObject[] targets;
 
-        [Tooltip("Shown first, before the Next button is pressed.")]
+        [Tooltip("Shown as soon as this step begins, at the same time its targets become visible.")]
         [TextArea(2, 4)]
         public string infoText;
 
-        [Tooltip("Optional: shown after Next is pressed once. Leave blank to skip straight to this step's interaction on Next. Use this for instructions that follow an introduction in infoText.")]
+        [Tooltip("Optional: a follow-up hint revealed when Next is pressed (targets are already visible/clickable by then). Leave blank if infoText alone is enough — Next then has nothing to do on this step.")]
         [TextArea(2, 4)]
         public string instructionsText;
 
         [Tooltip("Optional: this step also waits until this table has an item placed on it (Item != null) — e.g. the player manually places a held part via the table's own AlternateInteract.")]
         public Item_Plate RequiredOccupiedTable;
+
+        [Tooltip("Optional: for steps with no Marker_Interactable targets (e.g. a software/UI action like a control-panel button) — leave targets empty and set this instead. The step completes when NotifyAction() is called with this exact string.")]
+        public string requiredActionId;
     }
 
     [Header("Steps in order")]
@@ -104,37 +107,59 @@ public class SequenceManager : MonoBehaviour
             return;
         }
 
-        if (infoPanel != null)
-            infoPanel.UpdateText(steps[index].infoText);
+        Step step = steps[index];
 
+        if (infoPanel != null)
+            infoPanel.UpdateText(step.infoText);
+
+        // Next is only needed to reveal instructionsText, if this step has
+        // any — it no longer gates the targets themselves.
         if (nextButton != null)
-            nextButton.SetActive(true);
+            nextButton.SetActive(!string.IsNullOrEmpty(step.instructionsText));
+
+        // Targets go live immediately: the object infoText is describing
+        // should already be visible (and clickable) while it's on screen,
+        // not just once the trainee has clicked through to instructions.
+        BeginStepInteraction(step);
     }
 
-    // Hook this to the instruction panel's Next button OnClick.
-    public void OnNextPressed()
+    // For steps with no Marker_Interactable targets — call this once a
+    // software/UI action (e.g. a control-panel button) succeeds, passing the
+    // same string as that step's requiredActionId. No-ops if the current step
+    // isn't waiting on that action (or isn't waiting on an action at all).
+    public void NotifyAction(string actionId)
     {
-        if (interactionActive || currentIndex < 0 || currentIndex >= steps.Length)
+        if (!interactionActive || currentIndex < 0 || currentIndex >= steps.Length)
             return;
 
         Step step = steps[currentIndex];
 
-        if (!shownInstructions && !string.IsNullOrEmpty(step.instructionsText))
-        {
-            shownInstructions = true;
-            if (infoPanel != null) infoPanel.UpdateText(step.instructionsText);
-            return;
-        }
+        if (!string.IsNullOrEmpty(step.requiredActionId) && step.requiredActionId == actionId)
+            TryCompleteStep();
+    }
 
-        BeginStepInteraction(step);
+    // Hook this to the instruction panel's Next button OnClick. Targets are
+    // already live by the time this can be pressed (see ActivateStep) — this
+    // only reveals the optional instructionsText follow-up, then hides
+    // itself since there's nothing further for Next to do on this step.
+    public void OnNextPressed()
+    {
+        if (currentIndex < 0 || currentIndex >= steps.Length)
+            return;
+
+        Step step = steps[currentIndex];
+
+        if (shownInstructions || string.IsNullOrEmpty(step.instructionsText))
+            return;
+
+        shownInstructions = true;
+        if (infoPanel != null) infoPanel.UpdateText(step.instructionsText);
+        if (nextButton != null) nextButton.SetActive(false);
     }
 
     private void BeginStepInteraction(Step step)
     {
         interactionActive = true;
-
-        if (nextButton != null)
-            nextButton.SetActive(false);
 
         foreach (GameObject target in step.targets)
         {
