@@ -1011,7 +1011,7 @@ PrefabInstance:
       objectReference: {fileID: -382652638819485698, guid: adf695e81179d454c8947d6457e29f94, type: 3}
     - target: {fileID: 5848687157432659005, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_Name
-      value: PowerInteractable
+      value: USBPower
       objectReference: {fileID: 0}
     - target: {fileID: 6512597964779288199, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -1092,6 +1092,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ASRS_Power_Interactable
   PoweredOnMaterial: {fileID: 2100000, guid: 073e58a762f985047a1f1ae6d13df576, type: 2}
   PoweredOffMaterial: {fileID: -382652638819485698, guid: adf695e81179d454c8947d6457e29f94, type: 3}
+  RevealOnPowerOn: {fileID: 0}
   Sequence_Manager: {fileID: 436308603}
   PowerOnActionId: controller_power_on
 --- !u!1 &200236454 stripped
@@ -1959,7 +1960,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -2.600006, y: 45.59999}
+  m_AnchoredPosition: {x: -2.5999756, y: 45.599976}
   m_SizeDelta: {x: -5.2, y: 91.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &379384354
@@ -2210,8 +2211,7 @@ MonoBehaviour:
     instructionsText: Turn on the laptop to continue.
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: laptop_power_on
-  - targets:
-    - {fileID: 175849411}
+  - targets: []
     infoText: "This is the ASRS Controller-USB. It runs the SCORBASE software and
       is what actually drives the ASRS robotic arm \u2014 SCORBASE talks to it over
       USB, and it talks to the arm's motors directly."
@@ -2528,6 +2528,34 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 436308603}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnNextPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SequenceManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513035907872292842, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5300068347840151576, guid: 16632aa5ab19cea40a5e2a6d77d949b5, type: 3}
       propertyPath: m_SizeDelta.x
       value: 112.7
@@ -2799,7 +2827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &631428701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2930,7 +2958,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.804, y: 1.2173}
+  m_AnchoredPosition: {x: 2.538, y: 1.2173}
   m_SizeDelta: {x: 863.8215, y: 438.0259}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &673872015
@@ -3167,7 +3195,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 124342516709872685, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: m_Name
-      value: Marker_EButton
+      value: Marker_USBEButton
       objectReference: {fileID: 0}
     - target: {fileID: 788710960788934295, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: m_LocalScale.x
@@ -4090,7 +4118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8756301897996794924, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: Marker_Id
-      value: ASRSEButton
+      value: ASRSEStop
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6508,6 +6536,10 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 793334454529829958, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 1128974877098888665, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
       propertyPath: EpoxyBlockPrefab
       value: 
@@ -7162,7 +7194,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4320558180572046448, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
       propertyPath: m_Name
-      value: uploads_files_3557370_desktop+computer
+      value: ScorbasePC
       objectReference: {fileID: 0}
     - target: {fileID: 6791289068139120580, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7220,32 +7252,16 @@ PrefabInstance:
       addedObject: {fileID: 1688674026}
     - targetCorrespondingSourceObject: {fileID: -4320558180572046448, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1688674025}
+      addedObject: {fileID: 1688674028}
+    - targetCorrespondingSourceObject: {fileID: -4320558180572046448, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1688674030}
   m_SourcePrefab: {fileID: 3150474306388093854, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
 --- !u!1 &1688674024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -4320558180572046448, guid: 5de9c26b4751da6429f6b35ef9a4aaa6, type: 3}
   m_PrefabInstance: {fileID: 1688674023}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1688674025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688674024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3752cdf6c41efef4797c4f8589757a25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Marker_Interactable
-  Marker_Id: ComputerPowerOn
-  FadeDuration: 0.25
-  PulseSpeed: 2
-  PulseAmount: 0.3
-  OnSelected:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!23 &1688674026
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7310,6 +7326,44 @@ MonoBehaviour:
   OnInteractBegin:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &1688674028
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1688674024}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.81786454, y: 0.4966637, z: 1}
+  m_Center: {x: 0.09106773, y: -0.031961143, z: 0}
+--- !u!114 &1688674030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1688674024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69215e49fa22acf44b951bcf76770ad8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Power_Interactable
+  PoweredOnMaterial: {fileID: 0}
+  PoweredOffMaterial: {fileID: 0}
+  RevealOnPowerOn: {fileID: 631428700}
+  Sequence_Manager: {fileID: 436308603}
+  PowerOnActionId: laptop_power_on
 --- !u!1 &1741403984 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4268794636867867076, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
