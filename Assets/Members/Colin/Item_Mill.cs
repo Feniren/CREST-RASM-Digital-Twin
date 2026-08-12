@@ -7,8 +7,6 @@ public class Item_Mill : Item_Station{
 	[SerializeField] private MillingAnimation millingAnimation;
 	public Item_Robot_Arm RobotArm;
 
-	public Item_RFID_Sensor SensorReference;
-
 	private bool _isProcessing;
 
 	public override bool IsProcessing => _isProcessing;

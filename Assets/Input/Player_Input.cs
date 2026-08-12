@@ -288,7 +288,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b44a5338-89e9-4313-9a66-1bc5882e3563"",
-                    ""path"": ""<XRController>{RightHand}/triggerPressed"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryTrigger}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -408,6 +408,17 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""ee10f64c-624d-43a5-ab3a-f09932ad2dbe"",
+                    ""path"": ""<XRController>{LeftHand}/triggerPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootPhysical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""dc5c5473-3ad5-46e0-80ed-50e62cec8607"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
@@ -464,7 +475,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0a3fb1ca-fe49-4b9b-8a53-f9036e810e4c"",
-                    ""path"": ""<XRController>{LeftHand}/triggerPressed"",
+                    ""path"": ""<XRController>{LeftHand}/{PrimaryTrigger}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

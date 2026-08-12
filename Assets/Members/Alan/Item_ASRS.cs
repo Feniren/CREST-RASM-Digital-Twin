@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item_ASRS : Item_Parent
+public class Item_ASRS : Item_CNC_Machine
 {
     public RACK_TASK task;
     public Item_Slotted_Table item = null;
@@ -38,6 +38,7 @@ public class Item_ASRS : Item_Parent
     private const int RackCols = 6;
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
+
 	// public List<Machine_Job> Jobs = new List<Machine_Job>();
 	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
 
