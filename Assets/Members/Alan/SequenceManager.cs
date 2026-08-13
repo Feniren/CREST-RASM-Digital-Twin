@@ -27,6 +27,9 @@ public class SequenceManager : MonoBehaviour
 
         [Tooltip("Optional: for steps with no Marker_Interactable targets (e.g. a software/UI action like a control-panel button) — leave targets empty and set this instead. The step completes when NotifyAction() is called with this exact string.")]
         public string requiredActionId;
+
+        [Tooltip("Optional: the part to fly up and showcase in front of the trainee's face when the Hint button is pressed on this step. Leave blank if this step has no visual hint.")]
+        public Transform hintTarget;
     }
 
     [Header("Steps in order")]
@@ -35,6 +38,7 @@ public class SequenceManager : MonoBehaviour
     [Header("Shared references")]
     [SerializeField] private InstructionDisplay infoPanel;
     [SerializeField] private GameObject nextButton; // shown while paging through a step's text, hidden once its interaction begins
+    [SerializeField] private Hint_PartShowcase hintShowcase; // optional — wire the Hint button's OnClick() to OnHintPressed()
     [SerializeField] private string completionText = "Great job — you've identified every part. Let's test what you've learned.";
 
     [Header("Events")]
@@ -155,6 +159,18 @@ public class SequenceManager : MonoBehaviour
         shownInstructions = true;
         if (infoPanel != null) infoPanel.UpdateText(step.instructionsText);
         if (nextButton != null) nextButton.SetActive(false);
+    }
+
+    // Hook this to the Hint button's OnClick(). Shows the current step's
+    // hintTarget (if any) flying up in front of the trainee's face.
+    public void OnHintPressed()
+    {
+        if (currentIndex < 0 || currentIndex >= steps.Length || hintShowcase == null)
+            return;
+
+        Transform hintTarget = steps[currentIndex].hintTarget;
+        if (hintTarget != null)
+            hintShowcase.PlayHint(hintTarget);
     }
 
     private void BeginStepInteraction(Step step)

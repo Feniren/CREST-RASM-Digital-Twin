@@ -183,12 +183,12 @@ public static class ASRS_Module2_Sequence_Builder
 
         SetStep(steps.GetArrayElementAtIndex(7),
             "With the arm homed, you can now command it to any storage cell by its Table ID. This is the same kind of check a real installation runs before trusting the ASRS with real parts.",
-            "On the SCORBASE panel, type a storage cell ID (e.g. 010001) and press Go.",
+            "On the SCORBASE panel, type a storage cell ID (e.g. 070001) and press Go — the arm starts facing this side, so it can reach it without rotating.",
             "test_move");
 
         SetStep(steps.GetArrayElementAtIndex(8),
             "A full test also proves the arm can reach the far side of the rack, which requires it to rotate before moving — exactly like the real ASRS-36x2 switching sides.",
-            "Now type a cell ID on the far side of the rack (row 7 or higher, e.g. 070001) and press Go again.",
+            "Now type a cell ID on the far side of the rack (row 1 through 6, e.g. 010001) and press Go again — the arm should rotate first, then move.",
             "test_move");
 
         // Step 10: the material-flow proof. No code calls this yet — needs a

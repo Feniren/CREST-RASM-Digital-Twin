@@ -22,8 +22,15 @@ public class ASRSArmController : MonoBehaviour
 
     [Header("Rotation (separate from Arm Y — Rotatation's own Animator, plays ArmRotation / ArmRotationBack)")]
     [SerializeField] private Animator rotationAnimator;
-    [Tooltip("Must match the length of ArmRotation / ArmRotationBack so rotation can't be re-triggered mid-swing.")]
-    [SerializeField] private float rotationDuration = 6f;
+
+    [Header("Manual-move travel limits (offset from home)")]
+    [Tooltip("Z/Y are overwritten automatically at startup by ASRSArmTester.SetZYLimits(), derived from the rack's own corner slots (010001/010006/060001/060006) — these starting values only matter if that hookup is missing. X (depth) isn't part of the slot grid, so it's always manual — tune it to how far the arm can safely extend into a slot.")]
+    [SerializeField] private float minZ = -5f;
+    [SerializeField] private float maxZ = 5f;
+    [SerializeField] private float minY = -5f;
+    [SerializeField] private float maxY = 5f;
+    [SerializeField] private float minX = -2f;
+    [SerializeField] private float maxX = 2f;
 
     private float? targetZ;
     private float? targetY;
@@ -86,6 +93,17 @@ public class ASRSArmController : MonoBehaviour
         }
     }
 
+    // Called once by ASRSArmTester at startup, after it loads the rack's slot
+    // grid — derives the safe Z/Y travel range from the rack's own corner
+    // slots instead of a hand-guessed number.
+    public void SetZYLimits(float newMinZ, float newMaxZ, float newMinY, float newMaxY)
+    {
+        minZ = newMinZ;
+        maxZ = newMaxZ;
+        minY = newMinY;
+        maxY = newMaxY;
+    }
+
     // Drives every axis back to its recorded home offset and the default
     // (U) side, mirroring SCORBASE's "Search Home" — each axis (and the
     // rotation) reports back via AxisArrived, then AllAxesHomed fires once
@@ -116,19 +134,30 @@ public class ASRSArmController : MonoBehaviour
     // started at (recorded in Awake), not raw absolute local-space values —
     // so "MoveY(1)" always means "1 unit up from home", regardless of what
     // object ends up plugged into the Arm Y field or where it happens to sit.
-    public void MoveZ(float localZ)
+    //
+    // Each clamps to the configured min/max travel limit and returns false if
+    // the requested value had to be clamped — so a manual jog that would take
+    // the arm out of the rack still moves it right up to the limit, instead
+    // of silently doing nothing or overshooting.
+    public bool MoveZ(float localZ)
     {
-        targetZ = homeZ + localZ;
+        float clamped = Mathf.Clamp(localZ, minZ, maxZ);
+        targetZ = homeZ + clamped;
+        return Mathf.Approximately(clamped, localZ);
     }
 
-    public void MoveY(float localY)
+    public bool MoveY(float localY)
     {
-        targetY = homeY + localY;
+        float clamped = Mathf.Clamp(localY, minY, maxY);
+        targetY = homeY + clamped;
+        return Mathf.Approximately(clamped, localY);
     }
 
-    public void MoveX(float localX)
+    public bool MoveX(float localX)
     {
-        targetX = homeX + localX;
+        float clamped = Mathf.Clamp(localX, minX, maxX);
+        targetX = homeX + clamped;
+        return Mathf.Approximately(clamped, localX);
     }
 
     // angle 0 = non-U side, angle 180 (or anything else) = U side.
@@ -146,15 +175,35 @@ public class ASRSArmController : MonoBehaviour
         if (isRotating || rotationAnimator == null)
             return;
 
-        rotationAnimator.Play(targetSide == Side.U ? "ArmRotation" : "ArmRotationBack");
+        // CurrentSide starts at U, so the very first rotation anyone triggers
+        // targets NonU — mapped to "ArmRotation" here (not "ArmRotationBack")
+        // so that's the clip that plays first.
+        string stateName = targetSide == Side.U ? "ArmRotationBack" : "ArmRotation";
+        rotationAnimator.Play(stateName, 0, 0f);
         CurrentSide = targetSide;
-        StartCoroutine(LockDuringRotation());
+        StartCoroutine(LockDuringRotation(stateName));
     }
 
-    private IEnumerator LockDuringRotation()
+    // Waits on the Animator's own reported progress rather than a fixed
+    // duration, so it can't drift out of sync with what's actually playing —
+    // a fixed WaitForSeconds only matches reality if it's hand-kept equal to
+    // the clip length, and the very first Play() after the Animator becomes
+    // active can evaluate faster than normal, throwing that assumption off.
+    private IEnumerator LockDuringRotation(string stateName)
     {
         isRotating = true;
-        yield return new WaitForSeconds(rotationDuration);
+
+        // Play() doesn't take effect until the Animator's own update runs;
+        // wait a frame so the state info below reflects the new state, not
+        // whatever was playing (or not) before this call.
+        yield return null;
+
+        while (rotationAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateName)
+               && rotationAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+        {
+            yield return null;
+        }
+
         isRotating = false;
         AxisArrived?.Invoke("Rotate");
     }

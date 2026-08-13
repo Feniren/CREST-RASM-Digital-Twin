@@ -126,19 +126,24 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
             return;
 
         float step = JogStep * direction;
+        bool withinLimits;
 
         switch (axis)
         {
             case Axis.Z:
-                armController.MoveZ(armController.OffsetZ + step);
+                withinLimits = armController.MoveZ(armController.OffsetZ + step);
                 break;
             case Axis.Y:
-                armController.MoveY(armController.OffsetY + step);
+                withinLimits = armController.MoveY(armController.OffsetY + step);
                 break;
             case Axis.X:
-                armController.MoveX(armController.OffsetX + step);
+                withinLimits = armController.MoveX(armController.OffsetX + step);
                 break;
+            default:
+                return;
         }
+
+        SetError(withinLimits ? string.Empty : $"{axis} axis is at its travel limit — can't move further.");
     }
 
     private void OnSpeedEdited(string text)

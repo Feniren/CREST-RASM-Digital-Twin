@@ -39,8 +39,11 @@ public static class ASRS_Scorbase_Panel_Builder
             return;
         }
 
+        // Scale is the panel's only size control — nothing else overrides it,
+        // so it's safe to tune this (or the Transform's Scale directly on an
+        // already-built instance) up or down freely.
         Vector3 spawnPos = armController.transform.position + Vector3.up * 1.3f + armController.transform.forward * 1.5f;
-        Canvas canvas = CreateWorldCanvas(PanelName, new Vector2(520f, 640f), 0.0009f, spawnPos);
+        Canvas canvas = CreateWorldCanvas(PanelName, new Vector2(520f, 640f), 0.0018f, spawnPos);
         canvas.gameObject.AddComponent<GraphicRaycaster>();
         canvas.gameObject.AddComponent<TrackedDeviceGraphicRaycaster>();
         AddBackground(canvas.transform, new Color(0.05f, 0.07f, 0.12f, 0.95f));

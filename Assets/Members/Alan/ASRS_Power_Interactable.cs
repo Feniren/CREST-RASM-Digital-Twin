@@ -5,6 +5,7 @@ using UnityEngine;
 // Interactable_Select on the same GameObject fires OnInteractBegin, which
 // swaps the MeshRenderer's material — just semantically on/off instead of a
 // color demo, and with the state readable by other scripts.
+[RequireComponent(typeof(Interactable_Select))]
 public class ASRS_Power_Interactable : MonoBehaviour{
 	public bool IsPoweredOn { get; private set; }
 
@@ -26,7 +27,14 @@ public class ASRS_Power_Interactable : MonoBehaviour{
 	public void Start(){
 		MeshRendererReference = GetComponent<MeshRenderer>();
 
-		GetComponent<Interactable_Select>().OnInteractBegin.AddListener(TogglePower);
+		Interactable_Select select = GetComponent<Interactable_Select>();
+
+		if (select == null){
+			Debug.LogError($"[ASRS_Power_Interactable] No Interactable_Select on {name} — this switch can't be clicked. Add one.", this);
+			return;
+		}
+
+		select.OnInteractBegin.AddListener(TogglePower);
 
 		if (RevealOnPowerOn != null)
 			RevealOnPowerOn.SetActive(IsPoweredOn);

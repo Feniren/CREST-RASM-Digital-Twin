@@ -69,7 +69,67 @@ public class ASRSArmTester : MonoBehaviour
 
         currentSlotIndex = SlotsPerSide + centerSlotIndex; // start on SlotsB, matching the rig's U-facing rest pose
 
+        ApplyCornerTravelLimits();
+
         Debug.Log($"[ASRS] Loaded {slotsA.Length} SlotsA + {slotsB.Length} SlotsB slots. Tracking starts at index {currentSlotIndex}.");
+    }
+
+    // Derives the arm's safe Z/Y travel range from the rack's own corner
+    // slots instead of a hand-guessed number. Uses SlotsB's corners
+    // (070001/070006/120001/120006) specifically because CurrentSide starts
+    // at U — matching SlotsB — so at this point in Awake() that's the only
+    // side whose deltas are computed under the rig's actual current rotation.
+    // SlotsA's corners can't be trusted here: computing them before ever
+    // rotating would read them through the wrong (U-facing) rotation frame
+    // and give numbers that don't hold once the rig actually rotates to face
+    // them. Instead of trusting SlotsB's exact signed min/max, the range is
+    // made symmetric (±the largest magnitude seen) — a mirrored value from
+    // the other side after rotation still falls inside a symmetric range no
+    // matter which way its sign comes out, sidestepping that mismatch
+    // entirely. A small margin is added on top for safety.
+    private const float TravelLimitMargin = 1.1f;
+
+    private void ApplyCornerTravelLimits()
+    {
+        if (armController == null)
+        {
+            Debug.LogWarning("[ASRS] No ASRSArmController assigned — can't set travel limits from the rack corners.", this);
+            return;
+        }
+
+        int[] cornerIndices =
+        {
+            0,                                    // row 7,  col 1 (070001)
+            Cols - 1,                             // row 7,  col 6 (070006)
+            (Rows - 1) * Cols,                     // row 12, col 1 (120001)
+            (Rows - 1) * Cols + (Cols - 1)         // row 12, col 6 (120006)
+        };
+
+        float maxAbsZ = 0f;
+        float maxAbsY = 0f;
+        bool any = false;
+
+        foreach (int index in cornerIndices)
+        {
+            if (!TryComputeSlotDelta(true, index, out float z, out float y))
+                continue;
+
+            any = true;
+            maxAbsZ = Mathf.Max(maxAbsZ, Mathf.Abs(z));
+            maxAbsY = Mathf.Max(maxAbsY, Mathf.Abs(y));
+        }
+
+        if (!any)
+        {
+            Debug.LogWarning("[ASRS] Could not compute corner travel limits — corner slot transforms not ready.", this);
+            return;
+        }
+
+        float limitZ = maxAbsZ * TravelLimitMargin;
+        float limitY = maxAbsY * TravelLimitMargin;
+
+        armController.SetZYLimits(-limitZ, limitZ, -limitY, limitY);
+        Debug.Log($"[ASRS] Travel limits set from rack corners: Z [{-limitZ:F2}, {limitZ:F2}]  Y [{-limitY:F2}, {limitY:F2}]");
     }
 
     private Transform[] LoadSlots(Transform container)
