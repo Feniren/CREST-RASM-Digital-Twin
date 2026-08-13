@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Linq;
 
 public class Data_Loader : MonoBehaviour{
@@ -11,14 +12,23 @@ public class Data_Loader : MonoBehaviour{
     [SerializeField]
     private string FileName;
 
-    public Data_Loader instance{get; private set;}
+	[SerializeField]
+	public Item_Library ItemLibraryReference;
+
+    public Data_Loader Instance{get; private set;}
 
     private void Awake(){
-        if (instance != null){
+        if (Instance != null && Instance != this){
             Debug.LogError("Save Data Loader duplicate detected");
+
+			Destroy(gameObject);
+
+			return;
         }
 
-        instance = this;
+        Instance = this;
+
+		DontDestroyOnLoad(gameObject);
     }
 
     private void Start(){
@@ -58,7 +68,23 @@ public class Data_Loader : MonoBehaviour{
         SaveGame();
     }
 
-    private List<Save_Data_Interface> FindSaveableObjects(){
+	private void OnDisable(){
+		SceneManager.sceneLoaded -= OnSceneLoaded;
+	}
+
+	private void OnEnable(){
+		SceneManager.sceneLoaded += OnSceneLoaded;
+	}
+	
+	private void OnSceneLoaded(Scene scene, LoadSceneMode mode){
+		/*GameObject PlayerReference = FindFirstObjectByType<Entity_Player>().gameObject;
+
+		PlayerReference.transform.position += new Vector3(0.0f, 10.0f, 0.0f);
+
+		Debug.Log("New Scene loaded. Player position adjusted");*/
+	}
+
+	private List<Save_Data_Interface> FindSaveableObjects(){
         IEnumerable<Save_Data_Interface> SaveableObjects = FindObjectsOfType<MonoBehaviour>().OfType<Save_Data_Interface>();
 
         return new List<Save_Data_Interface>(SaveableObjects);

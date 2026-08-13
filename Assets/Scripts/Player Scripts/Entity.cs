@@ -7,7 +7,7 @@ public class Entity : MonoBehaviour{
     public TextAsset EntityStatSheet;
     public Inventory InventoryReference;
 
-    public GameObject RespawnPoint;
+    public GameObject SpawnPoint;
 
     public virtual void Start(){
         EntityStatistics = new Entity_Statistics();
@@ -21,7 +21,7 @@ public class Entity : MonoBehaviour{
 
         EntityStatistics.HealthCurrent = EntityStatistics.HealthMax;
         EntityStatistics.HealthNormalized = 1.0f;
-        EntityStatistics.JumpForce = 60.0f;
+        EntityStatistics.JumpForce = 50.0f;
         EntityStatistics.MovementSpeed = 5.0f;
     }
 

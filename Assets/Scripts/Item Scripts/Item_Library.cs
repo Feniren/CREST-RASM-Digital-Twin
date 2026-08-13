@@ -1,19 +1,41 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+
 using UnityEngine;
 
-[System.Serializable]
-public class Item_Library : MonoBehaviour{
-    [SerializeField]
-    public List<GameObject> ItemLibrary = new List<GameObject>();
+[CreateAssetMenu(menuName = "Item/Item Library")]
+public class Item_Library : ScriptableObject{
+	[SerializeField]
+	private List<GameObject> Items = new List<GameObject>();
 
-    public GameObject Find(string Item){
-        for (int i = 0; i < ItemLibrary.Count; i++){
-            if (ItemLibrary[i].GetComponent<Item_Parent>().Name.Equals(Item)){
-                return ItemLibrary[i];
-            }
-        }
+	private Dictionary<string, GameObject> ItemDictionary;
 
-        return null;
-    }
+	private void OnEnable(){
+		BuildDictionary();
+	}
+
+	private void BuildDictionary(){
+		ItemDictionary = new Dictionary<string, GameObject>();
+
+		for (int Index = 0; Index < Items.Count; Index++){
+			Item_Parent ItemReference = Items[Index].GetComponent<Item_Parent>();
+
+			ItemDictionary.Add(ItemReference.Name, Items[Index]);
+		}
+	}
+
+	public GameObject GetItemFromName(string Name){
+		if (ItemDictionary == null){
+			BuildDictionary();
+		}
+
+		if (ItemDictionary.TryGetValue(Name, out GameObject ItemPrefab)){
+			return ItemPrefab;
+		}
+		else{
+			Debug.LogError(Name + " not found as an Item");
+
+			return null;
+		}
+	}
 }

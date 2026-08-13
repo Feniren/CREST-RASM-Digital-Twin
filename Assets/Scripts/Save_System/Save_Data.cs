@@ -15,7 +15,7 @@ public class Save_Data{
         StaticInventory = new Serialized_Dictionary<string, int>();
         Module_Progress = new Serialized_Dictionary<string, int>();
         Quiz_Scores = new Serialized_Dictionary<string, int>();
-        PlayerLocation = new Vector3(0.0f, 20.0f, 0.0f);
+        PlayerLocation = new Vector3(0.0f, 5.0f, 0.0f);
         PlayerRotation = Quaternion.identity;
         PlayerScale = Vector3.one;
     }

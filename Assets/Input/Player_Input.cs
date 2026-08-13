@@ -183,6 +183,15 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""ToggleBag"",
+                    ""type"": ""Button"",
+                    ""id"": ""17b5d276-74f8-4880-8f1e-28aa366f2c40"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""XRControllerLeftPosition"",
                     ""type"": ""Value"",
                     ""id"": ""65041af2-887e-4a7e-b0e7-558966591108"",
@@ -379,6 +388,28 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""477bfa20-26e3-4a76-b3b3-2886766dbcfd"",
                     ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootPhysical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""379157a8-807d-4b3b-b685-7699f4230770"",
+                    ""path"": ""<XRController>{RightHand}/triggerPressed"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShootPhysical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ee10f64c-624d-43a5-ab3a-f09932ad2dbe"",
+                    ""path"": ""<XRController>{LeftHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -713,6 +744,28 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""XRRightGrab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7deb4c2-cdf6-4873-bd59-df0cc6c9fdcf"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleBag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e58cad6c-d528-486d-bc41-aa4033985de8"",
+                    ""path"": ""<XRController>{RightHand}/{SecondaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleBag"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1077,6 +1130,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_SwitchCameraPerspective = m_Player.FindAction("SwitchCameraPerspective", throwIfNotFound: true);
         m_Player_CreateItem = m_Player.FindAction("CreateItem", throwIfNotFound: true);
         m_Player_AlternateInteract = m_Player.FindAction("AlternateInteract", throwIfNotFound: true);
+        m_Player_ToggleBag = m_Player.FindAction("ToggleBag", throwIfNotFound: true);
         m_Player_XRControllerLeftPosition = m_Player.FindAction("XRControllerLeftPosition", throwIfNotFound: true);
         m_Player_XRControllerLeftRotation = m_Player.FindAction("XRControllerLeftRotation", throwIfNotFound: true);
         m_Player_XRControllerLeftTrackingState = m_Player.FindAction("XRControllerLeftTrackingState", throwIfNotFound: true);
@@ -1194,6 +1248,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwitchCameraPerspective;
     private readonly InputAction m_Player_CreateItem;
     private readonly InputAction m_Player_AlternateInteract;
+    private readonly InputAction m_Player_ToggleBag;
     private readonly InputAction m_Player_XRControllerLeftPosition;
     private readonly InputAction m_Player_XRControllerLeftRotation;
     private readonly InputAction m_Player_XRControllerLeftTrackingState;
@@ -1254,6 +1309,10 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/AlternateInteract".
         /// </summary>
         public InputAction @AlternateInteract => m_Wrapper.m_Player_AlternateInteract;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToggleBag".
+        /// </summary>
+        public InputAction @ToggleBag => m_Wrapper.m_Player_ToggleBag;
         /// <summary>
         /// Provides access to the underlying input action "Player/XRControllerLeftPosition".
         /// </summary>
@@ -1346,6 +1405,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started += instance.OnAlternateInteract;
             @AlternateInteract.performed += instance.OnAlternateInteract;
             @AlternateInteract.canceled += instance.OnAlternateInteract;
+            @ToggleBag.started += instance.OnToggleBag;
+            @ToggleBag.performed += instance.OnToggleBag;
+            @ToggleBag.canceled += instance.OnToggleBag;
             @XRControllerLeftPosition.started += instance.OnXRControllerLeftPosition;
             @XRControllerLeftPosition.performed += instance.OnXRControllerLeftPosition;
             @XRControllerLeftPosition.canceled += instance.OnXRControllerLeftPosition;
@@ -1414,6 +1476,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @AlternateInteract.started -= instance.OnAlternateInteract;
             @AlternateInteract.performed -= instance.OnAlternateInteract;
             @AlternateInteract.canceled -= instance.OnAlternateInteract;
+            @ToggleBag.started -= instance.OnToggleBag;
+            @ToggleBag.performed -= instance.OnToggleBag;
+            @ToggleBag.canceled -= instance.OnToggleBag;
             @XRControllerLeftPosition.started -= instance.OnXRControllerLeftPosition;
             @XRControllerLeftPosition.performed -= instance.OnXRControllerLeftPosition;
             @XRControllerLeftPosition.canceled -= instance.OnXRControllerLeftPosition;
@@ -1853,6 +1918,13 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlternateInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleBag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleBag(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "XRControllerLeftPosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

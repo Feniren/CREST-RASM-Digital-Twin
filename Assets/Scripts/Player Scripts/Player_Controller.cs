@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
+using UnityEngine.InputSystem.XR;
 
 public class Player_Controller : Controller{
     public InputAction InputSystem;
     public Entity_Player PlayerReference;
     public Rigidbody RigidBodyReference;
 
+	public GameObject Bag;
     public GameObject PhysicalProjectilePrefab;
     public GameObject SpellProjectilePrefab;
 	public GameObject ItemInstance = null;
@@ -39,7 +42,8 @@ public class Player_Controller : Controller{
 		PlayerInput.Player.Move.performed += Move;
         PlayerInput.Player.Move.canceled += StopMoving;
         PlayerInput.Player.ResetPosition.performed += ResetPosition;
-        //PlayerInput.Player.ShootPhysical.performed += ShootPhysical;
+		PlayerInput.Player.ToggleBag.performed += ToggleBag;
+        PlayerInput.Player.ShootPhysical.performed += LeftClick;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
         PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
@@ -49,7 +53,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.XRRightGrab.canceled += GrabEnd;
         PlayerInput.Player.XRLeftGrab.canceled += GrabEnd;
 
-        FirstPersonCameraLocation = new Vector3(0.0f, 0.433f, 0.328f);
+        FirstPersonCameraLocation = new Vector3(0.0f, 1.4968f, 0.328f);
         IsFirstPerson = true;
         ThirdPersonCameraLocation = new Vector3(0.0f, 1.14f, -2.161f);
     }
@@ -67,7 +71,9 @@ public class Player_Controller : Controller{
     }
 
     private void OnDisable(){
-        //InputSystem.Disable();
+		InputSystem.Disable();
+
+		PlayerInput.Disable();
     }
 
     private void FixedUpdate(){
@@ -94,7 +100,7 @@ public class Player_Controller : Controller{
             if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
-        }
+		}
     }   
 
     public void AlternateInteract(InputAction.CallbackContext Context){
@@ -112,8 +118,6 @@ public class Player_Controller : Controller{
 			if (ItemInstance){
 				Item_Parent Item = ItemInstance.GetComponent<Item_Parent>();
 
-				Debug.Log("Item exists. Adding to inventory");
-
 				PlayerReference.InventoryReference.AddToInventory(Item.Name, 1);
 
 				Destroy(ItemInstance);
@@ -123,7 +127,7 @@ public class Player_Controller : Controller{
 			}
 			else{
 				if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
+					ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.GetItemFromName(PlayerReference.InventoryReference.StaticInventory[^1].Key), (gameObject.transform.position + (PlayerReference.CameraReference.transform.forward * 2.0f)), Quaternion.identity);
 
 					PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
 
@@ -136,7 +140,6 @@ public class Player_Controller : Controller{
 					Debug.Log("Item created at " + ItemInstance.transform.position);
 
 					PlayerInput.ItemEquipped.Enable();
-					PlayerInput.Player.ShootPhysical.Disable();
 				}
 			}
 		}
@@ -208,6 +211,37 @@ public class Player_Controller : Controller{
         }
     }
 
+	public void LeftClick(InputAction.CallbackContext Context){
+		RaycastHit Hit;
+
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
+			}
+		}
+		else{
+			GameObject ActiveHand;
+
+			if (Context.control.device.usages.IndexOf(x => x == CommonUsages.LeftHand) >= 0){
+				ActiveHand = LeftHand;
+			}
+			else if (Context.control.device.usages.IndexOf(x => x == CommonUsages.RightHand) >= 0){
+				ActiveHand = RightHand;
+			}
+			else{
+				return;
+			}
+
+			if (Physics.Raycast(ActiveHand.transform.position, ActiveHand.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
+			}
+		}
+	}
+
 	public void Look(InputAction.CallbackContext Context){
 		if (Context.performed){
 			Vector2 Look = Context.ReadValue<Vector2>();
@@ -236,7 +270,7 @@ public class Player_Controller : Controller{
     }
 
     public void ResetPosition(InputAction.CallbackContext Context){
-        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 10.0f, 10.0f);
+        PlayerReference.gameObject.transform.position = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
     public void ShootPhysical(InputAction.CallbackContext Context){
@@ -309,6 +343,17 @@ public class Player_Controller : Controller{
 				ItemInstance.GetComponent<Rigidbody>().AddForce((PlayerReference.CameraReference.transform.forward * ThrowForce), ForceMode.Impulse);
 
 				ItemInstance = null;
+			}
+		}
+	}
+
+	public void ToggleBag(InputAction.CallbackContext Context){
+		if (Context.performed){
+			if (!Bag.activeSelf){
+				Bag.SetActive(true);
+			}
+			else{
+				Bag.SetActive(false);
 			}
 		}
 	}

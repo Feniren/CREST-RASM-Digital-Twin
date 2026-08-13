@@ -97,6 +97,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ToggleBag",
+                    "type": "Button",
+                    "id": "17b5d276-74f8-4880-8f1e-28aa366f2c40",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "XRControllerLeftPosition",
                     "type": "Value",
                     "id": "65041af2-887e-4a7e-b0e7-558966591108",
@@ -293,6 +302,28 @@
                     "name": "",
                     "id": "477bfa20-26e3-4a76-b3b3-2886766dbcfd",
                     "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShootPhysical",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "379157a8-807d-4b3b-b685-7699f4230770",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShootPhysical",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ee10f64c-624d-43a5-ab3a-f09932ad2dbe",
+                    "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -627,6 +658,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "XRRightGrab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d7deb4c2-cdf6-4873-bd59-df0cc6c9fdcf",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleBag",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e58cad6c-d528-486d-bc41-aa4033985de8",
+                    "path": "<XRController>{RightHand}/{SecondaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleBag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

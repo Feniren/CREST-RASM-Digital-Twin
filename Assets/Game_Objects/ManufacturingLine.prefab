@@ -71,17 +71,22 @@ Transform:
   - {fileID: 7255438261858586629}
   - {fileID: 1875623742696566258}
   - {fileID: 3025658746424066477}
+  - {fileID: 6165129946809042490}
   - {fileID: 8633246770099020692}
   - {fileID: 3353708912556724784}
+  - {fileID: 8605900397775206524}
+  - {fileID: 6256314387710876511}
   - {fileID: 8015062109737821620}
+  - {fileID: 7363883376924449622}
   - {fileID: 295518014015937746}
+  - {fileID: 8682251576130340290}
   - {fileID: 7890086757158923880}
   - {fileID: 8000312560462412552}
   - {fileID: 2743740502725974248}
   - {fileID: 5568931383675522707}
   - {fileID: 7903587367774857548}
-  - {fileID: 6256314387710876511}
-  - {fileID: 8605900397775206524}
+  - {fileID: 8169095825980784971}
+  - {fileID: 5420320664963166081}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &306719823906628696
@@ -92,6 +97,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5426036079080946996}
     m_Modifications:
+    - target: {fileID: 4877953145418353897, guid: bc2b43c8bcaff8f49be573caa687435c, type: 3}
+      propertyPath: SensorReference
+      value: 
+      objectReference: {fileID: 8715967202149593997}
     - target: {fileID: 6931418227917167446, guid: bc2b43c8bcaff8f49be573caa687435c, type: 3}
       propertyPath: m_Name
       value: Lathe
@@ -141,6 +150,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc2b43c8bcaff8f49be573caa687435c, type: 3}
+--- !u!114 &5183722905194686641 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4877953145418353897, guid: bc2b43c8bcaff8f49be573caa687435c, type: 3}
+  m_PrefabInstance: {fileID: 306719823906628696}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3fe7d98f4b19442a7f0dfedb0cb2b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Lathe
 --- !u!4 &8015062109737821620 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7744652643726508524, guid: bc2b43c8bcaff8f49be573caa687435c, type: 3}
@@ -207,6 +227,87 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5548530593035540350, guid: 318cb9cb9918dd34790107f342305cc3, type: 3}
   m_PrefabInstance: {fileID: 473881559478334156}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &624713686794827368
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5426036079080946996}
+    m_Modifications:
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: CNCMachineReference
+      value: 
+      objectReference: {fileID: 3346887827053132253}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: ConveyorBeltReference
+      value: 
+      objectReference: {fileID: 8857002879789219872}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.138
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.909
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.126
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.35361508
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.35349166
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6122656
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.6124794
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -89.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 8907329151235107088, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_Name
+      value: LaserEngraverRFIDSensor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+--- !u!114 &7401979181350497561 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 624713686794827368}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ab3cdde2d0f7f43806eafc662946c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_RFID_Sensor
+--- !u!4 &8682251576130340290 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 624713686794827368}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1296069394645581355
 PrefabInstance:
@@ -394,6 +495,87 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9149698012588524835, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
   m_PrefabInstance: {fileID: 1406664356998376267}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1650328390635727100
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5426036079080946996}
+    m_Modifications:
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: CNCMachineReference
+      value: 
+      objectReference: {fileID: 5183722905194686641}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: ConveyorBeltReference
+      value: 
+      objectReference: {fileID: 8857002879789219872}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.668195
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.909
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.189
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7069834
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7072302
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -89.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 8907329151235107088, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_Name
+      value: LatheRFIDSensor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+--- !u!4 &7363883376924449622 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 1650328390635727100}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8715967202149593997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 1650328390635727100}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ab3cdde2d0f7f43806eafc662946c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_RFID_Sensor
 --- !u!1001 &1835743976174114431
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -468,7 +650,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9032405553147307148, guid: f803db63bdda92f42a4ace0f196075b2, type: 3}
   m_PrefabInstance: {fileID: 1835743976174114431}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &2739319759727618293
+--- !u!1001 &2690919480456181136
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -477,12 +659,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 5426036079080946996}
     m_Modifications:
     - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: CNCMachineReference
+      value: 
+      objectReference: {fileID: 5346006921745155030}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: ConveyorBeltReference
       value: 
       objectReference: {fileID: 8857002879789219872}
     - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.22522
+      value: 10.336
       objectReference: {fileID: 0}
     - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -490,7 +676,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.29203
+      value: 2.07
       objectReference: {fileID: 0}
     - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -522,13 +708,113 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8907329151235107088, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
       propertyPath: m_Name
-      value: RFIDSensor
+      value: ASRSRFIDSensor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+--- !u!114 &5425254333547917025 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 2690919480456181136}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ab3cdde2d0f7f43806eafc662946c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_RFID_Sensor
+--- !u!4 &6165129946809042490 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 2690919480456181136}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2739319759727618293
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5426036079080946996}
+    m_Modifications:
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: Name
+      value: RFID Sensor
+      objectReference: {fileID: 0}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: Quantity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: CNCMachineReference
+      value: 
+      objectReference: {fileID: 5067587901113546925}
+    - target: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: ConveyorBeltReference
+      value: 
+      objectReference: {fileID: 8857002879789219872}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 10.336
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.909
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.059
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.24188694
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.24180251
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6643471
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.66457903
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -89.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 220
+      objectReference: {fileID: 0}
+    - target: {fileID: 8907329151235107088, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+      propertyPath: m_Name
+      value: MillRFIDSensor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+--- !u!114 &5194468816633246596 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7931526210784418673, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
+  m_PrefabInstance: {fileID: 2739319759727618293}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ab3cdde2d0f7f43806eafc662946c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_RFID_Sensor
 --- !u!4 &6256314387710876511 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8130932498443662250, guid: 2323b37ab0571d84aa0801076e0925c0, type: 3}
@@ -596,6 +882,108 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5548530593035540350, guid: 318cb9cb9918dd34790107f342305cc3, type: 3}
   m_PrefabInstance: {fileID: 2826964103987285445}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3094427370467126740
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5426036079080946996}
+    m_Modifications:
+    - target: {fileID: 1670477113955323098, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_Name
+      value: JobSelectPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 270
+      objectReference: {fileID: 0}
+    - target: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+--- !u!224 &8169095825980784971 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6606754348225948831, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+  m_PrefabInstance: {fileID: 3094427370467126740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3368679211594945081
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -648,6 +1036,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ASRS
       objectReference: {fileID: 0}
+    - target: {fileID: 7246053333255475695, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
+      propertyPath: SensorReference
+      value: 
+      objectReference: {fileID: 5425254333547917025}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -658,6 +1050,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 523191047928746900, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
   m_PrefabInstance: {fileID: 3368679211594945081}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5346006921745155030 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7246053333255475695, guid: d21d1c19161f6534496482fdcaab4d8f, type: 3}
+  m_PrefabInstance: {fileID: 3368679211594945081}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e475db19debbf4fa69cd62b3f9f69c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_ASRS
 --- !u!1001 &3725198493668527024
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -996,6 +1399,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a382389cafc104181571feec2840fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item_Conveyor_Belt
+--- !u!1001 &5925880569242130655
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5426036079080946996}
+    m_Modifications:
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9045150127449500674, guid: f09ac1361f3739345b04739059992e37, type: 3}
+      propertyPath: m_Name
+      value: JobManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f09ac1361f3739345b04739059992e37, type: 3}
+--- !u!4 &5420320664963166081 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1802614224338794334, guid: f09ac1361f3739345b04739059992e37, type: 3}
+  m_PrefabInstance: {fileID: 5925880569242130655}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6141959190397446203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1296,11 +1761,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3063388968215030173, guid: 673c7cc71a415124094f4eeb7a99b08a, type: 3}
+      propertyPath: SensorReference
+      value: 
+      objectReference: {fileID: 5194468816633246596}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 673c7cc71a415124094f4eeb7a99b08a, type: 3}
+--- !u!114 &5067587901113546925 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3063388968215030173, guid: 673c7cc71a415124094f4eeb7a99b08a, type: 3}
+  m_PrefabInstance: {fileID: 7841022389914571056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f52678db4c685b43ba0cf18ca4ce8da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Mill
 --- !u!4 &8605900397775206524 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1999216159218903372, guid: 673c7cc71a415124094f4eeb7a99b08a, type: 3}
@@ -1314,6 +1794,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5426036079080946996}
     m_Modifications:
+    - target: {fileID: 6533184127852204701, guid: 83ef631f8f58bcc49b9cd23ca17965ba, type: 3}
+      propertyPath: SensorReference
+      value: 
+      objectReference: {fileID: 7401979181350497561}
     - target: {fileID: 8125026956294715282, guid: 83ef631f8f58bcc49b9cd23ca17965ba, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.29522
@@ -1368,6 +1852,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8125026956294715282, guid: 83ef631f8f58bcc49b9cd23ca17965ba, type: 3}
   m_PrefabInstance: {fileID: 8419480493800385344}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3346887827053132253 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6533184127852204701, guid: 83ef631f8f58bcc49b9cd23ca17965ba, type: 3}
+  m_PrefabInstance: {fileID: 8419480493800385344}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68e4c35975877a54688603d6ec1d2ca2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Item_Laser_Engraver
 --- !u!1001 &9129328355413202611
 PrefabInstance:
   m_ObjectHideFlags: 0
