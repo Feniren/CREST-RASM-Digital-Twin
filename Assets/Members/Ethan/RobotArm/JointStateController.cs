@@ -28,21 +28,22 @@ public class JointStateController : MonoBehaviour
 
         BuildJointMap();
         provider.OnJointStateReceived += ApplyJointState;
+
+        Debug.Log($"[JointStateController] Subscribed to {provider.GetType().Name}");
     }
 
     void OnDestroy()
     {
-        if (provider != null)
-            provider.OnJointStateReceived -= ApplyJointState;
+        if (provider != null) provider.OnJointStateReceived -= ApplyJointState;
     }
 
     private void BuildJointMap()
     {
         jointMap = new Dictionary<string, ArticulationBody>();
+
         foreach (var body in GetComponentsInChildren<ArticulationBody>())
         {
-            if (body.jointType == ArticulationJointType.FixedJoint)
-                continue;
+            if (body.jointType == ArticulationJointType.FixedJoint) continue;
 
             if (jointMap.ContainsKey(body.name))
             {
@@ -51,7 +52,10 @@ public class JointStateController : MonoBehaviour
             }
 
             jointMap[body.name] = body;
+
             ApplyDriveSettings(body);
+
+            Debug.Log($"[JointStateController] Registered joint '{body.name}'");
         }
     }
 
@@ -60,18 +64,31 @@ public class JointStateController : MonoBehaviour
         if (msg.name == null) return;
 
         int count = msg.name.Length;
+
         bool hasPosition = msg.position != null && msg.position.Length >= count;
+
         bool hasVelocity = msg.velocity != null && msg.velocity.Length >= count;
 
         for (int i = 0; i < count; i++)
         {
-            if (!jointMap.TryGetValue(msg.name[i], out var body))
+            string jointName = msg.name[i];
+
+            if (!jointMap.TryGetValue(jointName, out var body))
+            {
+                Debug.LogWarning($"[JointStateController] ROS joint '{jointName}' not found in Unity.");
                 continue;
+            }
 
             var drive = body.xDrive;
 
             if (hasPosition)
-                drive.target = msg.position[i] * Mathf.Rad2Deg;
+            {
+                float targetDegrees = msg.position[i] * Mathf.Rad2Deg;
+
+                Debug.Log($"[JointStateController] {jointName}: ROS={msg.position[i]:F3} rad, target={targetDegrees:F1} deg");
+
+                drive.target = targetDegrees;
+            }
 
             if (hasVelocity)
                 drive.targetVelocity = msg.velocity[i] * Mathf.Rad2Deg;

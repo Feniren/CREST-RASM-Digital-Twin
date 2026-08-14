@@ -1114,6 +1114,7 @@ GameObject:
   - component: {fileID: 1279045286148357871}
   - component: {fileID: 474064414736667290}
   - component: {fileID: 2325373776013700449}
+  - component: {fileID: 4314788133416553534}
   m_Layer: 0
   m_Name: motoman_gp8
   m_TagString: robot
@@ -1234,7 +1235,27 @@ MonoBehaviour:
   forceLimit: 1000
   speed: 5
   acceleration: 5
-  stepDegrees: 5
+  homeToleranceDeg: 1
+  homeTimeout: 15
+  grabber: {fileID: 0}
+  grabDistance: 0.1
+  grabMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  servoSound: {fileID: 0}
+--- !u!114 &4314788133416553534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282666746881280642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca1df6a49192240758df7f7f38bfc690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ROSJointStateProvider
+  topicName: /joint_states
 --- !u!1 &3318405399374824346
 GameObject:
   m_ObjectHideFlags: 0
