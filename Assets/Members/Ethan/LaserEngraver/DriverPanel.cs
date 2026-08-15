@@ -1,0 +1,102 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using TMPro;
+
+public class DriverPanel : MonoBehaviour
+{
+    public GameObject mainPanel;
+    public GameObject zSetPanel;
+    public GameObject imagePanel;
+    public JobLaserEngrave managedJob;
+    public List<Texture2D> images;
+    public TextMeshProUGUI operationModeText;
+
+    // TODO: Get rid of this as soon as LM2ObjManager is replaced
+    public ObjectiveManager manager;
+
+    [SerializeField] Transform imageContent;
+    [SerializeField] GameObject imageButtonPrefab; // Button + RawImage
+    [SerializeField] LaserEngraver engraver;
+
+    bool built;
+
+    readonly List<Sprite> runtimeSprites = new();
+
+    public void OnEnable()
+    {
+        managedJob = GetComponentInChildren<JobLaserEngrave>();
+    }
+
+    public void ShowMainPanel()
+    {
+        mainPanel.SetActive(true);
+        zSetPanel.SetActive(false);
+        imagePanel.SetActive(false);
+    }
+
+    public void ShowZSetPanel()
+    {
+        mainPanel.SetActive(false);
+        zSetPanel.SetActive(true);
+        imagePanel.SetActive(false);
+    }
+
+    public void ShowImagePanel()
+    {
+        mainPanel.SetActive(false);
+        zSetPanel.SetActive(false);
+        imagePanel.SetActive(true);
+        if (!built) BuildImageList();
+    }
+
+    void BuildImageList()
+    {
+        foreach (Transform c in imageContent) Destroy(c.gameObject);
+        foreach (var s in runtimeSprites) Destroy(s);
+        runtimeSprites.Clear();
+
+        for (int i = 0; i < images.Count; i++)
+        {
+            int index = i;
+            var tex = images[index];
+            if (tex == null) continue;
+
+            var sprite = Sprite.Create(
+                tex,
+                new Rect(0, 0, tex.width, tex.height),
+                new Vector2(0.5f, 0.5f));
+            runtimeSprites.Add(sprite);
+
+            var go = Instantiate(imageButtonPrefab, imageContent);
+            var img = go.GetComponentInChildren<Image>(true);
+            img.sprite = sprite;
+            img.preserveAspect = true;
+
+            var rt = go.GetComponent<RectTransform>();
+            Canvas.ForceUpdateCanvases();
+            Debug.Log($"[{index}] img={img != null} sprite={img.sprite != null} " +
+                      $"color={img.color} enabled={img.enabled} " +
+                      $"rect={rt.rect.size} scale={rt.lossyScale} " +
+                      $"active={go.activeInHierarchy} pos={rt.position}");
+
+            go.GetComponent<Button>().onClick.AddListener(() => OnImageClicked(index));
+        }
+        built = true;
+    }
+
+    void OnImageClicked(int index)
+    {
+        // TODO: Add height/width settings for the print job
+        managedJob.Image2Engrave = EngraveMask.FromImage(images[index], 100, 100);
+        managedJob.DownloadJob();
+        // TODO: Change logic below when LM2ObjManager is replaced
+        manager.PrintFileDownloaded();
+    }
+
+    public void OnOperationModeClicked()
+    {
+        // TODO: Do more than set to manual
+        operationModeText.text = "Manual";
+    }
+}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
+  m_Name: LM2_Lesson
+  m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
+  Module_Id: M2
+  Scene_Name: Module2_Startup
+  Display_Name: "M2 \u2014 System Startup & Program Execution"
+  Steps:
+  - Step_Id: intro_startup
+    Kind: 0
+    Prompt_Text: 'Test
+
+'
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  Quiz_Pass_Threshold: 0
+  Practice_Shuffles_Quiz: 0
