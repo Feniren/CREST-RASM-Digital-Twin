@@ -43,6 +43,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: CNCBase Videos
+    uniqueID: 4223133673
+    locked: 0
+  - name: CNCBase Layout
+    uniqueID: 4293473117
+    locked: 0
+  - name: CNCBase Asset Buttons
+    uniqueID: 2078080219
+    locked: 0
+  - name: CNCBase Buttons
+    uniqueID: 1396732161
+    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1
