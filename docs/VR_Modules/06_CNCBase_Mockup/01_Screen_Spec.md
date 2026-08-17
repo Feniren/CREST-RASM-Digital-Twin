@@ -11,12 +11,12 @@ Verified against `M1_Module_Builder.cs` and `M2_Module_Builder.cs`, not from mem
 
 | Scene object | Path / component | What it can do |
 |---|---|---|
-| Mill assembly | `PM8000_Training.prefab` (mill + vise + `Demo_Block`) | Instantiated by M2 at `(1.681, 0, 3.44)`, rot Y 270° |
-| Machine **X** — table | `Worktable_Base/WB_XAxis_Drive`, `AxisMovement` (world **X**) | ±0.14 m (**280 mm**), speed 0.05 |
-| Machine **Y** — saddle | `Worktable_Base/WB_YAxis_Drive`, `AxisMovement` (world **Z**) | ±0.076 m (**152 mm**), speed 0.05; carries the X stage via `dependents` |
-| Machine **Z** — spindle | `SpindleBase/SpindleMotor`, `AxisMovement` (world **Y**) | −0.27…0 m (**270 mm**), speed 0.1 |
-| Canned cycle | `MillController`, `MillingAnimation` | `Play()` / `Stop()` / `IsPlaying` — plunge, square pocket, retract |
-| Guard doors | `doors`, `Item_Mill_Doors` + `Door_Click_Toggle` | `AlternateInteract()` slides both leaves along world Z |
+| Mill assembly | `IntellitekMill_Training.prefab` (mill + vise + `Demo_Block`) | Instantiated by M2 at `(1.681, 0, 3.44)`, rot Y 270° |
+| Machine **X** — table | `IntellitekMillBody/Worktable_Base/WB_XAxis_Drive`, `AxisMovement` (world **X**) | ±0.14 m (**280 mm**), speed 0.05 |
+| Machine **Y** — saddle | `IntellitekMillBody/Worktable_Base/WB_YAxis_Drive`, `AxisMovement` (world **Z**) | ±0.076 m (**152 mm**), speed 0.05; carries the X stage via `dependents` |
+| Machine **Z** — spindle | `IntellitekMillBody/SpindleBase/SpindleMotor`, `AxisMovement` (world **Y**) | −0.27…0 m (**270 mm**), speed 0.1 |
+| Canned cycle | `MillController` (wrapper level), `MillingAnimation` | `Play()` / `Stop()` / `IsPlaying` — plunge, square pocket, retract |
+| Guard doors | `LeftMillDoor`/`RightMillDoor` Rigidbodies, `Mill_Doors_Physics` (an `Item_Mill_Doors`) | `AlternateInteract()` slides both leaves apart; doors stay grabbable physics |
 | Vise + workpiece | `DualAxisVice`, `Demo_Block` | Appended to X and Y `dependents` — they ride the table |
 | Main power | `kaig` part, clickable via `BuildPartAction` | `mill_power_on` action; tinted green by `Startup_State_Controller` |
 | E-stop | `emergency_stop` marker (M1) | Currently identification-only; reserved for M3 |

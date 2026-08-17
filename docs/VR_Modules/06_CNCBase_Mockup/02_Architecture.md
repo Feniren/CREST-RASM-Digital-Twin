@@ -67,9 +67,9 @@ effects — the pattern the module already uses.
 
 | Machine axis | Node | `AxisMovement.axis` (Unity) | Limits (m) | Travel | Speed |
 |---|---|---|---|---|---|
-| **X** — table, left/right | `Worktable_Base/WB_XAxis_Drive` | **X** | −0.14 … +0.14 | 280 mm | 0.05 |
-| **Y** — saddle, fore/aft | `Worktable_Base/WB_YAxis_Drive` | **Z** | −0.076 … +0.076 | 152 mm | 0.05 |
-| **Z** — spindle, up/down | `SpindleBase/SpindleMotor` | **Y** | −0.27 … 0 | 270 mm | 0.1 |
+| **X** — table, left/right | `IntellitekMillBody/Worktable_Base/WB_XAxis_Drive` | **X** | −0.14 … +0.14 | 280 mm | 0.05 |
+| **Y** — saddle, fore/aft | `IntellitekMillBody/Worktable_Base/WB_YAxis_Drive` | **Z** | −0.076 … +0.076 | 152 mm | 0.05 |
+| **Z** — spindle, up/down | `IntellitekMillBody/SpindleBase/SpindleMotor` | **Y** | −0.27 … 0 | 270 mm | 0.1 |
 
 Rules:
 
@@ -158,7 +158,7 @@ Net: the file gets shorter, and the arm half is untouched. This is the diff that
 ## 7. `CNCBase_Spindle` (optional)
 
 ```csharp
-// Spins SpindleBase/SpindleMotor/SM_Rotating while on. RPM is display-only —
+// Spins IntellitekMillBody/SpindleBase/SpindleMotor/SM_Rotating while on. RPM is display-only —
 // visual rate is capped so it doesn't strobe at 60 Hz.
 void Update() { if (on) t.Rotate(axis, visual_deg_per_sec * Time.deltaTime, Space.Self); }
 ```

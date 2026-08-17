@@ -11,6 +11,8 @@ not built.
 | `01_Screen_Spec.md` | Screen/control inventory — every control mapped to the scene object it drives |
 | `02_Architecture.md` | Script design, data flow, machine↔world axis mapping, integration with the lesson engine |
 | `03_Build_Plan.md` | Phased build with verify criteria, lab-verification checklist, promotion path |
+| `04_CNCBase_Reference.md` | What Intelitek's docs say CNCBase actually is; corrections to `01`/`02` |
+| `05_NC_Interpretation.md` | Reading and executing external `.nc` files — the dialect, the code subset, coordinated motion, file loading. Answers `start_fms.nc` |
 
 Context: `00_Program_Overview.md` (program), `03_Module2_Startup_Plan.md` (the module this lands in),
 `05_Module_Framework_HOWTO.md` (framework rules), `04_Interaction_Ideas_Backlog.md` (physical-interaction
