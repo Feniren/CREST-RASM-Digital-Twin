@@ -90,6 +90,10 @@ public static class Training_Debug{
         Debug.Log($"Training_Debug: timeScale = {Time.timeScale}");
     }
 
+    private static void PressContinue(Lesson_Sequencer sequencer){
+        ((Button)new SerializedObject(sequencer).FindProperty("ContinueButton").objectReferenceValue).onClick.Invoke();
+    }
+
     private static void DebugStep(bool correct){
         if (!Application.isPlaying) return;
         Lesson_Sequencer sequencer = Object.FindFirstObjectByType<Lesson_Sequencer>();
@@ -104,10 +108,17 @@ public static class Training_Debug{
 
         switch (step.Kind){
             case Lesson_Step_Kind.Info:
-                ((Button)new SerializedObject(sequencer).FindProperty("ContinueButton").objectReferenceValue).onClick.Invoke();
+                PressContinue(sequencer);
                 break;
 
             case Lesson_Step_Kind.Select_Component:{
+                // The guided tour demonstrates the part instead of asking for a click, so
+                // there is nothing to select until the quiz.
+                if (sequencer.Mode == Lesson_Mode.Guided){
+                    PressContinue(sequencer);
+                    break;
+                }
+
                 Marker_Registry registry = Object.FindFirstObjectByType<Marker_Registry>();
                 Component_Marker target = registry.Resolve(step.Target_Marker_Id);
                 Debug.Log($"Training_Debug: registry holds {registry.All.Count} markers; resolve '{step.Target_Marker_Id}' -> {(target != null ? target.name : "NULL")}");

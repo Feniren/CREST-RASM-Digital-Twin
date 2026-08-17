@@ -48,7 +48,7 @@ MonoBehaviour:
   - Step_Id: spindle_motor
     Kind: 1
     Prompt_Text: "This is the SPINDLE MOTOR \u2014 the motor on top of the head \u2014
-      it spins the spindle and cutting tool.\n\nSelect the highlighted part to continue."
+      it spins the spindle and cutting tool.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Spindle Motor'
     Target_Marker_Id: spindle_motor
     Narration: {fileID: 0}
@@ -56,8 +56,7 @@ MonoBehaviour:
   - Step_Id: spindle_head
     Kind: 1
     Prompt_Text: "This is the SPINDLE HEAD \u2014 it holds the rotating spindle and
-      cutting tool, and moves up and down in Z.\n\nSelect the highlighted part to
-      continue."
+      cutting tool, and moves up and down in Z.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Spindle Head'
     Target_Marker_Id: spindle_head
     Narration: {fileID: 0}
@@ -65,7 +64,7 @@ MonoBehaviour:
   - Step_Id: vice
     Kind: 1
     Prompt_Text: "This is the VISE \u2014 it clamps the workpiece to the table during
-      cutting.\n\nSelect the highlighted part to continue."
+      cutting.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Vise'
     Target_Marker_Id: vice
     Narration: {fileID: 0}
@@ -73,8 +72,7 @@ MonoBehaviour:
   - Step_Id: guard_door
     Kind: 1
     Prompt_Text: "This is the GUARD DOOR \u2014 the perspex shield that must be closed
-      while the spindle is cutting \u2014 opened with the Door Open button in CNCBase.\n\nSelect
-      the highlighted part to continue."
+      while the spindle is cutting \u2014 opened with the Door Open button in CNCBase.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Guard Door'
     Target_Marker_Id: guard_door
     Narration: {fileID: 0}
@@ -82,8 +80,7 @@ MonoBehaviour:
   - Step_Id: emergency_stop
     Kind: 1
     Prompt_Text: "This is the EMERGENCY STOP BUTTON \u2014 the red button on the
-      front \u2014 press it to immediately stop the machine in an emergency.\n\nSelect
-      the highlighted part to continue."
+      front \u2014 press it to immediately stop the machine in an emergency.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Emergency Stop Button'
     Target_Marker_Id: emergency_stop
     Narration: {fileID: 0}
@@ -91,8 +88,7 @@ MonoBehaviour:
   - Step_Id: power_on
     Kind: 1
     Prompt_Text: "This is the POWER SWITCH \u2014 energizes the machine before any
-      operation \u2014 always the first control you use at start-up.\n\nSelect the
-      highlighted part to continue."
+      operation \u2014 always the first control you use at start-up.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Power Switch'
     Target_Marker_Id: power_on
     Narration: {fileID: 0}
@@ -100,8 +96,7 @@ MonoBehaviour:
   - Step_Id: door_unlock
     Kind: 1
     Prompt_Text: "This is the DOOR UNLOCK \u2014 releases the guard-door interlock
-      so the doors can slide open for loading and unloading.\n\nSelect the highlighted
-      part to continue."
+      so the doors can slide open for loading and unloading.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Door Unlock'
     Target_Marker_Id: door_unlock
     Narration: {fileID: 0}
@@ -110,7 +105,7 @@ MonoBehaviour:
     Kind: 1
     Prompt_Text: "This is the ELECTRONICS CABINET \u2014 the lower cabinet housing
       the machine's drive and control electronics \u2014 opened with the electrical
-      panel keys.\n\nSelect the highlighted part to continue."
+      panel keys.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Electronics Cabinet'
     Target_Marker_Id: electronics_cabinet
     Narration: {fileID: 0}

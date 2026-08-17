@@ -27,8 +27,13 @@ public class Table_Part_Display : MonoBehaviour{
         if (Sequencer.Mode != Lesson_Mode.Guided || step.Kind != Lesson_Step_Kind.Select_Component)
             return;
 
-        if (parts.TryGetValue(step.Target_Marker_Id, out current))
-            current.Set_Glow(true, TargetGlow);
+        // Parts that glide out to the mill are their own highlight — a glow shell left
+        // behind on the table would only compete with them.
+        if (!parts.TryGetValue(step.Target_Marker_Id, out Table_Part part) || part.Can_Glide)
+            return;
+
+        current = part;
+        current.Set_Glow(true, TargetGlow);
     }
 
     private void OnLessonCompleted(Lesson_Result result){

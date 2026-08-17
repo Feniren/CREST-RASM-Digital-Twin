@@ -79,19 +79,16 @@ public class Lesson_Sequencer : MonoBehaviour{
         if (step == null || step.Kind != Lesson_Step_Kind.Select_Component)
             return;
 
-        bool isTarget = marker.Marker_Id == step.Target_Marker_Id;
+        // Guided identification is a demonstration now, not a click test: the part glides
+        // out of the parts table into place and Continue advances. Clicking the mill does
+        // nothing until the quiz.
+        if (Mode == Lesson_Mode.Guided)
+            return;
 
-        if (Mode == Lesson_Mode.Guided){
-            if (isTarget)
-                Advance();
-            else
-                PromptText.text = ActivePrompt(step) + "\n<color=#FF6666>Not this one — try again.</color>";
-        }
-        else{
-            if (isTarget)
-                correctAnswers++;
-            Advance();
-        }
+        if (marker.Marker_Id == step.Target_Marker_Id)
+            correctAnswers++;
+
+        Advance();
     }
 
     public void Notify_Action(string actionId){
@@ -146,8 +143,16 @@ public class Lesson_Sequencer : MonoBehaviour{
     }
 
     private void OnContinuePressed(){
-        if (Current_Step != null && Current_Step.Kind == Lesson_Step_Kind.Info)
+        if (Current_Step != null && Continues_On_Button(Current_Step))
             Advance();
+    }
+
+    // Info steps have always been Continue-driven; guided Select_Component steps are too,
+    // because the trainee watches the part glide into place rather than hunting for it.
+    // The quiz keeps click-to-select, so this is false there.
+    private bool Continues_On_Button(Lesson_Step step){
+        return step.Kind == Lesson_Step_Kind.Info
+            || (Mode == Lesson_Mode.Guided && step.Kind == Lesson_Step_Kind.Select_Component);
     }
 
     private void OnDemoFinished(){
@@ -177,7 +182,7 @@ public class Lesson_Sequencer : MonoBehaviour{
         Lesson_Step step = steps[stepIndex];
         PromptPanel.SetActive(true);
         PromptText.text = ActivePrompt(step);
-        ContinueButton.gameObject.SetActive(step.Kind == Lesson_Step_Kind.Info);
+        ContinueButton.gameObject.SetActive(Continues_On_Button(step));
 
         Step_Changed?.Invoke(step, stepIndex, steps.Count);
 
