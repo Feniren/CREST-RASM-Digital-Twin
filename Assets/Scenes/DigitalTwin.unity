@@ -1618,6 +1618,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2719375797273390069, guid: b4afa464b7905b14e96879f189b9c712, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2818358263241952346, guid: b4afa464b7905b14e96879f189b9c712, type: 3}
       propertyPath: m_Name
       value: ControlPanel

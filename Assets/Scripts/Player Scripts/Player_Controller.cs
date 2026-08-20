@@ -64,7 +64,7 @@ public class Player_Controller : Controller{
 
         MovementVelocity = Vector2.zero;
         ControlRotation = Vector2.zero;
-    }
+	}
 
     private void OnEnable(){
         //InputSystem.Enable();
@@ -77,7 +77,7 @@ public class Player_Controller : Controller{
     }
 
     private void FixedUpdate(){
-        Vector3 Movement = ((PlayerReference.CameraReference.transform.right * MovementVelocity.x) + (PlayerReference.CameraReference.transform.forward * MovementVelocity.y));
+		Vector3 Movement = ((PlayerReference.CameraReference.transform.right * MovementVelocity.x) + (PlayerReference.CameraReference.transform.forward * MovementVelocity.y));
 
         Movement.y = RigidBodyReference.linearVelocity.y;
 
@@ -96,7 +96,7 @@ public class Player_Controller : Controller{
     public void Interact(InputAction.CallbackContext Context){
         RaycastHit Hit;
 
-        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
             if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
@@ -106,7 +106,7 @@ public class Player_Controller : Controller{
     public void AlternateInteract(InputAction.CallbackContext Context){
         RaycastHit Hit;
 
-        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
 			if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().AlternateInteract(PlayerReference);
 			}
@@ -215,7 +215,7 @@ public class Player_Controller : Controller{
 		RaycastHit Hit;
 
 		if (!PlayerReference.PlayerSettings.XREnabled){
-			if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+			if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
 				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
 					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
 				}
@@ -234,7 +234,7 @@ public class Player_Controller : Controller{
 				return;
 			}
 
-			if (Physics.Raycast(ActiveHand.transform.position, ActiveHand.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+			if (Physics.Raycast(ActiveHand.transform.position, ActiveHand.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
 				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
 					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
 				}

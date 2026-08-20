@@ -28,6 +28,9 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
         PlayerSettings.LookSpeedX = 0.5f;
         PlayerSettings.LookSpeedY = 0.5f;
+		PlayerSettings.SmoothXRRayEndPointMovement = true;
+		PlayerSettings.SmoothXRRayEndPointMovementSpeed = 0.2f;
+		PlayerSettings.XRRayThickness = 0.05f;
 
 		GetComponent<Rigidbody>().useGravity = false;
     }
