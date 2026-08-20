@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 	public LineRenderer HandLineRenderer;
 
 	Player_Settings PlayerSettingsReference;
+	XRRayInteractor RayInteractorReference;
 
 	[SerializeField]
 	private int SegmentCount = 20;
@@ -19,6 +22,7 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 
 	void Awake(){
 		HandLineRenderer = GetComponentInChildren<LineRenderer>();
+		RayInteractorReference = GetComponentInChildren<XRRayInteractor>();
 
 		LinePoints = new Vector3[SegmentCount];
 
@@ -35,21 +39,49 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 	}
 
 	void Update(){
-		RaycastHit Hit;
+		RaycastHit InteractableHit;
+		RaycastResult UserInterfaceHit;
+		bool ValidInteractableHit;
+		bool ValidUserInterfaceHit;
 
-		if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
-			if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
-				UpdateLine(Hit.point);
+		ValidInteractableHit = Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out InteractableHit, 10.0f, 1);
+		ValidUserInterfaceHit = RayInteractorReference.TryGetCurrentUIRaycastResult(out UserInterfaceHit);
 
-				HandLineRenderer.startColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-				HandLineRenderer.endColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		if (ValidInteractableHit && ValidUserInterfaceHit){
+			if (UserInterfaceHit.distance > InteractableHit.distance){
+				if (InteractableHit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					UpdateLine(InteractableHit.point);
+
+					SetValidColor();
+				}
+				else{
+					UpdateLine(InteractableHit.point);
+
+					SetInvalidColor();
+				}
 			}
 			else{
-				UpdateLine(Hit.point);
+				UpdateLine(UserInterfaceHit.worldPosition);
 
-				HandLineRenderer.startColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
-				HandLineRenderer.endColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
+				SetValidColor();
 			}
+		}
+		else if (ValidInteractableHit){
+			if (InteractableHit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+				UpdateLine(InteractableHit.point);
+
+				SetValidColor();
+			}
+			else{
+				UpdateLine(InteractableHit.point);
+
+				SetInvalidColor();
+			}
+		}
+		else if (ValidUserInterfaceHit){
+			UpdateLine(UserInterfaceHit.worldPosition);
+
+			SetValidColor();
 		}
 		else{
 			Vector3 TraceEnd = transform.position;
@@ -58,8 +90,7 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 
 			UpdateLine(TraceEnd);
 
-			HandLineRenderer.startColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
-			HandLineRenderer.endColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
+			SetInvalidColor();
 		}
 	}
 
@@ -69,25 +100,41 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 		return TCompliment * TCompliment * P0 + 2.0f * TCompliment * T * P1 + T * T * P2;
 	}
 
+	void SetInvalidColor(){
+		HandLineRenderer.startColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
+		HandLineRenderer.endColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
+	}
+
+	void SetValidColor(){
+		HandLineRenderer.startColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		HandLineRenderer.endColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
 	void UpdateLine(Vector3 LineEnd){
 		Vector3 LineStart = transform.position;
 		Vector3 ForwardVector = (LineEnd - LineStart);
-		Vector3 ControlPoint = (LineStart + transform.forward);
+		Vector3 ControlPoint;
 
-		SmoothedLineEnd = Vector3.Lerp(SmoothedLineEnd, LineEnd, (PlayerSettingsReference.SmoothXRRayEndPointMovementSpeed * (Time.deltaTime * 40.0f)));
+		if (Mathf.Abs((LineEnd.magnitude - SmoothedLineEnd.magnitude)) < 2.0f){
+			SmoothedLineEnd = Vector3.Lerp(SmoothedLineEnd, LineEnd, (PlayerSettingsReference.SmoothXRRayEndPointMovementSpeed * (Time.deltaTime * 40.0f)));
+		}
+		else{
+			SmoothedLineEnd = LineEnd;
+		}
 		
 		ForwardVector.Normalize();
 
 		if (!PlayerSettingsReference.SmoothXRRayEndPointMovement){
-			ControlPoint *= (Vector3.Distance(LineStart, LineEnd) * 0.5f);
 			ControlPoint = Vector3.Lerp(LineStart, LineEnd, 0.5f);
 		}
 		else{
-			ControlPoint *= (Vector3.Distance(LineStart, SmoothedLineEnd) * 0.5f);
-			ControlPoint = Vector3.Lerp(LineStart, SmoothedLineEnd, 0.5f);
-		}
+			ControlPoint = (transform.forward * Vector3.Distance(LineStart, SmoothedLineEnd));
 
-		//ControlPoint += (Vector3.Cross(ForwardVector, Vector3.up) * CurveIntensity);
+			ControlPoint *= 0.5f;
+			ControlPoint += LineStart;
+
+			//ControlPoint += (Vector3.Cross(ForwardVector, Vector3.up) * CurveIntensity);
+		}
 
 		for (int Index = 0; Index < SegmentCount; Index++){
 			float T = ((float)Index / (float)(SegmentCount - 1));
