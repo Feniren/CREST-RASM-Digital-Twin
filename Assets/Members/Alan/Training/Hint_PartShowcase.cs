@@ -14,7 +14,10 @@ public class Hint_PartShowcase : MonoBehaviour
 
     [Header("Placement")]
     [SerializeField] private float distanceFromFace = 0.6f;
-    [SerializeField] private float scaleMultiplier = 10f;
+    [Tooltip("The part's largest bounds dimension (in meters) once showcased — parts are scaled up OR down to hit this consistently, rather than by a flat multiplier, so a big part doesn't end up so enlarged the camera is effectively inside it.")]
+    [SerializeField] private float targetViewSize = 0.35f;
+    [Tooltip("Fallback scale multiplier used only if a part has no Renderer to measure bounds from.")]
+    [SerializeField] private float fallbackScaleMultiplier = 10f;
 
     [Header("Timing")]
     [SerializeField] private float flightDuration = 1f;
@@ -72,8 +75,15 @@ public class Hint_PartShowcase : MonoBehaviour
         // arc instead of turning in place. pivotToCenter is the constant
         // (rotation-relative) offset from pivot to visual center; it scales
         // and rotates along with the part every frame below.
-        Vector3 worldCenter = GetWorldBoundsCenter(part);
+        Bounds worldBounds = GetWorldBounds(part);
+        Vector3 worldCenter = worldBounds.center;
         Vector3 pivotToCenter = Quaternion.Inverse(startWorldRot) * (worldCenter - startWorldPos);
+
+        // Scale to a consistent viewed size instead of a flat multiplier —
+        // otherwise a part that's already large ends up so enlarged the
+        // camera is effectively inside it at showcase distance.
+        float largestDimension = Mathf.Max(worldBounds.size.x, worldBounds.size.y, worldBounds.size.z);
+        float scaleFactor = largestDimension > 0.0001f ? targetViewSize / largestDimension : fallbackScaleMultiplier;
 
         // Colliders off for the round trip — an enlarged part hovering at
         // face height in VR is very easy to grab by accident mid-animation.
@@ -99,7 +109,7 @@ public class Hint_PartShowcase : MonoBehaviour
         // by whatever the original parent is doing underneath it.
         part.SetParent(null, true);
 
-        Vector3 targetScale = startWorldScale * scaleMultiplier;
+        Vector3 targetScale = startWorldScale * scaleFactor;
 
         yield return FlyTo(part, worldCenter, startWorldRot, startWorldScale,
             () => cam.transform.position + cam.transform.forward * distanceFromFace,
@@ -149,19 +159,20 @@ public class Hint_PartShowcase : MonoBehaviour
     }
 
     // Combined world-space bounds of every renderer on the part, so we can
-    // find its visual center regardless of where its transform pivot is.
-    private static Vector3 GetWorldBoundsCenter(Transform t)
+    // find its visual center and size regardless of where its transform
+    // pivot is or how big its mesh actually is.
+    private static Bounds GetWorldBounds(Transform t)
     {
         Renderer[] renderers = t.GetComponentsInChildren<Renderer>();
 
         if (renderers.Length == 0)
-            return t.position;
+            return new Bounds(t.position, Vector3.zero);
 
         Bounds bounds = renderers[0].bounds;
         for (int i = 1; i < renderers.Length; i++)
             bounds.Encapsulate(renderers[i].bounds);
 
-        return bounds.center;
+        return bounds;
     }
 
     // How much pivotToCenter has grown/shrunk since it was measured at baseScale.

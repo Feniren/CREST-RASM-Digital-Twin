@@ -39,7 +39,17 @@ public class SequenceManager : MonoBehaviour
     [SerializeField] private InstructionDisplay infoPanel;
     [SerializeField] private GameObject nextButton; // shown while paging through a step's text, hidden once its interaction begins
     [SerializeField] private Hint_PartShowcase hintShowcase; // optional — wire the Hint button's OnClick() to OnHintPressed()
+    [SerializeField] private GameObject hintButton; // optional — hidden once the sequence completes, since quiz mode has no per-step hints to show
     [SerializeField] private string completionText = "Great job — you've identified every part. Let's test what you've learned.";
+
+    [Header("Quiz (optional)")]
+    [Tooltip("Optional — when assigned, this is started automatically once the walkthrough completes, and NotifyAction() calls are forwarded to it instead of handled here while it's active.")]
+    [SerializeField] private Quiz_Manager quizManager;
+
+    // Read-only access so Quiz_Manager can replay the exact same step data
+    // (targets, requiredActionId) instead of quiz content being authored
+    // twice.
+    public Step[] Steps => steps;
 
     [Header("Events")]
     public UnityEvent onSequenceComplete; // hook the quiz start here in the Inspector
@@ -107,7 +117,9 @@ public class SequenceManager : MonoBehaviour
         {
             if (infoPanel != null) infoPanel.UpdateText(completionText);
             if (nextButton != null) nextButton.SetActive(false);
+            if (hintButton != null) hintButton.SetActive(false);
             onSequenceComplete?.Invoke();
+            if (quizManager != null) quizManager.BeginQuiz();
             return;
         }
 
@@ -127,12 +139,46 @@ public class SequenceManager : MonoBehaviour
         BeginStepInteraction(step);
     }
 
+    // True if the current step is actively waiting on this exact action id —
+    // lets other scripts gate one-off behavior on "are we on this specific
+    // step right now" (e.g. a demo sequence that should only play out during
+    // one particular step) without needing to know/guess its index.
+    // True once the walkthrough has reached (or passed, or finished — quiz
+    // mode included) the step with this action id — lets other scripts gate
+    // behavior that shouldn't fire until the lesson is actually ready for it
+    // (e.g. don't consume a physical prop for a step the trainee hasn't
+    // reached yet). Unlike IsOnStep, this stays true for the rest of the
+    // module once reached, rather than only while sitting on that exact step.
+    public bool HasReachedStep(string actionId)
+    {
+        if (steps == null)
+            return false;
+
+        int targetIndex = System.Array.FindIndex(steps, s => s.requiredActionId == actionId);
+
+        // Unknown action id — fail open rather than silently deadlocking
+        // whatever's gating on it.
+        return targetIndex < 0 || currentIndex >= targetIndex;
+    }
+
+    public bool IsOnStep(string actionId)
+    {
+        return interactionActive && currentIndex >= 0 && currentIndex < steps.Length
+            && steps[currentIndex].requiredActionId == actionId;
+    }
+
     // For steps with no Marker_Interactable targets — call this once a
     // software/UI action (e.g. a control-panel button) succeeds, passing the
     // same string as that step's requiredActionId. No-ops if the current step
     // isn't waiting on that action (or isn't waiting on an action at all).
     public void NotifyAction(string actionId)
     {
+        if (quizManager != null && quizManager.IsActive)
+        {
+            quizManager.HandleAction(actionId);
+            return;
+        }
+
         if (!interactionActive || currentIndex < 0 || currentIndex >= steps.Length)
             return;
 

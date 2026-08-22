@@ -39,10 +39,17 @@ public class ASRSArmTester : MonoBehaviour
     [SerializeField] private int centerSlotIndex = 15;
     [Tooltip("Additional world-space nudge applied to every slot position. Fine-tune if the slot pivot is not exactly where the arm should align.")]
     [SerializeField] private Vector3 slotOffset = Vector3.zero;
+    [Tooltip("Optional override for the Z distance between two adjacent columns (e.g. -0.0194 if column 2 sits -0.0194 in Z from column 1 — sign included). When non-zero, Z is computed arithmetically from the column difference instead of read from the slot Transform positions, for whichever axis actually drives column-to-column movement on this rig. Leave at 0 to keep using the measured Transform positions.")]
+    [SerializeField] private float columnSpacingZ = 0f;
     [Tooltip("Local X when the arm is parked in front of a slot (not extended). X is the depth axis.")]
     [SerializeField] private float parkedX = 0f;
     [Tooltip("Seconds the arm pauses at each slot during auto-traverse before moving on.")]
     [SerializeField] private float autoTraverseDelay = 0.5f;
+
+    // Read-only so other scripts (e.g. the gripper controller) can match this
+    // exact depth for their own "parked, not reaching in" moves instead of
+    // needing a second field that could silently drift out of sync with it.
+    public float ParkedX => parkedX;
 
     private Transform[] slotsA;
     private Transform[] slotsB;
@@ -321,6 +328,50 @@ public class ASRSArmTester : MonoBehaviour
         // InverseTransformDirection maps direction (no translation) into local space,
         // giving the correct per-axis delta regardless of parent position.
         Vector3 worldDelta = slot.position + slotOffset - center.position;
+
+        Transform zParent = armController.ArmZ != null ? armController.ArmZ.parent : null;
+        Transform yParent = armController.ArmY != null ? armController.ArmY.parent : null;
+
+        targetZ = zParent != null ? zParent.InverseTransformDirection(worldDelta).z : worldDelta.z;
+        targetY = yParent != null ? yParent.InverseTransformDirection(worldDelta).y : worldDelta.y;
+
+        // Manual override: replace the measured Z with an exact arithmetic
+        // value from the column difference, instead of trusting the slot
+        // Transforms' real positions (which may not be perfectly consistent
+        // slot-to-slot).
+        if (!Mathf.Approximately(columnSpacingZ, 0f))
+        {
+            int col = localIndex % Cols;
+            int centerCol = centerSlotIndex % Cols;
+            targetZ = (col - centerCol) * columnSpacingZ;
+        }
+
+        return true;
+    }
+
+    // General-purpose version of the slot-delta math for an arbitrary world
+    // point — e.g. where the gripper should drop a table at the conveyor —
+    // rather than one of the rack's own numbered slots. Uses whichever
+    // side's center the arm is CURRENTLY facing, so the result is only
+    // meaningful for a point reachable from the current rotation.
+    public bool TryComputeDeltaToWorldPoint(Vector3 worldPoint, out float targetZ, out float targetY)
+    {
+        targetZ = 0f;
+        targetY = 0f;
+
+        if (armController == null)
+            return false;
+
+        Transform[] slots = armController.CurrentSide == ASRSArmController.Side.U ? slotsB : slotsA;
+
+        if (slots == null || centerSlotIndex < 0 || centerSlotIndex >= slots.Length)
+            return false;
+
+        Transform center = slots[centerSlotIndex];
+        if (center == null)
+            return false;
+
+        Vector3 worldDelta = worldPoint - center.position;
 
         Transform zParent = armController.ArmZ != null ? armController.ArmZ.parent : null;
         Transform yParent = armController.ArmY != null ? armController.ArmY.parent : null;

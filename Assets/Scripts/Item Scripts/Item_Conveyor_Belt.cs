@@ -79,20 +79,40 @@ public class Item_Conveyor_Belt : Item_Parent{
         }
     }
 
+    // Explicit and idempotent — safe to call from more than one place
+    // (e.g. two tables triggering the RFID sensor in close succession)
+    // without a stray extra call flipping the belt the wrong way, which a
+    // blind toggle can't guarantee.
+    public void PauseMovement(){
+        if (!Active)
+            return;
+
+        for (int i = 0; i < SlottedTableList.Count; i++){
+            Spline_Animate animate = SlottedTableList[i].GetComponent<Spline_Animate>();
+            if (animate != null)
+                animate.Pause();
+        }
+
+        Active = false;
+    }
+
+    public void ResumeMovement(){
+        if (Active)
+            return;
+
+        for (int i = 0; i < SlottedTableList.Count; i++){
+            Spline_Animate animate = SlottedTableList[i].GetComponent<Spline_Animate>();
+            if (animate != null)
+                animate.Play();
+        }
+
+        Active = true;
+    }
+
     public void ToggleMovement(){
-        if (Active){
-            for (int i = 0; i < SlottedTableList.Count; i++){
-                SlottedTableList[i].GetComponent<Spline_Animate>().Pause();
-            }
-
-            Active = !Active;
-        }
-        else{
-            for (int i = 0; i < SlottedTableList.Count; i++){
-                SlottedTableList[i].GetComponent<Spline_Animate>().Play();
-            }
-
-            Active = !Active;
-        }
+        if (Active)
+            PauseMovement();
+        else
+            ResumeMovement();
     }
 }

@@ -37,6 +37,22 @@ public class Marker_Interactable : MonoBehaviour
         idleRoutine = StartCoroutine(IdlePulse());
     }
 
+    // Restores/hides visibility directly, bypassing the click-driven toggle —
+    // used by quiz mode to un-hide a marker that auto-hid itself after a
+    // wrong-order click, so it's still findable when its real turn comes.
+    public void SetVisible(bool visible)
+    {
+        if (fadeRoutine != null)
+            StopCoroutine(fadeRoutine);
+        if (idleRoutine != null)
+            StopCoroutine(idleRoutine);
+
+        MeshRendererReference.enabled = visible;
+
+        if (visible)
+            idleRoutine = StartCoroutine(IdlePulse());
+    }
+
     public void ToggleVisibility(InteractionType interactionType)
     {
         Activated = !Activated;
