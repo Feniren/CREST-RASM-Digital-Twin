@@ -271,6 +271,15 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SystemMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""79ececc5-efda-4dfb-9ae1-bd7ad4d87afb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -717,7 +726,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""5ba9ae07-f8d5-4963-988f-e116a531b3e8"",
-                    ""path"": ""<XRController>{LeftHand}/{SecondaryButton}"",
+                    ""path"": ""<XRController>{LeftHand}/{PrimaryButton}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -766,6 +775,28 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleBag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d3faf139-2f51-4a8e-a63d-3b16b5bdcf22"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SystemMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8248cbca-19b8-4cb5-b9a4-6642f028ebb5"",
+                    ""path"": ""<XRController>{LeftHand}/{SecondaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SystemMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1140,6 +1171,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         m_Player_ResetPosition = m_Player.FindAction("ResetPosition", throwIfNotFound: true);
         m_Player_XRLeftGrab = m_Player.FindAction("XRLeftGrab", throwIfNotFound: true);
         m_Player_XRRightGrab = m_Player.FindAction("XRRightGrab", throwIfNotFound: true);
+        m_Player_SystemMenu = m_Player.FindAction("SystemMenu", throwIfNotFound: true);
         // ItemEquipped
         m_ItemEquipped = asset.FindActionMap("ItemEquipped", throwIfNotFound: true);
         m_ItemEquipped_ThrowItem = m_ItemEquipped.FindAction("ThrowItem", throwIfNotFound: true);
@@ -1258,6 +1290,7 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ResetPosition;
     private readonly InputAction m_Player_XRLeftGrab;
     private readonly InputAction m_Player_XRRightGrab;
+    private readonly InputAction m_Player_SystemMenu;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1350,6 +1383,10 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @XRRightGrab => m_Wrapper.m_Player_XRRightGrab;
         /// <summary>
+        /// Provides access to the underlying input action "Player/SystemMenu".
+        /// </summary>
+        public InputAction @SystemMenu => m_Wrapper.m_Player_SystemMenu;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1435,6 +1472,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @XRRightGrab.started += instance.OnXRRightGrab;
             @XRRightGrab.performed += instance.OnXRRightGrab;
             @XRRightGrab.canceled += instance.OnXRRightGrab;
+            @SystemMenu.started += instance.OnSystemMenu;
+            @SystemMenu.performed += instance.OnSystemMenu;
+            @SystemMenu.canceled += instance.OnSystemMenu;
         }
 
         /// <summary>
@@ -1506,6 +1546,9 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
             @XRRightGrab.started -= instance.OnXRRightGrab;
             @XRRightGrab.performed -= instance.OnXRRightGrab;
             @XRRightGrab.canceled -= instance.OnXRRightGrab;
+            @SystemMenu.started -= instance.OnSystemMenu;
+            @SystemMenu.performed -= instance.OnSystemMenu;
+            @SystemMenu.canceled -= instance.OnSystemMenu;
         }
 
         /// <summary>
@@ -1988,6 +2031,13 @@ public partial class @Player_Input: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnXRRightGrab(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SystemMenu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSystemMenu(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemEquipped" which allows adding and removing callbacks.
