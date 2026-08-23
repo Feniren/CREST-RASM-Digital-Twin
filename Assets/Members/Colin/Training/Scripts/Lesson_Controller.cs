@@ -44,18 +44,18 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
     }
 
     public void LoadData(Save_Data SaveData){
-        if (SaveData.Module_Progress != null)
+        /*if (SaveData.Module_Progress != null)
             moduleProgress = SaveData.Module_Progress;
 
         if (SaveData.Quiz_Scores != null)
-            quizScores = SaveData.Quiz_Scores;
+            quizScores = SaveData.Quiz_Scores;*/
 
         UpdateMenuStatus();
     }
 
     public void SaveData(ref Save_Data SaveData){
-        SaveData.Module_Progress = moduleProgress;
-        SaveData.Quiz_Scores = quizScores;
+        /*SaveData.Module_Progress = moduleProgress;
+        SaveData.Quiz_Scores = quizScores;*/
     }
 
     private void OnModuleLoaded(Scene scene){

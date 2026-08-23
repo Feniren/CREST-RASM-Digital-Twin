@@ -13,7 +13,10 @@ public class Data_Loader : MonoBehaviour{
     private string FileName;
 
 	[SerializeField]
-	public Item_Library ItemLibraryReference;
+	public Item_Library ItemLibrary;
+
+	[SerializeField]
+	public Widget_Library WidgetLibrary;
 
     public Data_Loader Instance{get; private set;}
 
@@ -85,7 +88,7 @@ public class Data_Loader : MonoBehaviour{
 	}
 
 	private List<Save_Data_Interface> FindSaveableObjects(){
-        IEnumerable<Save_Data_Interface> SaveableObjects = FindObjectsOfType<MonoBehaviour>().OfType<Save_Data_Interface>();
+        IEnumerable<Save_Data_Interface> SaveableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<Save_Data_Interface>();
 
         return new List<Save_Data_Interface>(SaveableObjects);
     }

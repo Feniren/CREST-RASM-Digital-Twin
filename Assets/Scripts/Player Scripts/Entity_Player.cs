@@ -40,7 +40,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
 		StartCoroutine(LaunchXR(0.1f));
 
-        ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibraryReference;
+        ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibrary;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

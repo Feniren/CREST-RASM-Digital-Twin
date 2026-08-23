@@ -31,6 +31,30 @@ public class Job_Manager : MonoBehaviour{
 		RunJob();
 	}
 
+	public void DequeueJob(Job_Parent Job){
+		JobQueue.Remove(Job);
+
+		Destroy(Job);
+
+		JobActive = false;
+
+		OnJobQueueUpdate.Invoke();
+
+		RunJob();
+	}
+
+	public void DequeueJob(int JobIndex){
+		Destroy(JobQueue[JobIndex]);
+
+		JobQueue.RemoveAt(JobIndex);
+
+		JobActive = false;
+
+		OnJobQueueUpdate.Invoke();
+
+		RunJob();
+	}
+
 	public void QueueJob(Job_Parent JobReference){
 		JobQueue.Add(JobReference);
 
