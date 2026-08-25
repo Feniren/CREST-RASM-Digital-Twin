@@ -8,9 +8,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 178682122818131419, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 0.345
+      objectReference: {fileID: 0}
+    - target: {fileID: 178682122818131419, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3025243101802959969, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 0.33
+      objectReference: {fileID: 0}
     - target: {fileID: 3282666746881280642, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
       propertyPath: m_Name
-      value: motoman_gp8_base
+      value: ROS_motoman_gp8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546719766780656174, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 5021535501805417680, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
       propertyPath: m_LocalPosition.x
@@ -52,8 +68,55 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6766877366869697505, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766877366869697505, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      propertyPath: m_ParentAnchorPosition.z
+      value: 0.04
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3282666746881280642, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8835626485681206399}
+    - targetCorrespondingSourceObject: {fileID: 3282666746881280642, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2946442660300342854}
   m_SourcePrefab: {fileID: 100100000, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+--- !u!1 &8181868877969287605 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3282666746881280642, guid: 9ec04d42521b5c42291a26ca5311f9ab, type: 3}
+  m_PrefabInstance: {fileID: 6630906578628666167}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8835626485681206399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181868877969287605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca1df6a49192240758df7f7f38bfc690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ROSJointStateProvider
+  topicName: /joint_states
+--- !u!114 &2946442660300342854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181868877969287605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59b62e0245aec174ea9d2d26b47befdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JointStateController
+  stiffness: 10000
+  damping: 100
+  forceLimit: 1000
