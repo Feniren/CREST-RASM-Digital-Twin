@@ -53,6 +53,10 @@ public class Quiz_Manager : MonoBehaviour
 
         if (quizPanel != null) quizPanel.SetActive(false);
         if (resultsPanel != null) resultsPanel.SetActive(false);
+
+        // The whole panel (title/background included) stays hidden until
+        // the quiz actually starts, not just its inner sub-panels.
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -69,6 +73,8 @@ public class Quiz_Manager : MonoBehaviour
         }
 
         UnsubscribeAll();
+
+        gameObject.SetActive(true);
 
         steps = sequenceManager.Steps;
         expectedIndex = 0;

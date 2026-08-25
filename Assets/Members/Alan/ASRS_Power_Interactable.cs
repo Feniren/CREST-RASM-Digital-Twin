@@ -14,8 +14,8 @@ public class ASRS_Power_Interactable : MonoBehaviour{
 	public Material PoweredOffMaterial;
 
 	[Header("Reveal on power-on (optional)")]
-	[Tooltip("Set active when this is powered on, set inactive when powered off — e.g. the SCORBASE panel Canvas, hidden until the laptop/monitor it lives on is switched on.")]
-	public GameObject RevealOnPowerOn;
+	[Tooltip("Set active when this is powered on, set inactive when powered off — e.g. the SCORBASE panel Canvas and the numeric keypad, both hidden until the laptop/monitor they live on is switched on.")]
+	public GameObject[] RevealOnPowerOn;
 
 	[Header("Lesson (optional)")]
 	[Tooltip("Leave empty to use this switch standalone with no lesson gating.")]
@@ -36,8 +36,7 @@ public class ASRS_Power_Interactable : MonoBehaviour{
 
 		select.OnInteractBegin.AddListener(TogglePower);
 
-		if (RevealOnPowerOn != null)
-			RevealOnPowerOn.SetActive(IsPoweredOn);
+		SetRevealedActive(IsPoweredOn);
 	}
 
 	public void TogglePower(){
@@ -46,10 +45,18 @@ public class ASRS_Power_Interactable : MonoBehaviour{
 		if (MeshRendererReference != null && PoweredOnMaterial != null && PoweredOffMaterial != null)
 			MeshRendererReference.material = IsPoweredOn ? PoweredOnMaterial : PoweredOffMaterial;
 
-		if (RevealOnPowerOn != null)
-			RevealOnPowerOn.SetActive(IsPoweredOn);
+		SetRevealedActive(IsPoweredOn);
 
 		if (IsPoweredOn && Sequence_Manager != null)
 			Sequence_Manager.NotifyAction(PowerOnActionId);
+	}
+
+	private void SetRevealedActive(bool active){
+		if (RevealOnPowerOn == null)
+			return;
+
+		foreach (GameObject obj in RevealOnPowerOn)
+			if (obj != null)
+				obj.SetActive(active);
 	}
 }

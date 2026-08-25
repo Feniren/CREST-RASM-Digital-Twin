@@ -54,6 +54,12 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     private static readonly Color PendingColor = new Color(1f, 1f, 1f, 0.35f);
     private static readonly Color ArrivedColor = new Color(0.45f, 1f, 0.55f, 1f);
 
+    // Read-only access so a companion tool (e.g. a VR-friendly numeric
+    // keypad) can find and type into these without needing its own
+    // duplicate reference wired up separately.
+    public TMP_InputField TableIdField => tableIdField;
+    public Button GoButton => goButton;
+
     private void Awake()
     {
         if (zPlusButton != null) zPlusButton.onClick.AddListener(() => Jog(Axis.Z, 1f));
