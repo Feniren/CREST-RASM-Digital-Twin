@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/DigitalTwin.unity
     guid: 6b7a3b6ca7923604db6888b861b14b14
   - enabled: 1
-    path: Assets/Members/Ethan/RobotArm/Arm-Module.unity
+    path: Assets/Members/Ethan/RobotArm/Play-Module/Arm-Module.unity
     guid: 4165e5dd05783c740a5567e27e686760
   - enabled: 1
     path: Assets/Members/Colin/Scenes/Bootstrap.unity
