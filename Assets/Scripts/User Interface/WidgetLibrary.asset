@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f615081e4e97440a8828506cd9e82c, type: 3}
+  m_Name: WidgetLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::Widget_Library
+  Widgets:
+  - {fileID: 1670477113955323098, guid: 5c043032db5d34f4a932fda5be874e16, type: 3}
+  - {fileID: 2818358263241952346, guid: b4afa464b7905b14e96879f189b9c712, type: 3}
+  - {fileID: 1670477113955323098, guid: ea30f579cc3be9f4b8f4b2fba78cf125, type: 3}
+  - {fileID: 1670477113955323098, guid: 08b65cd32e539c840b489eb521cdeff2, type: 3}
+  - {fileID: 1670477113955323098, guid: 82163e30bc5388346bd9d65c93d1b1fa, type: 3}
+  - {fileID: 2790577418318035806, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
+  - {fileID: 1670477113955323098, guid: a9e78b6547c30e34182d7412f681739b, type: 3}

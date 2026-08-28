@@ -18,6 +18,7 @@ public class Player_Controller : Controller{
 	public GameObject ItemInstance = null;
     public GameObject LeftHand;
     public GameObject RightHand;
+	public GameObject ActiveWidget = null;
 
     Player_Input PlayerInput;
 
@@ -43,6 +44,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Move.canceled += StopMoving;
         PlayerInput.Player.ResetPosition.performed += ResetPosition;
 		PlayerInput.Player.ToggleBag.performed += ToggleBag;
+		PlayerInput.Player.SystemMenu.performed += CreateSystemMenu;
         PlayerInput.Player.ShootPhysical.performed += LeftClick;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
@@ -317,6 +319,25 @@ public class Player_Controller : Controller{
 
         Debug.Log(PlayerReference.CameraReference.transform.localPosition);
     }
+
+	public void CreateSystemMenu(InputAction.CallbackContext Context){
+		Vector3 Position;
+
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			Position = (transform.position + (transform.forward * 2.0f));
+		}
+		else{
+			Position = (LeftHand.transform.position + (transform.forward * 2.0f));
+		}
+
+		if (ActiveWidget == null){
+			ActiveWidget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName("System"), Position, transform.rotation);
+		}
+		else{
+			ActiveWidget.transform.position = Position;
+			ActiveWidget.transform.rotation = transform.rotation;
+		}
+	}
 
 	public void ThrowItem(InputAction.CallbackContext Context){
 		float ElapsedThrowTime;
