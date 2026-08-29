@@ -19,7 +19,7 @@ public class ASRS_Gripper_Controller : MonoBehaviour
 
     [Header("Reach")]
     [Tooltip("Local X (depth) extended in far enough to actually grab/release a table — deeper than ASRSArmTester's Parked X. Tune to your rig; too shallow misses the table, too deep drives it into the shelf.")]
-    [SerializeField] private float reachDepth = 0.3f;
+    [SerializeField] private float reachDepth = 0.15f;
 
     [Header("Carry Speed")]
     [Tooltip("ASRSArmController.MoveSpeed is temporarily set to this for the whole carry sequence (grab, carry, release, return home), then restored to whatever it was before — so this demo plays out slower/more deliberately without affecting jog, Search Home, or Go-to-slot speed elsewhere.")]

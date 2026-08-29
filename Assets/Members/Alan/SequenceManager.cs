@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 // Drives a step-by-step "click the part" sequence.
 // Only the current step's part(s) are active/visible in the scene —
 // every other part is hidden until it's its turn.
@@ -28,6 +29,9 @@ public class SequenceManager : MonoBehaviour
         [Tooltip("Optional: for steps with no Marker_Interactable targets (e.g. a software/UI action like a control-panel button) — leave targets empty and set this instead. The step completes when NotifyAction() is called with this exact string.")]
         public string requiredActionId;
 
+        [Tooltip("Check this if Required Action Id is driven by something automatic/environmental (e.g. a conveyor table reaching the RFID scanner on its own schedule) rather than a deliberate trainee click (e.g. a panel button). During the quiz, this action firing before its turn is silently ignored instead of counted as a mistake, since its timing isn't something the trainee controls.")]
+        public bool passiveAction;
+
         [Tooltip("Optional: the part to fly up and showcase in front of the trainee's face when the Hint button is pressed on this step. Leave blank if this step has no visual hint.")]
         public Transform hintTarget;
     }
@@ -43,7 +47,7 @@ public class SequenceManager : MonoBehaviour
     [SerializeField] private string completionText = "Great job — you've identified every part. Let's test what you've learned.";
 
     [Header("Quiz (optional)")]
-    [Tooltip("Optional — when assigned, this is started automatically once the walkthrough completes, and NotifyAction() calls are forwarded to it instead of handled here while it's active.")]
+    [Tooltip("Optional — NotifyAction() calls are forwarded to it while it's active, and its own start-prompt panel is shown once the walkthrough completes. Leave empty if this module has no quiz yet.")]
     [SerializeField] private Quiz_Manager quizManager;
 
     // Read-only access so Quiz_Manager can replay the exact same step data
@@ -60,8 +64,22 @@ public class SequenceManager : MonoBehaviour
     private bool shownInstructions;
     private bool interactionActive;
 
+    // Set just before reloading the scene from OnStartQuizPressed() — static
+    // so it survives the reload (statics aren't reset by loading a new
+    // scene, only by a domain reload/exiting Play mode). Read once in the
+    // fresh instance's Start() so the trainee lands straight in the quiz
+    // instead of replaying the whole walkthrough after a "Start Quiz" reset.
+    private static bool skipToQuizOnLoad;
+
     private void Start()
     {
+        if (skipToQuizOnLoad)
+        {
+            skipToQuizOnLoad = false;
+            StartQuizDirectly();
+            return;
+        }
+
         // Hide every part to start clean
         foreach (Step step in steps)
             foreach (GameObject target in step.targets)
@@ -118,8 +136,13 @@ public class SequenceManager : MonoBehaviour
             if (infoPanel != null) infoPanel.UpdateText(completionText);
             if (nextButton != null) nextButton.SetActive(false);
             if (hintButton != null) hintButton.SetActive(false);
+
+            // Only offer to start the quiz once there's actually one to
+            // start — a module with no Quiz_Manager assigned just ends here.
+            if (quizManager != null)
+                quizManager.ShowStartPrompt();
+
             onSequenceComplete?.Invoke();
-            if (quizManager != null) quizManager.BeginQuiz();
             return;
         }
 
@@ -205,6 +228,34 @@ public class SequenceManager : MonoBehaviour
         shownInstructions = true;
         if (infoPanel != null) infoPanel.UpdateText(step.instructionsText);
         if (nextButton != null) nextButton.SetActive(false);
+    }
+
+    // Hook this to the Start Quiz button's OnClick() — only shown once the
+    // walkthrough completes. Reloads the scene (so the rack/conveyor/arm and
+    // every marker come back in their clean, freshly-authored state, not
+    // whatever's left over from the walkthrough that just ran) and flags the
+    // fresh instance to jump straight into the quiz instead of replaying the
+    // guided walkthrough.
+    public void OnStartQuizPressed()
+    {
+        skipToQuizOnLoad = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // Runs once, right after a reload triggered by OnStartQuizPressed() —
+    // skips straight to the completed/quiz state instead of Start()'s normal
+    // ActivateStep(0).
+    private void StartQuizDirectly()
+    {
+        currentIndex = steps.Length;
+        interactionActive = false;
+
+        if (infoPanel != null) infoPanel.UpdateText(completionText);
+        if (nextButton != null) nextButton.SetActive(false);
+        if (hintButton != null) hintButton.SetActive(false);
+
+        if (quizManager != null)
+            quizManager.BeginQuiz();
     }
 
     // Hook this to the Hint button's OnClick(). Shows the current step's

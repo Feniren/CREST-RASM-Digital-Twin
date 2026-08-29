@@ -21,6 +21,12 @@ public class Quiz_Manager : MonoBehaviour
 {
     [SerializeField] private SequenceManager sequenceManager;
 
+    [Header("Start Prompt UI")]
+    [Tooltip("Shown when the walkthrough completes, in place of auto-starting the quiz — lets the trainee choose when to begin.")]
+    [SerializeField] private GameObject startPanel;
+    [Tooltip("Triggers SequenceManager's scene reload, which flags the fresh instance to come back straight into the quiz.")]
+    [SerializeField] private Button startQuizButton;
+
     [Header("Status UI")]
     [SerializeField] private GameObject quizPanel;
     [SerializeField] private TextMeshProUGUI statusText;
@@ -50,13 +56,34 @@ public class Quiz_Manager : MonoBehaviour
     {
         if (retryButton != null) retryButton.onClick.AddListener(BeginQuiz);
         if (continueButton != null) continueButton.onClick.AddListener(OnContinuePressed);
+        if (startQuizButton != null) startQuizButton.onClick.AddListener(OnStartQuizButtonPressed);
 
+        if (startPanel != null) startPanel.SetActive(false);
         if (quizPanel != null) quizPanel.SetActive(false);
         if (resultsPanel != null) resultsPanel.SetActive(false);
 
         // The whole panel (title/background included) stays hidden until
-        // the quiz actually starts, not just its inner sub-panels.
+        // the walkthrough completes and offers the start prompt, or a reload
+        // brings the trainee straight into the quiz.
         gameObject.SetActive(false);
+    }
+
+    // Called by SequenceManager once its walkthrough completes — shows the
+    // start prompt on this same panel instead of a separately-built button,
+    // since this panel's canvas is otherwise sitting hidden at this point.
+    public void ShowStartPrompt()
+    {
+        gameObject.SetActive(true);
+
+        if (startPanel != null) startPanel.SetActive(true);
+        if (quizPanel != null) quizPanel.SetActive(false);
+        if (resultsPanel != null) resultsPanel.SetActive(false);
+    }
+
+    private void OnStartQuizButtonPressed()
+    {
+        if (sequenceManager != null)
+            sequenceManager.OnStartQuizPressed();
     }
 
     private void OnDestroy()
@@ -81,6 +108,7 @@ public class Quiz_Manager : MonoBehaviour
         errorCount = 0;
         IsActive = true;
 
+        if (startPanel != null) startPanel.SetActive(false);
         if (resultsPanel != null) resultsPanel.SetActive(false);
         if (quizPanel != null) quizPanel.SetActive(true);
 
@@ -125,9 +153,14 @@ public class Quiz_Manager : MonoBehaviour
             // else: this step also has marker targets still pending — a
             // matching action alone doesn't complete it.
         }
-        else if (IsKnownActionId(actionId))
+        else if (IsKnownActionId(actionId, out bool isPassive))
         {
-            errorCount++;
+            if (!isPassive)
+                errorCount++;
+            // else: driven by something automatic (e.g. a conveyor table
+            // reaching the RFID scanner on its own schedule), not a
+            // deliberate click — firing before its turn isn't the trainee's
+            // mistake, so it's silently ignored instead of counted.
         }
         // else: not an action id used anywhere in this lesson — ignore.
 
@@ -194,12 +227,18 @@ public class Quiz_Manager : MonoBehaviour
         FinishQuiz();
     }
 
-    private bool IsKnownActionId(string actionId)
+    private bool IsKnownActionId(string actionId, out bool isPassive)
     {
         foreach (SequenceManager.Step step in steps)
+        {
             if (step.requiredActionId == actionId)
+            {
+                isPassive = step.passiveAction;
                 return true;
+            }
+        }
 
+        isPassive = false;
         return false;
     }
 
