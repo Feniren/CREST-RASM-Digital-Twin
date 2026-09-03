@@ -5,7 +5,8 @@ using UnityEngine.Video;
 public class VerifyButton : MonoBehaviour
 {
     private Boolean redrawFlag;
-    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private VideoPlayer verifyPlayer;
+    [SerializeField] private VideoPlayer scriptPlayer;
 
     void Start()
     {
@@ -16,7 +17,8 @@ public class VerifyButton : MonoBehaviour
         // prepare
         // the verification start up steps, ignored till assets are made
         // start video
-        videoPlayer.Play();
+        verifyPlayer.Play();
+        scriptPlayer.Play();
         redrawFlag = true;
         Debug.Log("verify");
     }
@@ -24,22 +26,23 @@ public class VerifyButton : MonoBehaviour
     public void Redraw()
     {
         if(redrawFlag) {
-            videoPlayer.time = 0f;
-            videoPlayer.Play();
+            verifyPlayer.time = 0f;
+            verifyPlayer.Play();
         }
     }
 
     public void StopRedraw()
     {
         if(redrawFlag) {
-            videoPlayer.Pause();
+            verifyPlayer.Pause();
         }
     }
 
     public void Reset()
     {
         // stop video
-        videoPlayer.time = 0f;
+        verifyPlayer.time = 0f;
+        scriptPlayer.time = 0f;
         redrawFlag = false;
     } 
 }
