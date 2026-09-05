@@ -47,15 +47,21 @@ public class Mill_Stock : MonoBehaviour
         Data.Reset();
     }
 
-    /// <summary>World-space tip poses; the sweep from prev to curr is carved.</summary>
+    /// <summary>World-space tip poses; the sweep from prev to curr is carved. Only valid while the stock is not moving.</summary>
     public void Carve(Tool_Profile tool, Vector3 prev_world, Vector3 curr_world, Vector3 tool_up_world)
+    {
+        Carve_Local(tool, transform.InverseTransformPoint(prev_world), transform.InverseTransformPoint(curr_world), tool_up_world);
+    }
+
+    /// <summary>Stock-local tip poses; use this when the stock itself moves between steps.</summary>
+    public void Carve_Local(Tool_Profile tool, Vector3 prev_local, Vector3 curr_local, Vector3 tool_up_world)
     {
         if (!warned_axis && Mathf.Abs(Vector3.Dot(tool_up_world.normalized, transform.up)) < 0.99f)
         {
             Debug.LogWarning(name + ": tool axis is not parallel to the stock's Y axis; carving by tip position only.");
             warned_axis = true;
         }
-        Data.Carve(tool, transform.InverseTransformPoint(prev_world), transform.InverseTransformPoint(curr_world));
+        Data.Carve(tool, prev_local, curr_local);
         if (Data.Gap_Warning && !warned_gap)
         {
             Debug.LogWarning(name + ": a tool moved more than " + (Mill_Stock_Data.Max_Sub_Steps * Cell * 500f) + " mm in one step; the sweep was capped and may have gaps.");
@@ -65,7 +71,7 @@ public class Mill_Stock : MonoBehaviour
 
     void LateUpdate()
     {
-        Rebuild_Dirty();
+        if (Data != null) Rebuild_Dirty();   // Data is not serialized: a script reload during Play empties it
     }
 
     void Rebuild_Dirty()

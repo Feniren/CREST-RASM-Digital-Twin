@@ -14,15 +14,37 @@ public class Carving_Tool : MonoBehaviour
     public Vector3 Last_Tip { get; private set; }
     public bool Is_Lathe_Tool => Lathe != null;
 
+    // Mill sweeps are tracked in stock-local space so a stock that moves under the tool (a
+    // machine table) still carves the relative motion; a world-space sweep would only see the tool's own delta.
+    Vector3 last_local;
+
     void OnEnable()
     {
+        Seed();
+    }
+
+    /// <summary>Binds to a stock (or null) and re-seeds, so the teleport that brought the tool here is not carved.</summary>
+    public void Bind(Mill_Stock mill)
+    {
+        Mill = mill;
+        Seed();
+    }
+
+    void Seed()
+    {
         Last_Tip = transform.position;
+        if (Mill != null) last_local = Mill.transform.InverseTransformPoint(Last_Tip);
     }
 
     public void Carve_Step()
     {
         Vector3 tip = transform.position;
-        if (Mill != null) Mill.Carve(Profile, Last_Tip, tip, transform.up);
+        if (Mill != null)
+        {
+            Vector3 local = Mill.transform.InverseTransformPoint(tip);
+            Mill.Carve_Local(Profile, last_local, local, transform.up);
+            last_local = local;
+        }
         if (Lathe != null) Lathe.Carve(Profile, Last_Tip, tip);
         Last_Tip = tip;
     }
