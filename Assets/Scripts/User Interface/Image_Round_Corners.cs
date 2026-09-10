@@ -19,10 +19,10 @@ public class Image_Rounded_Corners : MonoBehaviour, IMaterialModifier{
 	private RectTransform ImageRectTransform;
 	private Material MaterialInstance;
 
-	private static readonly int SizeProperty = Shader.PropertyToID("_Size");
-	private static readonly int RadiusProperty = Shader.PropertyToID("_CornerRadius");
-	private static readonly int BorderWidthProperty = Shader.PropertyToID("_BorderWidth");
-	private static readonly int BorderColorProperty = Shader.PropertyToID("_BorderColor");
+	private static readonly int SizeProperty = Shader.PropertyToID("Size");
+	private static readonly int RadiusProperty = Shader.PropertyToID("CornerRadius");
+	private static readonly int BorderWidthProperty = Shader.PropertyToID("BorderWidth");
+	private static readonly int BorderColorProperty = Shader.PropertyToID("BorderColor");
 
 	private Vector2 LastSize;
 	private float LastRadius;

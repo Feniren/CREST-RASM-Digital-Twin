@@ -49,7 +49,9 @@ GameObject:
   - component: {fileID: 2719375797273390069}
   - component: {fileID: 8399665239666783026}
   - component: {fileID: 8518039328166507347}
+  - component: {fileID: 5150150034696911326}
   - component: {fileID: 757394683014016759}
+  - component: {fileID: 5735296683725685947}
   m_Layer: 5
   m_Name: ControlPanel
   m_TagString: Untagged
@@ -122,7 +124,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &8399665239666783026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +161,27 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
+--- !u!65 &5150150034696911326
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818358263241952346}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 60, y: 80, z: 0.1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &757394683014016759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +195,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ControlPanelWidget
   Name: Control
+--- !u!114 &5735296683725685947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818358263241952346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4afeec4bf838104faa38b8ef2c57977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_User_Interface
 --- !u!1 &3307766204287766147
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,8 +313,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5
-  m_fontSizeBase: 5
+  m_fontSize: 4
+  m_fontSizeBase: 4
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -527,8 +562,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5
-  m_fontSizeBase: 5
+  m_fontSize: 4
+  m_fontSizeBase: 4
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -666,8 +701,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8
-  m_fontSizeBase: 8
+  m_fontSize: 6
+  m_fontSizeBase: 6
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -753,11 +788,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 50
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 10
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_LocalPosition.x
@@ -833,7 +868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4051210213518680291, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: DefaultBackgroundOpacity
-      value: 1
+      value: 0.5019608
       objectReference: {fileID: 0}
     - target: {fileID: 4051210213518680291, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: HighlightedBorderColor.a

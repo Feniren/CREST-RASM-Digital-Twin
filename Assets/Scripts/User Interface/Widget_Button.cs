@@ -45,7 +45,12 @@ public class Widget_Button : Button{
 				RoundedCornerImage.SetBorderColor(DefaultBorderColor);
 
 				if (BackgroundImage){
-					DefaultBackgroundOpacity = BackgroundImage.color.a;
+					if (Application.isPlaying){
+						BackgroundImage.color = new Color(1.0f, 1.0f, 1.0f, DefaultBackgroundOpacity);
+					}
+					else{
+						DefaultBackgroundOpacity = BackgroundImage.color.a;
+					}
 				}
 
 				break;

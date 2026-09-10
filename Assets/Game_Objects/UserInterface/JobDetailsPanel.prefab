@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 7834885251304694076}
   - component: {fileID: 7610705521141925827}
   - component: {fileID: 1233625388162685855}
+  - component: {fileID: 5293484728750579403}
   - component: {fileID: 5420288855919912162}
+  - component: {fileID: 4187212675912390730}
   m_Layer: 5
   m_Name: JobDetailsPanel
   m_TagString: Untagged
@@ -123,6 +125,27 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
+--- !u!65 &5293484728750579403
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670477113955323098}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 60, y: 80, z: 0.1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5420288855919912162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,6 +162,18 @@ MonoBehaviour:
   JobName: {fileID: 1835613427124539657}
   JobDescription: {fileID: 3635660606672611481}
   JobManagerReference: {fileID: 0}
+--- !u!114 &4187212675912390730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670477113955323098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4afeec4bf838104faa38b8ef2c57977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_User_Interface
 --- !u!1 &2123761763160996489
 GameObject:
   m_ObjectHideFlags: 0
@@ -590,7 +625,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 10
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_LocalPosition.x
@@ -744,7 +779,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 10
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3000972462085904374, guid: 73320e9a76c33c043ac009dbe1ad5654, type: 3}
       propertyPath: m_LocalPosition.x
