@@ -3,12 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // SCORBASE-style control panel for the ASRS-36 arm: Manual Movement (jog +
-// speed), Search Home (per-axis checkmarks), and a Go-to-slot control
-// addressed by the rack's own TableID. Wired directly to
-// ASRSArmController/ASRSArmTester. The SequenceManager reference is
-// optional — leave it unassigned to use this panel standalone; when
-// assigned, a completed Search Home or a successful Go reports back to it
-// via NotifyAction() so a lesson step can gate on either.
+// speed), Search Home (per-axis checkmarks), and a Pick and Place section
+// (Part/Source/Target ID + OK/Cancel) that retrieves the Source ID table
+// from the rack and delivers it to the RFID reader/conveyor via the
+// gripper. Wired directly to ASRSArmController/ASRSArmTester/
+// Item_RFID_Sensor_ASRS. The SequenceManager reference is optional — leave
+// it unassigned to use this panel standalone; when assigned, a completed
+// Search Home or a successful pick-and-place reports back to it via
+// NotifyAction() so a lesson step can gate on either.
 public class ASRS_Scorbase_Panel : MonoBehaviour
 {
     private const float JogStep = 0.25f;
@@ -18,6 +20,11 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     [Header("Arm")]
     [SerializeField] private ASRSArmController armController;
     [SerializeField] private ASRSArmTester armTester;
+
+    [Header("Go Online")]
+    [Tooltip("SCORBASE must be brought online before it will accept manual movement, homing, or Go commands — matches the real software's Go Online step.")]
+    [SerializeField] private Button goOnlineButton;
+    [SerializeField] private TextMeshProUGUI onlineStatusText;
 
     [Header("Manual Movement")]
     [SerializeField] private TMP_InputField speedField;
@@ -37,9 +44,25 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rotateCheck;
     [SerializeField] private TextMeshProUGUI robotCheck;
 
-    [Header("Go To Slot")]
-    [SerializeField] private TMP_InputField tableIdField;
-    [SerializeField] private Button goButton;
+    [Header("Pick and Place")]
+    [Tooltip("Retrieves the table addressed by Source Index from the rack and carries it to the RFID reader/conveyor via the gripper — the only real destination this simulation delivers to.")]
+    [SerializeField] private Item_RFID_Sensor_ASRS rfidSensor;
+    [Tooltip("Defaults to TEMPLATE — the slotted table itself is 'the part' in this simulation, there's no separate part-type model to validate against yet.")]
+    [SerializeField] private TMP_InputField partIdField;
+    [Tooltip("Read-only display of the resolved rack TableID (e.g. 070001) — filled in automatically from Source Index when OK is pressed, not typed independently.")]
+    [SerializeField] private TMP_InputField sourceIdField;
+    [Tooltip("Which system Source Index refers to (ASRS Slot / Conveyor Belt / Workstation) — not yet wired to different behavior per selection; Source Index currently always addresses an ASRS rack slot.")]
+    [SerializeField] private TMP_Dropdown sourceDropdown;
+    [Tooltip("The real address: a plain rack slot number, 1-72 (ASRSArmTester.TotalSlots). Converted to the rack's row/column TableID format and used directly to run the pick.")]
+    [SerializeField] private TMP_InputField sourceIndexField;
+    [Tooltip("Not currently used — there's no arbitrary target-slot routing yet (Item_ASRS.SlotInsert always returns a table to its own home slot), so this stays a plain field for now.")]
+    [SerializeField] private TMP_InputField targetIdField;
+    [Tooltip("Which system Target Index refers to (ASRS Slot / Conveyor Belt / Workstation) — not yet wired to different behavior per selection, that's future work once arbitrary-target routing is designed.")]
+    [SerializeField] private TMP_Dropdown targetDropdown;
+    [Tooltip("Validated as a slot number (1-72, matching ASRSArmTester.TotalSlots) before OK proceeds, but doesn't drive any routing yet — the only real destination is the conveyor/RFID reader, which every pick already delivers to regardless of this value.")]
+    [SerializeField] private TMP_InputField targetIndexField;
+    [SerializeField] private Button okButton;
+    [SerializeField] private Button cancelButton;
     [SerializeField] private TextMeshProUGUI errorText;
 
     [Header("Status")]
@@ -48,20 +71,37 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     [Header("Lesson (optional)")]
     [Tooltip("Leave empty to use this panel standalone with no lesson gating.")]
     [SerializeField] private SequenceManager sequenceManager;
+    [SerializeField] private string goOnlineActionId = "scorbase_online";
     [SerializeField] private string searchHomeActionId = "scorbase_home";
     [SerializeField] private string goActionId = "test_move";
+    [Tooltip("Fired the first time any jog button is used while online — the digital-twin stand-in for 'navigated to View > Manual Movement and used it'.")]
+    [SerializeField] private string manualMovementActionId = "manual_movement_used";
 
-    private static readonly Color PendingColor = new Color(1f, 1f, 1f, 0.35f);
-    private static readonly Color ArrivedColor = new Color(0.45f, 1f, 0.55f, 1f);
+    // Matches the classic-industrial light-gray panel background — the old
+    // translucent-white/neon-green pair was tuned for a dark panel and was
+    // barely legible once the panel moved to a light background.
+    private static readonly Color PendingColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+    private static readonly Color ArrivedColor = new Color(0f, 0.35f, 0f, 1f);
+
+    private bool manualMovementNotified;
 
     // Read-only access so a companion tool (e.g. a VR-friendly numeric
     // keypad) can find and type into these without needing its own
-    // duplicate reference wired up separately.
-    public TMP_InputField TableIdField => tableIdField;
-    public Button GoButton => goButton;
+    // duplicate reference wired up separately. Points at the Pick and
+    // Place section's Source ID field / OK button — the numeric keypad's
+    // job (type an ID, confirm) maps directly onto typing a Source ID and
+    // pressing OK.
+    public TMP_InputField TableIdField => sourceIdField;
+    public Button GoButton => okButton;
+
+    // Matches real SCORBASE: nothing else works until you've gone online.
+    public bool IsOnline { get; private set; }
 
     private void Awake()
     {
+        if (goOnlineButton != null) goOnlineButton.onClick.AddListener(OnGoOnline);
+        SetOnlineStatus(false);
+
         if (zPlusButton != null) zPlusButton.onClick.AddListener(() => Jog(Axis.Z, 1f));
         if (zMinusButton != null) zMinusButton.onClick.AddListener(() => Jog(Axis.Z, -1f));
         if (yPlusButton != null) yPlusButton.onClick.AddListener(() => Jog(Axis.Y, 1f));
@@ -89,8 +129,11 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         if (searchHomeButton != null)
             searchHomeButton.onClick.AddListener(OnSearchHome);
 
-        if (goButton != null)
-            goButton.onClick.AddListener(OnGo);
+        if (okButton != null)
+            okButton.onClick.AddListener(OnOk);
+
+        if (cancelButton != null)
+            cancelButton.onClick.AddListener(OnCancel);
 
         if (armController != null)
         {
@@ -117,9 +160,38 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
             return;
 
         statusText.text =
-            $"Z {armController.OffsetZ:F2}   Y {armController.OffsetY:F2}   X {armController.OffsetX:F2}   " +
-            $"Side {armController.CurrentSide}   " +
-            (armController.IsMoving ? "Moving" : "Idle");
+            $"Z:  {armController.OffsetZ:F2}\n" +
+            $"Y:  {armController.OffsetY:F2}\n" +
+            $"X:  {armController.OffsetX:F2}\n" +
+            $"Side:  {armController.CurrentSide}\n" +
+            $"State:  {(armController.IsMoving ? "Moving" : "Idle")}";
+    }
+
+    // ------------------------------------------------------------------
+    // Go Online
+    // ------------------------------------------------------------------
+
+    private void OnGoOnline()
+    {
+        SetOnlineStatus(true);
+        SetError(string.Empty);
+
+        if (sequenceManager != null)
+            sequenceManager.NotifyAction(goOnlineActionId);
+    }
+
+    private void SetOnlineStatus(bool online)
+    {
+        IsOnline = online;
+
+        if (onlineStatusText != null)
+        {
+            onlineStatusText.text = online ? "ONLINE" : "OFFLINE";
+            onlineStatusText.color = online ? ArrivedColor : PendingColor;
+        }
+
+        if (goOnlineButton != null)
+            goOnlineButton.gameObject.SetActive(!online);
     }
 
     // ------------------------------------------------------------------
@@ -130,6 +202,12 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     {
         if (armController == null)
             return;
+
+        if (!IsOnline)
+        {
+            SetError("Go Online first.");
+            return;
+        }
 
         float step = JogStep * direction;
         bool withinLimits;
@@ -150,6 +228,16 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         }
 
         SetError(withinLimits ? string.Empty : $"{axis} axis is at its travel limit — can't move further.");
+
+        // Fired once, the first time any jog control is actually used while
+        // online — the digital-twin stand-in for "navigated to View >
+        // Manual Movement and used it".
+        if (!manualMovementNotified)
+        {
+            manualMovementNotified = true;
+            if (sequenceManager != null)
+                sequenceManager.NotifyAction(manualMovementActionId);
+        }
     }
 
     private void OnSpeedEdited(string text)
@@ -171,6 +259,12 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     {
         if (armController == null)
             return;
+
+        if (!IsOnline)
+        {
+            SetError("Go Online first.");
+            return;
+        }
 
         ClearChecks();
         armController.HomeAll();
@@ -208,17 +302,52 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     }
 
     // ------------------------------------------------------------------
-    // Go To Slot
+    // Pick and Place
     // ------------------------------------------------------------------
 
-    private void OnGo()
+    private void OnOk()
     {
-        if (armTester == null || tableIdField == null)
+        if (rfidSensor == null)
             return;
 
-        string id = tableIdField.text.Trim();
+        if (!IsOnline)
+        {
+            SetError("Go Online first.");
+            return;
+        }
 
-        if (armTester.TryMoveToTableId(id))
+        if (armController == null || !armController.IsHomed)
+        {
+            SetError("Search Home first.");
+            return;
+        }
+
+        if (sourceIndexField == null)
+        {
+            Debug.LogError("[ASRS_Scorbase_Panel] Source Index field is not assigned — can't resolve a rack address.", this);
+            return;
+        }
+
+        // Source Index (1-72) is the real address now — it's converted into
+        // the rack's own row/column TableID format and that's what actually
+        // drives the pick. Target Index is validated the same way but
+        // doesn't route anywhere yet — the only real destination this
+        // simulation delivers to is the conveyor/RFID reader, which is
+        // already where every pick lands regardless of Target.
+        if (!TryValidateIndex(sourceIndexField, "Source Index", out int sourceIndex))
+            return;
+
+        if (!TryValidateIndex(targetIndexField, "Target Index", out _))
+            return;
+
+        string sourceId = ASRSArmTester.IndexToTableId(sourceIndex);
+
+        // Reflects the resolved rack address back for the trainee to see —
+        // Source ID is now a read-out, not something typed independently.
+        if (sourceIdField != null)
+            sourceIdField.text = sourceId;
+
+        if (rfidSensor.TryManualPickAndPlace(sourceId))
         {
             SetError(string.Empty);
 
@@ -227,8 +356,45 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         }
         else
         {
-            SetError($"Can't reach {id} — check the ID and which side the arm is on.");
+            SetError($"Can't pick slot {sourceIndex} ({sourceId}) — check the index and that the arm isn't already busy.");
         }
+    }
+
+    // Optional fields (Target Index) pass with index=0 when unassigned —
+    // required fields (Source Index) are null-checked by the caller before
+    // this runs, so a null 'field' here always means "optional and unused".
+    private bool TryValidateIndex(TMP_InputField field, string label, out int index)
+    {
+        index = 0;
+
+        if (field == null)
+            return true;
+
+        string text = field.text.Trim();
+
+        if (string.IsNullOrEmpty(text))
+        {
+            SetError($"{label} is required (1-{ASRSArmTester.TotalSlots}).");
+            return false;
+        }
+
+        if (!int.TryParse(text, out index) || index < 1 || index > ASRSArmTester.TotalSlots)
+        {
+            SetError($"{label} must be between 1 and {ASRSArmTester.TotalSlots}.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void OnCancel()
+    {
+        if (partIdField != null) partIdField.text = string.Empty;
+        if (sourceIdField != null) sourceIdField.text = string.Empty;
+        if (sourceIndexField != null) sourceIndexField.text = string.Empty;
+        if (targetIdField != null) targetIdField.text = string.Empty;
+        if (targetIndexField != null) targetIndexField.text = string.Empty;
+        SetError(string.Empty);
     }
 
     private void SetError(string message)

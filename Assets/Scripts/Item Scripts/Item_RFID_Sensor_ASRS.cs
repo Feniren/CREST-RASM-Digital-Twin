@@ -30,6 +30,32 @@ public class Item_RFID_Sensor_ASRS : Item_Parent{
 		HandleRackTriggerEnter(OverlappedCollider);
 	}
 
+	// Manual entry point for the SCORBASE panel's Pick and Place section —
+	// retrieves 'sourceTableId' from the rack and carries it to this
+	// sensor's own position via the gripper (or falls back to instant
+	// placement if no gripper is wired), reusing the exact same delivery
+	// path as the automatic RFID-triggered retrieve. Returns false without
+	// starting anything if a table is already being processed, or if the
+	// required references aren't assigned.
+	public bool TryManualPickAndPlace(string sourceTableId){
+		if (rack == null || ConveyorBeltReference == null){
+			Debug.LogError("Item_RFID_Sensor_ASRS: Rack or conveyor reference is not assigned.", this);
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(sourceTableId))
+			return false;
+
+		if (IsProcessing)
+			return false;
+
+		IsProcessing = true;
+		ConveyorBeltReference.PauseMovement();
+
+		StartCoroutine(RetrieveAndReturnToConveyor(sourceTableId, transform.position, transform.rotation, 0f));
+		return true;
+	}
+
 	private void HandleRackTriggerEnter(Collider other){
 		if (rack == null)
 			return;
@@ -206,6 +232,12 @@ public class Item_RFID_Sensor_ASRS : Item_Parent{
 	// Always finishes by clearing processing state, whichever path called it.
 	private IEnumerator RetrieveAndReturnToConveyor(string tableId, Vector3 dropPosition, Quaternion dropRotation, float returnOffset)
 	{
+		// Pallet-presence check: don't start delivering another table into
+		// the scanner/conveyor zone while one is already sitting there —
+		// wait for it to clear first, per the real operation's rule of
+		// checking the conveyor before proceeding.
+		yield return new WaitUntil(() => tablesInTrigger.Count == 0);
+
 		Item_Slotted_Table retrieved = rack.RetrieveByID(tableId);
 
 		if (retrieved == null)
