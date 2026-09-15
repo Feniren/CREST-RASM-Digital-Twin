@@ -1,26 +1,45 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Video;
 
-public class VerifyButton : MonoBehaviour
+public class VerifyStateManager : MonoBehaviour
 {
     private Boolean redrawFlag;
     [SerializeField] private VideoPlayer verifyPlayer;
-    [SerializeField] private VideoPlayer scriptPlayer;
+    // [SerializeField] private VideoPlayer rePlayer;
 
     void Start()
     {
         redrawFlag = false;
     }
-    public void Verify()
+
+    public void StartSequence() // called by verify button ONLY
+    {
+        //verify prgm alert becomes active
+        //button attached will call verify() on click()
+    }
+
+    public void VerifyStartButton()
+    {
+        StartCoroutine(StartVerify());
+    }
+    IEnumerator StartVerify()
     {
         // prepare
         // the verification start up steps, ignored till assets are made
         // start video
         verifyPlayer.Play();
-        scriptPlayer.Play();
+        yield return new WaitForSeconds(0.8f);
+        verifyPlayer.Pause();
+        Debug.Log("verify prepared");
+        // set all start verify sim buttons active
+    }
+
+    public void Verify() // to be called by start verify sim buttons
+    {
+        verifyPlayer.Play();
         redrawFlag = true;
-        Debug.Log("verify");
     }
 
     public void Redraw()
@@ -42,7 +61,7 @@ public class VerifyButton : MonoBehaviour
     {
         // stop video
         verifyPlayer.time = 0f;
-        scriptPlayer.time = 0f;
+        // scriptPlayer.time = 0f;
         redrawFlag = false;
     } 
 }

@@ -87,6 +87,7 @@ public class JogControlManager : MonoBehaviour
     // inches to meters; 1 : 0.0254
     public void ChangeStepSize(string newStepSize)
     {
+        print("old step size" + stepSize + ", cont step:" + contStep);
         if(newStepSize.Equals(cont))
         {
             contStep = true;
@@ -101,10 +102,13 @@ public class JogControlManager : MonoBehaviour
             contStep = false;
             stepSize = 0f;
         }
+        print("new step size" + stepSize + ", cont step:" + contStep);
     }
     public void ChangeSpeed(int newSpeed)
     {
+        print("old speed" + speed);
         speed = newSpeed;
+        print("new speed" + speed);
     }
 
     // SetJogStatus sets direction and jogStatus
