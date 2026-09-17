@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Job_Library
   Jobs:
   - {fileID: 6204677867117691263, guid: f834ce08b6c4ba84a8700ed7ac7fa85b, type: 3}
+  - {fileID: 6488832861154717399, guid: e65007b62e39b83499761b39a6629cfd, type: 3}

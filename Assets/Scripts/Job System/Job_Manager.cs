@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Job_Manager : MonoBehaviour{
 	public List<Job_Parent> JobQueue = new List<Job_Parent>();
+
+	public UnityEvent OnJobQueueUpdate;
 
 	public Job_Library JobLibraryReference;
 
@@ -22,11 +26,39 @@ public class Job_Manager : MonoBehaviour{
 
 		JobActive = false;
 
+		OnJobQueueUpdate.Invoke();
+
+		RunJob();
+	}
+
+	public void DequeueJob(Job_Parent Job){
+		JobQueue.Remove(Job);
+
+		Destroy(Job);
+
+		JobActive = false;
+
+		OnJobQueueUpdate.Invoke();
+
+		RunJob();
+	}
+
+	public void DequeueJob(int JobIndex){
+		Destroy(JobQueue[JobIndex]);
+
+		JobQueue.RemoveAt(JobIndex);
+
+		JobActive = false;
+
+		OnJobQueueUpdate.Invoke();
+
 		RunJob();
 	}
 
 	public void QueueJob(Job_Parent JobReference){
 		JobQueue.Add(JobReference);
+
+		OnJobQueueUpdate.Invoke();
 
 		RunJob();
 	}
@@ -36,6 +68,8 @@ public class Job_Manager : MonoBehaviour{
 
 		if (Job){
 			JobQueue.Add(Job.GetComponent<Job_Parent>());
+
+			OnJobQueueUpdate.Invoke();
 
 			RunJob();
 		}

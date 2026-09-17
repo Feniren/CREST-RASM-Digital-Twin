@@ -18,7 +18,7 @@ public class Job_Mill_Epoxy_Penholder : Job_Parent{
 
 		Destroy(MillReference.SensorReference.SensedPlate.Item);
 
-		GameObject EpoxyPenholder = Instantiate(FindFirstObjectByType<Data_Loader>().ItemLibraryReference.GetItemFromName("Epoxy Penholder"), Vector3.zero, Quaternion.identity);
+		GameObject EpoxyPenholder = Instantiate(FindFirstObjectByType<Data_Loader>().ItemLibrary.GetItemFromName("Epoxy Penholder"), Vector3.zero, Quaternion.identity);
 
 		MillReference.SensorReference.SensedPlate.Item = EpoxyPenholder;
 		MillReference.SensorReference.SensedPlate.SetItem();

@@ -6,6 +6,8 @@ Movement - WASD
 
 Look - MouseXY
 
+System Menu - Escape
+
 Jump - SpaceBar
     Can jump twice
 
@@ -30,6 +32,9 @@ Reset Position - X
 Toggle Bag - B
     Enables and disables the inventory bag
 
+UI Left Click - LeftClick
+    Clicks world space UI
+
 ### VR
 Movement - Left Thumbstick
 
@@ -42,6 +47,11 @@ Jump - A
 Toggle Bag - B
     Enables and disables the inventory bag
 
+Reset Position - X
+    Spawns above platform
+
+System Menu - Y
+
 Equip Item - Backpack
     Reach into red backpack behind player to equip item
 
@@ -49,8 +59,5 @@ Unequip Item - Backpack
     Reach into red backpack behind player and drop held item
 
 Grab - Left Grip / Right Grip
-
-Reset Position - Y
-    Spawns above platform
 
 UI Select - Left Trigger / Right Trigger
