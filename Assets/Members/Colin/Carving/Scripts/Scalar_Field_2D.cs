@@ -4,20 +4,29 @@ using UnityEngine;
 /// <summary>
 /// Regular 2D scalar field with a one-cell padding ring. Positive = solid, negative = empty,
 /// iso-surface at 0. Values are clamped to ±Cell: the linear zero crossing stays exact near the
-/// surface and the interior costs nothing. Padded index 1 is the first interior cell; indices 0
-/// and N+1 are padding. Stamps touch interior cells only, so the padding keeps the block boundary
-/// where Fill_Solid_Rect put it.
+/// surface and the interior costs nothing. Padded index Padding is the first interior cell; the
+/// ring outside it is padding. Stamps touch interior cells only, so the padding keeps the block
+/// boundary where Fill_Solid_Rect put it.
 /// </summary>
 public sealed class Scalar_Field_2D
 {
+    /// <summary>Signed distance to a tool, positive OUTSIDE it. Implemented by structs so a stamp allocates nothing.</summary>
+    public interface I_Sdf
+    {
+        float Evaluate(Vector2 p);
+    }
+
+    public const int Padding = 1;          // padding cells on each side of the interior
+    const float Centre_Offset = 0.5f;      // a cell's centre sits half a cell past its min corner
+    const int Grow_Cells = 1;              // stamps cover the bbox plus this ring so the clamped band is complete
+
     public readonly int Nx;        // interior cells along u
     public readonly int Nz;        // interior cells along w
-    public readonly int Width;     // Nx + 2
-    public readonly int Height;    // Nz + 2
+    public readonly int Width;     // Nx + 2 * Padding
+    public readonly int Height;    // Nz + 2 * Padding
     public readonly float Cell;
     public readonly Vector2 Origin; // min corner of the interior, field units
     public readonly float[] V;
-    public bool Dirty;
 
     public Scalar_Field_2D(int nx, int nz, float cell, Vector2 origin)
     {
@@ -25,8 +34,8 @@ public sealed class Scalar_Field_2D
         if (cell <= 0f) throw new ArgumentException("Scalar_Field_2D cell must be positive");
         Nx = nx;
         Nz = nz;
-        Width = nx + 2;
-        Height = nz + 2;
+        Width = nx + 2 * Padding;
+        Height = nz + 2 * Padding;
         Cell = cell;
         Origin = origin;
         V = new float[Width * Height];
@@ -40,13 +49,11 @@ public sealed class Scalar_Field_2D
 
     public Vector2 Interior_Size => new Vector2(Nx * Cell, Nz * Cell);
 
-    /// <summary>Centre of padded cell (ix, iz). Interior cell 1 spans [Origin, Origin + Cell].</summary>
+    /// <summary>Centre of padded cell (ix, iz). Interior cell Padding spans [Origin, Origin + Cell].</summary>
     public Vector2 Cell_Centre(int ix, int iz)
     {
-        return new Vector2(Origin.x + (ix - 0.5f) * Cell, Origin.y + (iz - 0.5f) * Cell);
+        return new Vector2(Origin.x + (ix - Padding + Centre_Offset) * Cell, Origin.y + (iz - Padding + Centre_Offset) * Cell);
     }
-
-    public bool Is_Solid(int ix, int iz) => V[iz * Width + ix] > 0f;
 
     public float Clamp(float d) => Mathf.Clamp(d, -Cell, Cell);
 
@@ -71,14 +78,13 @@ public sealed class Scalar_Field_2D
                 V[iz * Width + ix] = Clamp(-(outside + inside));
             }
         }
-        Dirty = true;
     }
 
     /// <summary>
-    /// v = min(v, sdf(centre)) over interior cells inside bbox (+1 cell). sdf is positive OUTSIDE
-    /// the tool. Returns true if any value changed.
+    /// v = min(v, sdf(centre)) over interior cells inside bbox (grown by Grow_Cells). Returns true
+    /// if any value changed. T is a struct so the call is specialised and allocation-free.
     /// </summary>
-    public bool Subtract(Func<Vector2, float> tool_sdf, Rect bbox)
+    public bool Subtract<T>(in T sdf, Rect bbox) where T : struct, I_Sdf
     {
         if (!Cell_Range(bbox, out int ix0, out int ix1, out int iz0, out int iz1)) return false;
         bool changed = false;
@@ -87,15 +93,14 @@ public sealed class Scalar_Field_2D
             for (int ix = ix0; ix <= ix1; ix++)
             {
                 int i = iz * Width + ix;
-                float d = Clamp(tool_sdf(Cell_Centre(ix, iz)));
+                float d = Clamp(sdf.Evaluate(Cell_Centre(ix, iz)));
                 if (d < V[i]) { V[i] = d; changed = true; }
             }
         }
-        Dirty |= changed;
         return changed;
     }
 
-    /// <summary>Allocation-free disc stamp: v = min(v, |p - centre| - radius). Returns true if any value changed.</summary>
+    /// <summary>Disc stamp for the mill hot path: v = min(v, |p - centre| - radius). Returns true if any value changed.</summary>
     public bool Subtract_Disc(Vector2 centre, float radius)
     {
         var bbox = new Rect(centre.x - radius, centre.y - radius, radius * 2f, radius * 2f);
@@ -103,31 +108,32 @@ public sealed class Scalar_Field_2D
         bool changed = false;
         for (int iz = iz0; iz <= iz1; iz++)
         {
-            float dz = Origin.y + (iz - 0.5f) * Cell - centre.y;
+            float dz = Origin.y + (iz - Padding + Centre_Offset) * Cell - centre.y;
             for (int ix = ix0; ix <= ix1; ix++)
             {
-                float dx = Origin.x + (ix - 0.5f) * Cell - centre.x;
+                float dx = Origin.x + (ix - Padding + Centre_Offset) * Cell - centre.x;
                 float d = Clamp(Mathf.Sqrt(dx * dx + dz * dz) - radius);
                 int i = iz * Width + ix;
                 if (d < V[i]) { V[i] = d; changed = true; }
             }
         }
-        Dirty |= changed;
         return changed;
     }
 
-    // Interior index range whose cell centres can lie within bbox grown by one cell. False if none.
+    // Interior index range whose cell centres can lie within bbox grown by Grow_Cells. False if none.
     bool Cell_Range(Rect bbox, out int ix0, out int ix1, out int iz0, out int iz1)
     {
-        ix0 = Mathf.FloorToInt((bbox.xMin - Origin.x) / Cell + 0.5f) - 1;
-        ix1 = Mathf.CeilToInt((bbox.xMax - Origin.x) / Cell + 0.5f) + 1;
-        iz0 = Mathf.FloorToInt((bbox.yMin - Origin.y) / Cell + 0.5f) - 1;
-        iz1 = Mathf.CeilToInt((bbox.yMax - Origin.y) / Cell + 0.5f) + 1;
-        if (ix1 < 1 || iz1 < 1 || ix0 > Nx || iz0 > Nz) return false;
-        ix0 = Mathf.Max(ix0, 1);
-        iz0 = Mathf.Max(iz0, 1);
-        ix1 = Mathf.Min(ix1, Nx);
-        iz1 = Mathf.Min(iz1, Nz);
+        int last_x = Nx + Padding - 1;
+        int last_z = Nz + Padding - 1;
+        ix0 = Mathf.FloorToInt((bbox.xMin - Origin.x) / Cell + Padding - Centre_Offset) - Grow_Cells;
+        ix1 = Mathf.CeilToInt((bbox.xMax - Origin.x) / Cell + Padding - Centre_Offset) + Grow_Cells;
+        iz0 = Mathf.FloorToInt((bbox.yMin - Origin.y) / Cell + Padding - Centre_Offset) - Grow_Cells;
+        iz1 = Mathf.CeilToInt((bbox.yMax - Origin.y) / Cell + Padding - Centre_Offset) + Grow_Cells;
+        if (ix1 < Padding || iz1 < Padding || ix0 > last_x || iz0 > last_z) return false;
+        ix0 = Mathf.Max(ix0, Padding);
+        iz0 = Mathf.Max(iz0, Padding);
+        ix1 = Mathf.Min(ix1, last_x);
+        iz1 = Mathf.Min(iz1, last_z);
         return true;
     }
 }

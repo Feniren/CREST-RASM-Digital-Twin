@@ -16,8 +16,6 @@ using UnityEngine;
 /// </summary>
 public sealed class Mill_Stock_Data
 {
-    public const int Max_Sub_Steps = 64;
-
     public readonly Vector3 Size;      // actual size (x and z rounded to whole cells)
     public readonly float Cell;
     public readonly float Pitch;
@@ -27,11 +25,11 @@ public sealed class Mill_Stock_Data
     public readonly Scalar_Field_2D[] Slabs;
 
     readonly bool[] dirty;
-    static readonly List<Vector2> segs = new List<Vector2>();
-    static readonly List<Vector2> fill = new List<Vector2>();
+    readonly List<Vector2> segs = new List<Vector2>();
+    readonly List<Vector2> fill = new List<Vector2>();
 
     public int Last_Sub_Steps { get; private set; }
-    /// <summary>Set once a single Carve exceeded Max_Sub_Steps (a teleport left gaps).</summary>
+    /// <summary>Set once a single Carve exceeded Carve_Sweep.Max_Sub_Steps (a teleport left gaps); cleared by Reset.</summary>
     public bool Gap_Warning { get; private set; }
 
     public Mill_Stock_Data(Vector3 size, float cell, float pitch)
@@ -60,6 +58,7 @@ public sealed class Mill_Stock_Data
             Slabs[k].Fill_Solid_Rect();
             dirty[k] = true;
         }
+        Gap_Warning = false;
     }
 
     public bool Is_Dirty(int k) => dirty[k];
@@ -69,9 +68,8 @@ public sealed class Mill_Stock_Data
     public void Carve(Tool_Profile tool, Vector3 prev_tip, Vector3 curr_tip)
     {
         Vector3 d = curr_tip - prev_tip;
-        float dist = d.magnitude;
-        int n = dist <= 1e-9f ? 1 : Mathf.CeilToInt(dist / (Cell * 0.5f));
-        if (n > Max_Sub_Steps) { n = Max_Sub_Steps; Gap_Warning = true; }
+        int n = Carve_Sweep.Sub_Steps(d.magnitude, Cell, out bool capped);
+        if (capped) Gap_Warning = true;
         Last_Sub_Steps = n;
         for (int s = 1; s <= n; s++) Stamp(tool, prev_tip + d * ((float)s / n));
     }
@@ -97,11 +95,12 @@ public sealed class Mill_Stock_Data
     }
 
     /// <summary>
-    /// Builds slab k's geometry (flat shaded, unshared vertices) into verts/tris (appended).
-    /// Returns false if the slab produced no triangles. cull_caps=false emits every cap, which
-    /// makes each slab a closed surface on its own — used by the watertight test.
+    /// Builds slab k's geometry (flat shaded, unshared vertices, one normal per vertex) into
+    /// verts/normals/tris (appended; indices are relative to verts at entry). Returns false if the
+    /// slab produced no triangles. cull_caps=false emits every cap, which makes each slab a closed
+    /// surface on its own — used by the watertight test.
     /// </summary>
-    public bool Build_Slab_Mesh(int k, List<Vector3> verts, List<int> tris, bool cull_caps = true)
+    public bool Build_Slab_Mesh(int k, List<Vector3> verts, List<Vector3> normals, List<int> tris, bool cull_caps = true)
     {
         var f = Slabs[k];
         float y0 = Slab_Bottom(k);
@@ -125,18 +124,18 @@ public sealed class Mill_Stock_Data
                 Marching_Squares.Evaluate(f.Cell_Centre(ix, iz), f.Cell_Centre(ix + 1, iz), f.Cell_Centre(ix + 1, iz + 1), f.Cell_Centre(ix, iz + 1),
                                           v0, v1, v2, v3, segs, top || bottom ? fill : null);
 
-                for (int i = 0; i < segs.Count; i += 2) Add_Wall(segs[i], segs[i + 1], y0, y1, verts, tris);
+                for (int i = 0; i < segs.Count; i += 2) Add_Wall(segs[i], segs[i + 1], y0, y1, verts, normals, tris);
 
                 if (top)
                 {
                     // fill is CCW in (x,z) which faces -Y; reverse for the +Y cap
                     for (int i = 0; i < fill.Count; i += 3)
-                        Add_Tri(fill[i], fill[i + 2], fill[i + 1], y1, verts, tris);
+                        Add_Tri(fill[i], fill[i + 2], fill[i + 1], y1, verts, normals, tris);
                 }
                 if (bottom)
                 {
                     for (int i = 0; i < fill.Count; i += 3)
-                        Add_Tri(fill[i], fill[i + 1], fill[i + 2], y0, verts, tris);
+                        Add_Tri(fill[i], fill[i + 1], fill[i + 2], y0, verts, normals, tris);
                 }
             }
         }
@@ -151,23 +150,29 @@ public sealed class Mill_Stock_Data
     }
 
     // Segment a->b has solid on its left (viewed from +Y); the quad below faces the empty side.
-    static void Add_Wall(Vector2 a, Vector2 b, float y0, float y1, List<Vector3> verts, List<int> tris)
+    static void Add_Wall(Vector2 a, Vector2 b, float y0, float y1, List<Vector3> verts, List<Vector3> normals, List<int> tris)
     {
         int i = verts.Count;
-        verts.Add(new Vector3(a.x, y0, a.y));
-        verts.Add(new Vector3(a.x, y1, a.y));
-        verts.Add(new Vector3(b.x, y1, b.y));
-        verts.Add(new Vector3(b.x, y0, b.y));
+        var p0 = new Vector3(a.x, y0, a.y);
+        var p1 = new Vector3(a.x, y1, a.y);
+        var p2 = new Vector3(b.x, y1, b.y);
+        var p3 = new Vector3(b.x, y0, b.y);
+        Vector3 n = Mesh_Util.Flat_Normal(p0, p1, p2);
+        verts.Add(p0); verts.Add(p1); verts.Add(p2); verts.Add(p3);
+        normals.Add(n); normals.Add(n); normals.Add(n); normals.Add(n);
         tris.Add(i); tris.Add(i + 1); tris.Add(i + 2);
         tris.Add(i); tris.Add(i + 2); tris.Add(i + 3);
     }
 
-    static void Add_Tri(Vector2 a, Vector2 b, Vector2 c, float y, List<Vector3> verts, List<int> tris)
+    static void Add_Tri(Vector2 a, Vector2 b, Vector2 c, float y, List<Vector3> verts, List<Vector3> normals, List<int> tris)
     {
         int i = verts.Count;
-        verts.Add(new Vector3(a.x, y, a.y));
-        verts.Add(new Vector3(b.x, y, b.y));
-        verts.Add(new Vector3(c.x, y, c.y));
+        var p0 = new Vector3(a.x, y, a.y);
+        var p1 = new Vector3(b.x, y, b.y);
+        var p2 = new Vector3(c.x, y, c.y);
+        Vector3 n = Mesh_Util.Flat_Normal(p0, p1, p2);
+        verts.Add(p0); verts.Add(p1); verts.Add(p2);
+        normals.Add(n); normals.Add(n); normals.Add(n);
         tris.Add(i); tris.Add(i + 1); tris.Add(i + 2);
     }
 }

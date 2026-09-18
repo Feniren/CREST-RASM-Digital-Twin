@@ -4,11 +4,19 @@ using UnityEngine;
 /// <summary>Everything a run needs, precomputed: moves in absolute work mm plus the notices raised while planning.</summary>
 public sealed class NC_Plan
 {
+    public readonly NC_Machine_Settings Settings;
     public readonly List<NC_Move> Moves = new List<NC_Move>();
     public readonly List<NC_Notice> Notices = new List<NC_Notice>();
     public readonly SortedSet<int> Tools_Used = new SortedSet<int>();
     public float Cut_Mm, Rapid_Mm, Estimated_Seconds;
     public bool Has_Alarm;
+
+    public NC_Plan() : this(new NC_Machine_Settings()) { }
+
+    public NC_Plan(NC_Machine_Settings settings)
+    {
+        Settings = settings ?? new NC_Machine_Settings();
+    }
 }
 
 /// <summary>
@@ -16,16 +24,12 @@ public sealed class NC_Plan
 /// units (G70/G71, G20/G21), dwell (G04, F = seconds), homing (G28), drilling cycles
 /// (G80–G83 with R/Q/P and G98/G99), spindle (M03/M04/M05 + S), tool change (M06 + T),
 /// program stop/end (M00/M01, M02/M30). Arcs take I/J (incremental from the start point) or
-/// R. Everything unsupported raises a Warning and produces no motion; geometry that cannot be
-/// honoured raises an Alarm.
+/// R. Codes that are accepted but have no effect here (G43/G49, G54–G59, M08/M09) raise an
+/// Info notice; everything unsupported raises a Warning and produces no motion; geometry that
+/// cannot be honoured raises an Alarm.
 /// </summary>
 public static class NC_Planner
 {
-    public const float Rapid_Mm_Min = 2000f;          // ProMill user guide rapid traverse
-    public const float Default_Feed_Mm_Min = 254f;    // the guide's "up to 10 in/min" cutting feed
-    public const float Arc_Tolerance_Mm = 0.01f;
-    public const float Peck_Clearance_Mm = 1f;
-
     enum Motion { Rapid, Linear, Cw, Ccw, None, Drill, Drill_Dwell, Peck }
 
     sealed class State
@@ -44,20 +48,29 @@ public static class NC_Planner
         public bool Ended;
     }
 
-    public static NC_Plan Plan(NC_Program program)
+    // The one-shot codes one block asked for; modal words act on State as they are read.
+    struct Block_Words
     {
-        var plan = new NC_Plan();
+        public bool Dwell, Home, Tool_Change, Spindle_On, Spindle_Off, Stop, End;
+    }
+
+    /// <summary>Plans with default machine settings (tests and tools without a machine profile).</summary>
+    public static NC_Plan Plan(NC_Program program) => Plan(program, new NC_Machine_Settings());
+
+    public static NC_Plan Plan(NC_Program program, NC_Machine_Settings settings)
+    {
+        var plan = new NC_Plan(settings);
         var s = new State();
         foreach (var block in program.Blocks)
         {
-            Plan_Block(block, s, plan);
+            Apply_Block(block, s, plan, Read_Words(block, s, plan));
             if (s.Ended) break;
         }
         foreach (var m in plan.Moves)
         {
             switch (m.Kind)
             {
-                case NC_Move_Kind.Rapid: plan.Rapid_Mm += m.Length; plan.Estimated_Seconds += m.Length / (Rapid_Mm_Min / 60f); break;
+                case NC_Move_Kind.Rapid: plan.Rapid_Mm += m.Length; plan.Estimated_Seconds += m.Length / (plan.Settings.Rapid_Mm_Min / 60f); break;
                 case NC_Move_Kind.Linear:
                 case NC_Move_Kind.Arc: plan.Cut_Mm += m.Length; plan.Estimated_Seconds += m.Length / (m.Feed_Mm_Min / 60f); break;
                 case NC_Move_Kind.Dwell:
@@ -69,75 +82,98 @@ public static class NC_Planner
         return plan;
     }
 
-    static void Plan_Block(NC_Block b, State s, NC_Plan plan)
+    static Block_Words Read_Words(NC_Block b, State s, NC_Plan plan)
     {
-        bool dwell = false, home = false, tool_change = false, spindle_on = false, spindle_off = false, stop = false, end = false;
-
-        foreach (var w in b.Words)
+        var w = new Block_Words();
+        foreach (var word in b.Words)
         {
-            switch (w.Letter)
+            switch (word.Letter)
             {
-                case 'G':
-                    if (!Is_Integer(w.Value)) { Warn(plan, b, "unsupported G" + w.Value); break; }
-                    switch ((int)w.Value)
-                    {
-                        case 0: s.Motion = Motion.Rapid; break;
-                        case 1: s.Motion = Motion.Linear; break;
-                        case 2: s.Motion = Motion.Cw; break;
-                        case 3: s.Motion = Motion.Ccw; break;
-                        case 4: dwell = true; break;
-                        case 17: break;
-                        case 18: case 19: Warn(plan, b, "only the G17 (XY) plane is supported"); break;
-                        case 20: case 70: s.Unit = 25.4f; break;
-                        case 21: case 71: s.Unit = 1f; break;
-                        case 28: home = true; break;
-                        case 40: case 43: case 49: case 54: case 55: case 56: case 57: case 58: case 59: case 94: break;
-                        case 41: case 42: Warn(plan, b, "cutter compensation is not supported; the path is the tool centre"); break;
-                        case 80: s.Motion = Motion.None; break;
-                        case 81: Enter_Cycle(s, Motion.Drill); break;
-                        case 82: Enter_Cycle(s, Motion.Drill_Dwell); break;
-                        case 83: Enter_Cycle(s, Motion.Peck); break;
-                        case 90: s.Incremental = false; break;
-                        case 91: s.Incremental = true; break;
-                        case 98: s.Cycle_Return_Initial = true; break;
-                        case 99: s.Cycle_Return_Initial = false; break;
-                        default: Warn(plan, b, "unsupported G" + (int)w.Value); break;
-                    }
-                    break;
-                case 'M':
-                    if (!Is_Integer(w.Value)) { Warn(plan, b, "unsupported M" + w.Value); break; }
-                    switch ((int)w.Value)
-                    {
-                        case 0: case 1: stop = true; break;
-                        case 2: case 30: end = true; break;
-                        case 3: case 4: spindle_on = true; break;
-                        case 5: spindle_off = true; break;
-                        case 6: tool_change = true; break;
-                        case 8: case 9: break;
-                        default: Warn(plan, b, "unsupported M" + (int)w.Value); break;
-                    }
-                    break;
-                case 'S': s.Rpm = w.Value; break;
-                case 'T': s.Tool = Mathf.RoundToInt(w.Value); break;
+                case 'G': Read_G(word.Value, b, s, plan, ref w); break;
+                case 'M': Read_M(word.Value, b, s, plan, ref w); break;
+                case 'S': s.Rpm = word.Value; break;
+                case 'T': s.Tool = Mathf.RoundToInt(word.Value); break;
             }
         }
+        return w;
+    }
 
-        if (spindle_on) s.Spindle = true;
-        if (tool_change)
+    static void Read_G(float value, NC_Block b, State s, NC_Plan plan, ref Block_Words w)
+    {
+        if (!Is_Integer(value))
+        {
+            Warn(plan, b, "unsupported G" + value);
+            return;
+        }
+        int code = (int)value;
+        switch (code)
+        {
+            case 0: s.Motion = Motion.Rapid; break;
+            case 1: s.Motion = Motion.Linear; break;
+            case 2: s.Motion = Motion.Cw; break;
+            case 3: s.Motion = Motion.Ccw; break;
+            case 4: w.Dwell = true; break;
+            case 17: break;                                                       // XY plane: the only one
+            case 18: case 19: Warn(plan, b, "only the G17 (XY) plane is supported"); break;
+            case 20: case 70: s.Unit = 25.4f; break;
+            case 21: case 71: s.Unit = 1f; break;
+            case 28: w.Home = true; break;
+            case 40: case 94: break;                                              // no cutter comp, feed per minute: already the case
+            case 41: case 42: Warn(plan, b, "cutter compensation is not supported; the path is the tool centre"); break;
+            case 43: case 49: Info(plan, b, "G" + code + " tool length offset is ignored; tool length comes from the tool definition"); break;
+            case 54: case 55: case 56: case 57: case 58: case 59: Info(plan, b, "G" + code + " work offset is ignored; the work origin is the fixture datum"); break;
+            case 80: s.Motion = Motion.None; break;
+            case 81: Enter_Cycle(s, Motion.Drill); break;
+            case 82: Enter_Cycle(s, Motion.Drill_Dwell); break;
+            case 83: Enter_Cycle(s, Motion.Peck); break;
+            case 90: s.Incremental = false; break;
+            case 91: s.Incremental = true; break;
+            case 98: s.Cycle_Return_Initial = true; break;
+            case 99: s.Cycle_Return_Initial = false; break;
+            default: Warn(plan, b, "unsupported G" + code); break;
+        }
+    }
+
+    static void Read_M(float value, NC_Block b, State s, NC_Plan plan, ref Block_Words w)
+    {
+        if (!Is_Integer(value))
+        {
+            Warn(plan, b, "unsupported M" + value);
+            return;
+        }
+        int code = (int)value;
+        switch (code)
+        {
+            case 0: case 1: w.Stop = true; break;
+            case 2: case 30: w.End = true; break;
+            case 3: case 4: w.Spindle_On = true; break;
+            case 5: w.Spindle_Off = true; break;
+            case 6: w.Tool_Change = true; break;
+            case 8: case 9: Info(plan, b, "M" + code + " coolant is ignored"); break;
+            default: Warn(plan, b, "unsupported M" + code); break;
+        }
+    }
+
+    // The order is load-bearing: spindle on → tool change → F → dwell → motion → spindle off →
+    // stop → end, so a block such as "M03 M06 T2 F100 G01 X10 M05" mounts, feeds and cuts with
+    // the spindle on and only then stops it.
+    static void Apply_Block(NC_Block b, State s, NC_Plan plan, Block_Words w)
+    {
+        if (w.Spindle_On) s.Spindle = true;
+        if (w.Tool_Change)
         {
             if (s.Tool <= 0) Warn(plan, b, "M06 without a tool number");
             else
             {
-                var tc = New_Move(NC_Move_Kind.Tool_Change, b, s);
-                plan.Moves.Add(tc);
+                plan.Moves.Add(New_Move(NC_Move_Kind.Tool_Change, b, s));
                 plan.Tools_Used.Add(s.Tool);
             }
         }
         if (b.Try_Get('F', out float f))
         {
-            if (!dwell) s.Feed = f * s.Unit;             // G04's F is seconds, never a feed
+            if (!w.Dwell) s.Feed = f * s.Unit;             // G04's F is seconds, never a feed
         }
-        if (dwell)
+        if (w.Dwell)
         {
             var d = New_Move(NC_Move_Kind.Dwell, b, s);
             if (b.Try_Get('F', out float sec) || b.Try_Get('P', out sec)) d.Seconds = Mathf.Max(0f, sec);
@@ -145,7 +181,7 @@ public static class NC_Planner
             plan.Moves.Add(d);
         }
 
-        if (home)
+        if (w.Home)
         {
             if (Has_Axis(b)) Emit_Line(b, s, plan, Target(b, s), true);
             plan.Moves.Add(New_Move(NC_Move_Kind.Home, b, s));
@@ -167,14 +203,14 @@ public static class NC_Planner
             }
         }
 
-        if (spindle_off) s.Spindle = false;
-        if (stop)
+        if (w.Spindle_Off) s.Spindle = false;
+        if (w.Stop)
         {
             var st = New_Move(NC_Move_Kind.Stop, b, s);
-            st.Seconds = 1f;
+            st.Seconds = plan.Settings.Stop_Seconds;
             plan.Moves.Add(st);
         }
-        if (end)
+        if (w.End)
         {
             plan.Moves.Add(New_Move(NC_Move_Kind.End, b, s));
             s.Ended = true;
@@ -185,6 +221,11 @@ public static class NC_Planner
     static bool Is_Cycle(Motion m) => m == Motion.Drill || m == Motion.Drill_Dwell || m == Motion.Peck;
     static bool Is_Arc(Motion m) => m == Motion.Cw || m == Motion.Ccw;
     static bool Has_Axis(NC_Block b) => b.Has('X') || b.Has('Y') || b.Has('Z');
+
+    static void Info(NC_Plan plan, NC_Block b, string message)
+    {
+        plan.Notices.Add(new NC_Notice(NC_Notice.Level.Info, b.Line, message));
+    }
 
     static void Warn(NC_Plan plan, NC_Block b, string message)
     {
@@ -215,8 +256,8 @@ public static class NC_Planner
         if (s.Feed > 0f) m.Feed_Mm_Min = s.Feed;
         else
         {
-            m.Feed_Mm_Min = Default_Feed_Mm_Min;
-            if (!s.Warned_Feed) Warn(plan, b, "feed move before any F word; using " + Default_Feed_Mm_Min + " mm/min");
+            m.Feed_Mm_Min = plan.Settings.Default_Feed_Mm_Min;
+            if (!s.Warned_Feed) Warn(plan, b, "feed move before any F word; using " + plan.Settings.Default_Feed_Mm_Min + " mm/min");
             s.Warned_Feed = true;
         }
         if (!s.Spindle && !s.Warned_Spindle)
@@ -251,7 +292,7 @@ public static class NC_Planner
             centre = from + new Vector2(i, j) * s.Unit;
             radius = Vector2.Distance(centre, from);
             float r_end = Vector2.Distance(centre, end);
-            if (Mathf.Abs(radius - r_end) > Arc_Tolerance_Mm)
+            if (Mathf.Abs(radius - r_end) > plan.Settings.Arc_Tolerance_Mm)
                 Alarm(plan, b, "arc radius mismatch: " + radius.ToString("0.###") + " at the start, " + r_end.ToString("0.###") + " at the end");
         }
         else if (b.Try_Get('R', out float r))
@@ -301,8 +342,9 @@ public static class NC_Planner
         m.Clockwise = clockwise;
         m.Radius = radius;
         m.Sweep = sweep;
+        float arc = radius * sweep;
         float dz = to.z - s.Pos.z;
-        m.Length = Mathf.Sqrt(radius * sweep * (radius * sweep) + dz * dz);
+        m.Length = Mathf.Sqrt(arc * arc + dz * dz);   // helical: arc length and Z rise combined
         Feed_Check(b, s, plan, m);
         plan.Moves.Add(m);
         s.Pos = to;
@@ -333,7 +375,7 @@ public static class NC_Planner
         float back = s.Cycle_Return_Initial ? s.Cycle_Initial : plane;
         if (depth >= plane)
         {
-            Alarm(plan, b, "drilling cycle Z " + depth + " is not below R " + plane);
+            Alarm(plan, b, "drilling cycle Z " + depth.ToString("0.###") + " is not below R " + plane.ToString("0.###"));
             return;
         }
 
@@ -353,7 +395,7 @@ public static class NC_Planner
             while (reached > depth + 1e-4f)
             {
                 float next = Mathf.Max(depth, reached - s.Cycle_Q);
-                if (reached < plane) Emit_Line(b, s, plan, new Vector3(xy.x, xy.y, Mathf.Min(plane, reached + Peck_Clearance_Mm)), true);
+                if (reached < plane) Emit_Line(b, s, plan, new Vector3(xy.x, xy.y, Mathf.Min(plane, reached + plan.Settings.Peck_Clearance_Mm)), true);
                 Emit_Line(b, s, plan, new Vector3(xy.x, xy.y, next), false);
                 Emit_Line(b, s, plan, new Vector3(xy.x, xy.y, plane), true);
                 reached = next;

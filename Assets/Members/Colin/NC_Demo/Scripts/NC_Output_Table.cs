@@ -1,71 +1,101 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Finished blocks are set down on the table in rows by category, in the order categories
-/// first appear, each with a flat label in front of it. Table_Top is the grid origin on the
-/// top surface: rows advance along its +X (away from the operator), slots along its +Z.
+/// Finished blocks are set down on authored slots: one row per category in the order categories
+/// first appear, each block with a label in front of it. Rows, their category labels and their
+/// slots are scene objects; the part label is a prefab instantiated under the slot, so its pose
+/// relative to the slot is authored on the prefab.
 /// </summary>
 public class NC_Output_Table : MonoBehaviour
 {
-    public Transform Table_Top;
-    public int Rows = 5;
-    public int Slots_Per_Row = 3;
-    public float Row_Pitch = 0.15f;
-    public float Slot_Pitch = 0.16f;
-    public float Label_Font_Size = 9f;
+    [Serializable]
+    public class Row
+    {
+        public TMP_Text Label;          // shows the category; hidden until the row is used
+        public Transform[] Slots;       // one block each, filled in order
+        [NonSerialized] public string Category;
+        [NonSerialized] public int Filled;
+    }
 
-    readonly List<string> rows = new List<string>();
-    readonly List<int> filled = new List<int>();
+    [SerializeField] private Row[] Rows;
+    [SerializeField] private TMP_Text Part_Label_Prefab;
+
     readonly List<GameObject> placed = new List<GameObject>();
 
+    void Awake()
+    {
+        if (Rows == null || Rows.Length == 0 || Part_Label_Prefab == null)
+        {
+            Debug.LogWarning("NC_Output_Table: Rows and Part_Label_Prefab must be assigned.");
+            enabled = false;
+            return;
+        }
+        foreach (var row in Rows)
+        {
+            if (row.Label != null && row.Slots != null && row.Slots.Length > 0) continue;
+            Debug.LogWarning("NC_Output_Table: every row needs a Label and at least one slot.");
+            enabled = false;
+            return;
+        }
+        Clear();
+    }
+
+    /// <summary>Destroys every placed block and label and hides the row labels.</summary>
     public void Clear()
     {
         foreach (var go in placed)
             if (go != null) Destroy(go);
         placed.Clear();
-        rows.Clear();
-        filled.Clear();
+        foreach (var row in Rows)
+        {
+            row.Category = null;
+            row.Filled = 0;
+            row.Label.gameObject.SetActive(false);
+        }
     }
 
     public void Place(GameObject block, string category, string text)
     {
-        int row = rows.IndexOf(category);
-        if (row < 0)
+        var row = Find_Row(category);
+        if (row == null)
         {
-            rows.Add(category);
-            filled.Add(0);
-            row = rows.Count - 1;
-            if (row >= Rows) Debug.LogWarning("NC table: " + category + " is category " + (row + 1) + " but the table has " + Rows + " rows");
-            placed.Add(Make_Label(new Vector3(row * Row_Pitch + 0.05f, 0.001f, -0.065f), category, Label_Font_Size * 1.4f, new Vector2(10f, 2f), TextAlignmentOptions.Center));
+            Debug.LogWarning("NC_Output_Table: no free row for category '" + category + "'; " + block.name + " stays where it is.");
+            return;
         }
-        int slot = filled[row]++;
-        if (slot >= Slots_Per_Row) Debug.LogWarning("NC table: row " + category + " is full; " + block.name + " overhangs");
+        int slot = row.Filled++;
+        if (slot >= row.Slots.Length)
+        {
+            Debug.LogWarning("NC_Output_Table: row '" + category + "' is full; " + block.name + " shares its last slot.");
+            slot = row.Slots.Length - 1;
+        }
 
-        var local = new Vector3(row * Row_Pitch, 0f, slot * Slot_Pitch);
-        block.transform.SetParent(Table_Top, false);
-        block.transform.localPosition = local;
+        var anchor = row.Slots[slot];
+        block.transform.SetParent(anchor, false);
+        block.transform.localPosition = Vector3.zero;
         block.transform.localRotation = Quaternion.identity;
-        block.transform.localScale = Vector3.one;
         placed.Add(block);
-        placed.Add(Make_Label(local + new Vector3(-0.026f, 0.001f, 0.05f), text, Label_Font_Size, new Vector2(10f, 4.6f), TextAlignmentOptions.TopLeft));
+
+        var label = Instantiate(Part_Label_Prefab, anchor);   // keeps the prefab's pose relative to the slot
+        label.text = text;
+        placed.Add(label.gameObject);
     }
 
-    // A flat label read from the operator's side: text runs toward -Z, lines stack away (+X).
-    GameObject Make_Label(Vector3 local, string text, float size, Vector2 rect, TextAlignmentOptions align)
+    // The row already holding this category, else the first unused one (null when all are taken).
+    Row Find_Row(string category)
     {
-        var go = new GameObject("Label");
-        go.transform.SetParent(Table_Top, false);
-        go.transform.localPosition = local;
-        go.transform.localRotation = Quaternion.LookRotation(Vector3.down, Vector3.right);
-        go.transform.localScale = Vector3.one * 0.01f;
-        var tmp = go.AddComponent<TextMeshPro>();
-        tmp.rectTransform.sizeDelta = rect;
-        tmp.text = text;
-        tmp.fontSize = size;
-        tmp.color = Color.black;
-        tmp.alignment = align;
-        return go;
+        foreach (var row in Rows)
+            if (row.Category == category) return row;
+        foreach (var row in Rows)
+        {
+            if (row.Category != null) continue;
+            row.Category = category;
+            row.Label.text = category;
+            row.Label.gameObject.SetActive(true);
+            return row;
+        }
+        return null;
     }
 }

@@ -70,5 +70,8 @@ public sealed class NC_Program
     public readonly List<NC_Block> Blocks = new List<NC_Block>();
     public readonly List<NC_Notice> Notices = new List<NC_Notice>();
 
-    public string Category => Header.TryGetValue("CATEGORY", out var c) ? c : "Uncategorized";
+    public const string Category_Key = "CATEGORY";        // "; CATEGORY: Pocketing" in the header comments
+    public const string Default_Category = "Uncategorized";
+
+    public string Category => Header.TryGetValue(Category_Key, out var c) ? c : Default_Category;
 }

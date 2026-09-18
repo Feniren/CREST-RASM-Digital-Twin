@@ -71,6 +71,11 @@ effects — the pattern the module already uses.
 | **Y** — saddle, fore/aft | `IntellitekMillBody/Worktable_Base/WB_YAxis_Drive` | **Z** | −0.076 … +0.076 | 152 mm | 0.05 |
 | **Z** — spindle, up/down | `IntellitekMillBody/SpindleBase/SpindleMotor` | **Y** | −0.27 … 0 | 270 mm | 0.1 |
 
+`AxisMovement.axis` is the drive's **local** axis (since 2026-09-17; before that it was a world axis, which made
+these values wrong wherever the wrapper sat at identity). The model root sits at Y 270 inside
+`IntellitekMill_Training`, but that no longer matters: the values above hold at any mill rotation and no scene
+carries `axis` overrides.
+
 Rules:
 
 1. The mapping is declared **once**, as three serialized fields on `CNCBase_Machine_Link` named
@@ -86,7 +91,7 @@ mm = AxisMovement.OffsetFromOrigin * 1000f
 ```
 
 1 Unity unit = 1 m throughout. Y (saddle) carries the X stage via `dependents`, so jogging Y drags the
-table in world Z — but X reads its own world-X offset, so the two DRO figures stay independent. Verify this
+table along Y — but X reads its own offset along its own axis, so the two DRO figures stay independent. Verify this
 in P1 rather than assuming it.
 
 ## 4. `AxisMovement` gotchas that shape the code

@@ -39,6 +39,17 @@ public class NC_Parser_Tests
     }
 
     [Test]
+    public void Unterminated_Paren_Comment_Runs_To_End_Of_Line()
+    {
+        var p = NC_Parser.Parse("t", "(CATEGORY: Late\nG01 X5 (no close F999");
+        Assert.That(p.Category, Is.EqualTo("Late"), "the whole rest of the line is the comment");
+        Assert.That(p.Blocks.Count, Is.EqualTo(1));
+        Assert.That(p.Blocks[0].Text, Is.EqualTo("G01 X5"));
+        Assert.That(p.Blocks[0].Has('F'), Is.False);
+        Assert.That(p.Notices, Is.Empty);
+    }
+
+    [Test]
     public void Header_Comments_Fill_The_Header()
     {
         var p = NC_Parser.Parse("t", "; NAME: Test part\n; CATEGORY: Drilling\n; a free note: not a key\n;-----\nG00 X1\n; CATEGORY: Late");

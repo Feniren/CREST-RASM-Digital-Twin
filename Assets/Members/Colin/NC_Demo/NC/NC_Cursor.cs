@@ -31,8 +31,8 @@ public sealed class NC_Cursor
         {
             var m = Current;
             if (m.Length <= 0f) { Next(); continue; }
-            float rate = m.Rate_Mm_Min(NC_Planner.Rapid_Mm_Min);
-            if (rate <= 0f) rate = NC_Planner.Default_Feed_Mm_Min;
+            float rate = m.Rate_Mm_Min(Plan.Settings.Rapid_Mm_Min);
+            if (rate <= 0f) rate = Plan.Settings.Default_Feed_Mm_Min;
             rate = rate / 60f * feed_override;
             float remaining = m.Length - S;
             float dist = rate * budget;
@@ -64,7 +64,10 @@ public sealed class NC_Cursor
         if (At_Event) Next();
     }
 
-    /// <summary>Runs a synthesised move (an approach rapid) before the current one.</summary>
+    /// <summary>
+    /// Runs a synthesised move (an approach rapid) before the current one. This mutates
+    /// Plan.Moves, so a plan is good for one run: re-plan the program before running it again.
+    /// </summary>
     public void Insert_Before_Current(NC_Move move)
     {
         Plan.Moves.Insert(Index, move);

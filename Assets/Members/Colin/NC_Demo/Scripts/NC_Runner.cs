@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Executes one NC_Plan on the mill: every frame the cursor yields sample points along the
@@ -11,11 +12,26 @@ public class NC_Runner : MonoBehaviour
 {
     public enum State { Idle, Running, Paused, Dwell, Tool_Change, Homing, Done }
 
-    public NC_Mill_Link Link;
-    public NC_Tool_Rack Rack;
-    public float Feed_Override = 1f;
-    public float Max_Step_Mm = 1f;
-    public float Tool_Change_Seconds = 0.5f;
+    [Header("Machine")]
+    [SerializeField] private NC_Mill_Link Link;
+    [SerializeField] private NC_Tool_Rack Rack;
+
+    [Header("Simulation")]
+    [Tooltip("Longest gap between carve samples along a move")]
+    [SerializeField] private float Max_Step_Mm = 1f;
+    [SerializeField] private float Tool_Change_Seconds = 0.5f;
+    [Tooltip("Visual only: the programmed S (2500-3000 rpm on the shipped programs) would alias at frame rate. The real S is in the readout.")]
+    [SerializeField] private float Spindle_Visual_Deg_Per_S = 720f;
+    [FormerlySerializedAs("Feed_Override")] [SerializeField] private float feed_override = 1f;
+
+    public const float Min_Feed_Override = 0.25f;
+    public const float Max_Feed_Override = 10f;
+
+    public float Feed_Override
+    {
+        get => feed_override;
+        set => feed_override = Mathf.Clamp(value, Min_Feed_Override, Max_Feed_Override);
+    }
 
     public State Current_State { get; private set; } = State.Idle;
     public NC_Plan Plan { get; private set; }
@@ -29,8 +45,16 @@ public class NC_Runner : MonoBehaviour
     float wait;
     bool tool_change_pending, finishing;
     State paused_from;
-    Transform spindle_visual;
     readonly List<Vector3> samples = new List<Vector3>();
+
+    void Awake()
+    {
+        if (Link == null || Rack == null)
+        {
+            Debug.LogWarning("NC_Runner: Link and Rack must be assigned.");
+            enabled = false;
+        }
+    }
 
     public void Load(NC_Plan plan, Mill_Stock target)
     {
@@ -46,10 +70,9 @@ public class NC_Runner : MonoBehaviour
         Rack.Bind_Stock(stock);
         if (Rack.Active == 0)
         {
-            int first = 1;
+            int first = 1;                                   // nothing in the spindle: mount the first tool the program cuts with
             foreach (var m in plan.Moves)
                 if (m.Is_Motion && m.Tool > 0) { first = m.Tool; break; }
-            Debug.Log("NC: no tool in the spindle; mounting T" + first);
             Mount(first);
         }
         else Mount(Rack.Active);
@@ -85,7 +108,7 @@ public class NC_Runner : MonoBehaviour
         else Pause();
     }
 
-    /// <summary>Retracts and homes, then reports Done (N key, alarms).</summary>
+    /// <summary>Retracts and homes, then reports Done (skip key, alarms).</summary>
     public void Abort(string reason)
     {
         if (Plan == null || Current_State == State.Done || finishing) return;
@@ -95,12 +118,6 @@ public class NC_Runner : MonoBehaviour
 
     void Update()
     {
-        if (Cursor == null && Current_State != State.Idle)
-        {
-            // A script reload during Play keeps serializable fields (this enum) but drops the plan and cursor.
-            Debug.LogWarning("NC: run state lost after a script reload; press R to restart.");
-            Unload();
-        }
         float dt = Time.deltaTime;
         switch (Current_State)
         {
@@ -117,7 +134,7 @@ public class NC_Runner : MonoBehaviour
                 }
                 break;
             case State.Homing:
-                if (!Link.Home_Step(dt, tool_change_pending)) break;
+                if (!Link.Home_Step(Plan.Settings.Rapid_Mm_Min, dt, tool_change_pending)) break;
                 if (finishing) Current_State = State.Done;
                 else if (tool_change_pending)
                 {
@@ -133,7 +150,8 @@ public class NC_Runner : MonoBehaviour
                 }
                 break;
         }
-        if (spindle_visual != null && Spindle_On) spindle_visual.Rotate(0f, 720f * dt, 0f, Space.Self);
+        // Spinning the tool about its own axis leaves its tip and axis unchanged, so carving is unaffected.
+        if (Spindle_On && Link.Tool_Tip != null) Link.Tool_Tip.Rotate(0f, Spindle_Visual_Deg_Per_S * dt, 0f, Space.Self);
     }
 
     void Step_Motion(float dt)
@@ -181,7 +199,7 @@ public class NC_Runner : MonoBehaviour
         switch (m.Kind)
         {
             case NC_Move_Kind.Dwell:
-            case NC_Move_Kind.Stop:          // M00/M01: the unattended demo pauses one second and continues
+            case NC_Move_Kind.Stop:          // M00/M01: an unattended run pauses Settings.Stop_Seconds and continues
                 wait = m.Seconds;
                 Current_State = State.Dwell;
                 break;
@@ -211,14 +229,12 @@ public class NC_Runner : MonoBehaviour
     void Raise_Alarm(string text)
     {
         Alarm_Text = text;
-        Debug.LogWarning("NC: ALARM " + text);
+        Debug.LogWarning("NC_Runner: ALARM " + text);
         Finish();
     }
 
     void Mount(int t)
     {
-        var tool = Rack.Mount(t, Link.Tool_Holder, stock);
-        Link.Tool_Tip = tool != null ? tool.transform : null;
-        spindle_visual = tool != null ? tool.transform.Find("Visual") : null;
+        Link.Mount(Rack, t, stock);
     }
 }

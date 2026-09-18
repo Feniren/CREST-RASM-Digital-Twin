@@ -53,15 +53,28 @@ public class Lathe_Stock_Data_Tests
     {
         var s = Make();
         var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
         var tris = new List<int>();
 
-        s.Build_Mesh(16, verts, tris);
+        s.Build_Mesh(16, verts, normals, tris);
         Mesh_Check.Assert_Watertight(verts, tris, "fresh stock");
 
         Turn(s);
-        verts.Clear(); tris.Clear();
-        s.Build_Mesh(16, verts, tris);
+        verts.Clear(); normals.Clear(); tris.Clear();
+        s.Build_Mesh(16, verts, normals, tris);
         Mesh_Check.Assert_Watertight(verts, tris, "turned stock");
+    }
+
+    [Test]
+    public void Normals_Are_Unit_And_Match_The_Winding()
+    {
+        var s = Make();
+        Turn(s);
+        var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
+        var tris = new List<int>();
+        s.Build_Mesh(16, verts, normals, tris);
+        Mesh_Check.Assert_Flat_Normals(verts, normals, tris, "turned stock");
     }
 
     [Test]
@@ -71,8 +84,9 @@ public class Lathe_Stock_Data_Tests
         s.Carve(Tool(0.004f, 0.03f, Tool_Profile.Tip.Flat), new Vector2(0.05f, 0.02f), new Vector2(0.05f, 0f));
 
         var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
         var tris = new List<int>();
-        s.Build_Mesh(12, verts, tris);
+        s.Build_Mesh(12, verts, normals, tris);
         Mesh_Check.Assert_Watertight(verts, tris, "parted stock");
 
         bool apex = false;

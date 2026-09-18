@@ -15,10 +15,11 @@ public sealed class Tool_Profile
     public float Length = 0.030f;
     public Tip Tip_Shape = Tip.Flat;
 
-    // 118° included drill point → 59° half angle.
-    const float Drill_Tan = 1.6642795f;
-    const float Drill_Sin = 0.8571673f;
-    const float Drill_Cos = 0.5150381f;
+    // Included drill point angle; the flank trig below is its half angle.
+    const float Drill_Point_Deg = 118f;
+    static readonly float Drill_Tan = Mathf.Tan(Drill_Point_Deg * 0.5f * Mathf.Deg2Rad);
+    static readonly float Drill_Sin = Mathf.Sin(Drill_Point_Deg * 0.5f * Mathf.Deg2Rad);
+    static readonly float Drill_Cos = Mathf.Cos(Drill_Point_Deg * 0.5f * Mathf.Deg2Rad);
 
     public float Radius => Diameter * 0.5f;
 
@@ -37,12 +38,6 @@ public sealed class Tool_Profile
             default:
                 return r;
         }
-    }
-
-    /// <summary>Mill: disc footprint in a plane perpendicular to the axis at height h.</summary>
-    public float Footprint_Sdf(Vector2 p, Vector2 tip, float h)
-    {
-        return (p - tip).magnitude - Radius_At_Height(h);
     }
 
     /// <summary>

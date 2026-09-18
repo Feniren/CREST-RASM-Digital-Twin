@@ -37,6 +37,31 @@ public static class Mesh_Check
         Assert.That(duplicated, Is.EqualTo(0), label + ": directed edges used more than once");
     }
 
+    /// <summary>
+    /// Asserts one normal per vertex and that every non-degenerate triangle's three normals are
+    /// unit length and point along its winding's cross product — what RecalculateNormals yields
+    /// for unshared vertices, so a mesh passing this looks identical to one it processed.
+    /// </summary>
+    public static void Assert_Flat_Normals(List<Vector3> verts, List<Vector3> normals, List<int> tris, string label)
+    {
+        Assert.That(normals.Count, Is.EqualTo(verts.Count), label + ": one normal per vertex");
+        int checked_tris = 0;
+        for (int i = 0; i < tris.Count; i += 3)
+        {
+            Vector3 a = verts[tris[i]], b = verts[tris[i + 1]], c = verts[tris[i + 2]];
+            Vector3 n = Mesh_Util.Flat_Normal(a, b, c);
+            if (n == Vector3.zero) continue;   // degenerate: draws nothing, normal irrelevant
+            for (int j = 0; j < 3; j++)
+            {
+                Vector3 m = normals[tris[i + j]];
+                Assert.That(m.magnitude, Is.EqualTo(1f).Within(1e-4f), label + ": normal length, triangle " + i / 3);
+                Assert.That(Vector3.Dot(m, n), Is.GreaterThan(0.999f), label + ": normal direction, triangle " + i / 3);
+            }
+            checked_tris++;
+        }
+        Assert.That(checked_tris, Is.GreaterThan(0), label + ": no non-degenerate triangles");
+    }
+
     static void Add(Dictionary<(long, long, long, long, long, long), int> edges, (long, long, long) a, (long, long, long) b)
     {
         if (a.Equals(b)) return;

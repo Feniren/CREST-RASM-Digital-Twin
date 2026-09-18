@@ -13,6 +13,7 @@ public static class NC_Parser
     {
         var p = new NC_Program { Name = name };
         string[] lines = (text ?? "").Split('\n');
+        var number = new StringBuilder();
         bool in_header = true;
         for (int i = 0; i < lines.Length; i++)
         {
@@ -35,7 +36,7 @@ public static class NC_Parser
 
             in_header = false;
             var block = new NC_Block { Index = p.Blocks.Count, Line = line, Text = code };
-            Tokenise(code, block, p);
+            Tokenise(code, block, p, number);
             p.Blocks.Add(block);
         }
         return p;
@@ -54,7 +55,13 @@ public static class NC_Parser
         while (open >= 0)
         {
             int close = raw.IndexOf(')', open + 1);
-            if (close < 0) close = raw.Length - 1;
+            if (close < 0)
+            {
+                // Unterminated: the rest of the line is the comment.
+                if (comment == null) comment = raw.Substring(open + 1);
+                raw = raw.Substring(0, open);
+                break;
+            }
             if (comment == null) comment = raw.Substring(open + 1, close - open - 1);
             raw = raw.Remove(open, close - open + 1);
             open = raw.IndexOf('(');
@@ -81,9 +88,7 @@ public static class NC_Parser
         return code.Length > 1;
     }
 
-    static readonly StringBuilder number = new StringBuilder();
-
-    static void Tokenise(string code, NC_Block block, NC_Program p)
+    static void Tokenise(string code, NC_Block block, NC_Program p, StringBuilder number)
     {
         int i = 0;
         while (i < code.Length)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -60,8 +61,6 @@ public static class Marching_Squares
     static readonly int[][] Fill_5_Connected = { new[] { 0, 4, 5, 2, 6, 7 } };
     static readonly int[][] Fill_10_Connected = { new[] { 4, 1, 5, 6, 3, 7 } };
 
-    static readonly Vector2[] pts = new Vector2[8];
-
     public static int Case(float v0, float v1, float v2, float v3)
     {
         return (v0 > 0f ? 1 : 0) | (v1 > 0f ? 2 : 0) | (v2 > 0f ? 4 : 0) | (v3 > 0f ? 8 : 0);
@@ -78,6 +77,7 @@ public static class Marching_Squares
         int c = Case(v0, v1, v2, v3);
         if (c == 0) return;
 
+        Span<Vector2> pts = stackalloc Vector2[8];   // per-call scratch: re-entrant, no allocation
         pts[0] = c0; pts[1] = c1; pts[2] = c2; pts[3] = c3;
         pts[4] = (v0 > 0f) != (v1 > 0f) ? Cross(c0, v0, c1, v1) : c0;
         pts[5] = (v1 > 0f) != (v2 > 0f) ? Cross(c1, v1, c2, v2) : c1;
@@ -125,13 +125,6 @@ public static class Marching_Squares
         for (int iz = 0; iz < f.Height - 1; iz++)
             for (int ix = 0; ix < f.Width - 1; ix++)
                 Cell(f, ix, iz, segments, null);
-    }
-
-    public static void Fill(Scalar_Field_2D f, List<Vector2> triangles)
-    {
-        for (int iz = 0; iz < f.Height - 1; iz++)
-            for (int ix = 0; ix < f.Width - 1; ix++)
-                Cell(f, ix, iz, null, triangles);
     }
 
     static Vector2 Cross(Vector2 a, float va, Vector2 b, float vb)

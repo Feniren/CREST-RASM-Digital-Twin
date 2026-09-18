@@ -191,8 +191,28 @@ public class NC_Planner_Tests
     public void Feed_Without_F_Uses_The_Default_With_A_Warning()
     {
         var plan = Plan("M03\nG01 X10");
-        Assert.That(Motion(plan)[0].Feed_Mm_Min, Is.EqualTo(NC_Planner.Default_Feed_Mm_Min));
+        Assert.That(Motion(plan)[0].Feed_Mm_Min, Is.EqualTo(plan.Settings.Default_Feed_Mm_Min));
         Assert.That(plan.Notices.Any(n => n.Message.Contains("F word")));
+    }
+
+    [Test]
+    public void Machine_Settings_Set_Rapid_Rate_And_Stop_Length()
+    {
+        var settings = new NC_Machine_Settings { Rapid_Mm_Min = 6000f, Stop_Seconds = 2f };
+        var plan = NC_Planner.Plan(NC_Parser.Parse("t", "G00 X100\nM00"), settings);
+        Assert.That(plan.Settings, Is.SameAs(settings));
+        Assert.That(plan.Moves[1].Seconds, Is.EqualTo(2f));
+        Assert.That(plan.Estimated_Seconds, Is.EqualTo(3f).Within(1e-3f), "100 mm at 6000 mm/min plus the stop");
+    }
+
+    [Test]
+    public void Ignored_Codes_Raise_Info_Not_Warnings()
+    {
+        var plan = Plan("G43 H1\nG54\nM08\nM03 F100\nG01 X10");
+        Assert.That(plan.Notices.Count, Is.EqualTo(3));
+        Assert.That(plan.Notices.All(n => n.Severity == NC_Notice.Level.Info));
+        Assert.That(plan.Has_Alarm, Is.False);
+        Near(Motion(plan)[0].To, new Vector3(10, 0, 0));   // the offset codes changed nothing
     }
 
     [Test]

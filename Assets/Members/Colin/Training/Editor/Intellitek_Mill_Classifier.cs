@@ -353,10 +353,10 @@ public static class Intellitek_Mill_Classifier{
 
             Close_Sliding_Panel(members, groups);
 
-            // Axis-mapping guesses mirror PM8000 (machine X->world X, machine Y->world Z,
-            // machine Z->world Y) but this model bakes a different orientation — verify with
-            // "Training/9 Intellitek - Jog Drives" before trusting them. Carried values from
-            // the previous asset win over the guesses.
+            // Axis mapping in the drives' own frame: machine X = model X, machine Y = model Z,
+            // machine Z = model Y. AxisMovement slides along its local axis (since 2026-09-17), so
+            // the root's Y 270 and the scene placement are irrelevant; verified in the NC demo.
+            // Carried values from the previous asset win over the guesses.
             Ensure_Axis(groups["WB_XAxis_Drive"], MovementAxis.X, tuned);
             Ensure_Axis(groups["WB_YAxis_Drive"], MovementAxis.Z, tuned);
             Ensure_Axis(groups["SpindleMotor"], MovementAxis.Y, tuned);

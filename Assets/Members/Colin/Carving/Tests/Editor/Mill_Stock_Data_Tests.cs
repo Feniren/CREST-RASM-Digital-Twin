@@ -38,8 +38,9 @@ public class Mill_Stock_Data_Tests
     static int Triangles(Mill_Stock_Data s, int k, bool cull)
     {
         var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
         var tris = new List<int>();
-        s.Build_Slab_Mesh(k, verts, tris, cull);
+        s.Build_Slab_Mesh(k, verts, normals, tris, cull);
         return tris.Count / 3;
     }
 
@@ -89,11 +90,12 @@ public class Mill_Stock_Data_Tests
     {
         var s = Make();
         var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
         var tris = new List<int>();
         for (int k = 0; k < s.Slab_Count; k++)
         {
-            verts.Clear(); tris.Clear();
-            s.Build_Slab_Mesh(k, verts, tris, false);
+            verts.Clear(); normals.Clear(); tris.Clear();
+            s.Build_Slab_Mesh(k, verts, normals, tris, false);
             Mesh_Check.Assert_Watertight(verts, tris, "fresh slab " + k);
         }
 
@@ -101,9 +103,26 @@ public class Mill_Stock_Data_Tests
         Ball_Slot(s);
         for (int k = 0; k < s.Slab_Count; k++)
         {
-            verts.Clear(); tris.Clear();
-            s.Build_Slab_Mesh(k, verts, tris, false);
+            verts.Clear(); normals.Clear(); tris.Clear();
+            s.Build_Slab_Mesh(k, verts, normals, tris, false);
             Mesh_Check.Assert_Watertight(verts, tris, "carved slab " + k);
+        }
+    }
+
+    [Test]
+    public void Normals_Are_Unit_And_Match_The_Winding()
+    {
+        var s = Make();
+        Plunge(s);
+        Ball_Slot(s);
+        var verts = new List<Vector3>();
+        var normals = new List<Vector3>();
+        var tris = new List<int>();
+        for (int k = 0; k < s.Slab_Count; k++)
+        {
+            verts.Clear(); normals.Clear(); tris.Clear();
+            s.Build_Slab_Mesh(k, verts, normals, tris);
+            Mesh_Check.Assert_Flat_Normals(verts, normals, tris, "slab " + k);
         }
     }
 

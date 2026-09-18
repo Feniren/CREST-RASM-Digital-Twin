@@ -13,8 +13,6 @@ using UnityEngine;
 /// </summary>
 public sealed class Lathe_Stock_Data
 {
-    public const int Max_Sub_Steps = 64;
-
     public readonly float Length;   // rounded to whole cells
     public readonly float Radius;   // rounded to whole cells
     public readonly float Cell;
@@ -22,12 +20,28 @@ public sealed class Lathe_Stock_Data
     public readonly int Nr;
     public readonly Scalar_Field_2D Field;
 
-    public bool Dirty;
+    public bool Dirty { get; private set; }
     public int Last_Sub_Steps { get; private set; }
+    /// <summary>Set once a single Carve exceeded Carve_Sweep.Max_Sub_Steps (a teleport left gaps); cleared by Reset.</summary>
     public bool Gap_Warning { get; private set; }
 
-    static readonly List<Vector2> segs = new List<Vector2>();
-    static float[] cos_table, sin_table;
+    readonly List<Vector2> segs = new List<Vector2>();
+    float[] cos_table, sin_table;
+
+    // Tool_Profile.Section_Sdf as a struct so a stamp allocates nothing.
+    readonly struct Section_Sdf : Scalar_Field_2D.I_Sdf
+    {
+        readonly Tool_Profile tool;
+        readonly Vector2 tip;
+
+        public Section_Sdf(Tool_Profile tool, Vector2 tip)
+        {
+            this.tool = tool;
+            this.tip = tip;
+        }
+
+        public float Evaluate(Vector2 p) => tool.Section_Sdf(p, tip);
+    }
 
     public Lathe_Stock_Data(float length, float radius, float cell)
     {
@@ -46,7 +60,10 @@ public sealed class Lathe_Stock_Data
         Field.Fill_Solid_Rect();
         Mirror_Axis();
         Dirty = true;
+        Gap_Warning = false;
     }
+
+    public void Clear_Dirty() => Dirty = false;
 
     void Mirror_Axis()
     {
@@ -57,9 +74,8 @@ public sealed class Lathe_Stock_Data
     public void Carve(Tool_Profile tool, Vector2 prev_tip, Vector2 curr_tip)
     {
         Vector2 d = curr_tip - prev_tip;
-        float dist = d.magnitude;
-        int n = dist <= 1e-9f ? 1 : Mathf.CeilToInt(dist / (Cell * 0.5f));
-        if (n > Max_Sub_Steps) { n = Max_Sub_Steps; Gap_Warning = true; }
+        int n = Carve_Sweep.Sub_Steps(d.magnitude, Cell, out bool capped);
+        if (capped) Gap_Warning = true;
         Last_Sub_Steps = n;
         for (int s = 1; s <= n; s++) Stamp(tool, prev_tip + d * ((float)s / n));
     }
@@ -68,15 +84,15 @@ public sealed class Lathe_Stock_Data
     {
         float r = tool.Radius;
         var bbox = new Rect(tip.x - r, tip.y, r * 2f, tool.Length + r);
-        if (Field.Subtract(p => tool.Section_Sdf(p, tip), bbox))
+        if (Field.Subtract(new Section_Sdf(tool, tip), bbox))
         {
             Mirror_Axis();
             Dirty = true;
         }
     }
 
-    /// <summary>Revolves the contour into a flat-shaded mesh (appended to verts/tris).</summary>
-    public void Build_Mesh(int segments, List<Vector3> verts, List<int> tris)
+    /// <summary>Revolves the contour into a flat-shaded mesh (appended to verts/normals/tris; indices relative to verts at entry).</summary>
+    public void Build_Mesh(int segments, List<Vector3> verts, List<Vector3> normals, List<int> tris)
     {
         segments = Mathf.Max(3, segments);
         if (cos_table == null || cos_table.Length != segments)
@@ -110,16 +126,18 @@ public sealed class Lathe_Stock_Data
                 var B0 = new Vector3(rb * cos_table[j], rb * sin_table[j], b.x);
                 var B1 = new Vector3(rb * cos_table[j1], rb * sin_table[j1], b.x);
                 // Segment a->b has solid on its left in (z, r); these windings face outward.
-                if (ra > 0f) Add_Tri(A0, B0, A1, verts, tris);
-                if (rb > 0f) Add_Tri(A1, B0, B1, verts, tris);
+                if (ra > 0f) Add_Tri(A0, B0, A1, verts, normals, tris);
+                if (rb > 0f) Add_Tri(A1, B0, B1, verts, normals, tris);
             }
         }
     }
 
-    static void Add_Tri(Vector3 a, Vector3 b, Vector3 c, List<Vector3> verts, List<int> tris)
+    static void Add_Tri(Vector3 a, Vector3 b, Vector3 c, List<Vector3> verts, List<Vector3> normals, List<int> tris)
     {
         int i = verts.Count;
+        Vector3 n = Mesh_Util.Flat_Normal(a, b, c);
         verts.Add(a); verts.Add(b); verts.Add(c);
+        normals.Add(n); normals.Add(n); normals.Add(n);
         tris.Add(i); tris.Add(i + 1); tris.Add(i + 2);
     }
 }

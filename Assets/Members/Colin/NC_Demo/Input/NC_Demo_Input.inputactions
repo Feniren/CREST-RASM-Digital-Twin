@@ -1,0 +1,175 @@
+{
+    "version": 1,
+    "name": "NC_Demo_Input",
+    "maps": [
+        {
+            "name": "Demo",
+            "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d01",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d02",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d03",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Restart",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d04",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Feed_Down",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d05",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Feed_Up",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d06",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "View_1",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d07",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "View_2",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d08",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "View_3",
+                    "type": "Button",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d09",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d10",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d11",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d12",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d13",
+                    "path": "<Keyboard>/leftBracket",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Feed_Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d14",
+                    "path": "<Keyboard>/rightBracket",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Feed_Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d15",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View_1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d16",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View_2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a1d4f6b-2c3e-4a5b-9d0e-7f6a5b4c3d17",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View_3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

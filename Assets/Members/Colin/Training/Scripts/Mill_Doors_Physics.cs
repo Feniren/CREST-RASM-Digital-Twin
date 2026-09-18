@@ -25,6 +25,7 @@ public class Mill_Doors_Physics : Item_Mill_Doors{
     private Coroutine _slide;
 
     public bool IsOpen => _isOpen;
+    public bool IsSliding => _slide != null;
 
     private void Awake(){
         if (LeftDoor != null)
