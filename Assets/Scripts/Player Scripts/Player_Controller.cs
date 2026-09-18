@@ -33,7 +33,6 @@ public class Player_Controller : Controller{
     private void Awake(){
         PlayerInput = new Player_Input();
 
-        PlayerInput.Player.Enable();
         PlayerInput.Player.EquipItem.performed += EquipItem;
         PlayerInput.Player.Interact.performed += Interact;
         PlayerInput.Player.AlternateInteract.performed += AlternateInteract;
@@ -79,7 +78,7 @@ public class Player_Controller : Controller{
     }
 
     private void FixedUpdate(){
-		Vector3 Movement = ((PlayerReference.CameraReference.transform.right * MovementVelocity.x) + (PlayerReference.CameraReference.transform.forward * MovementVelocity.y));
+		Vector3 Movement = ((transform.right * MovementVelocity.x) + (transform.forward * MovementVelocity.y));
 
         Movement.y = RigidBodyReference.linearVelocity.y;
 
@@ -115,6 +114,14 @@ public class Player_Controller : Controller{
         }
     }
 
+	public void DisableInput(){
+		PlayerInput.Disable();
+	}
+
+	public void EnableInput(){
+		PlayerInput.Enable();
+	}
+
 	public void EquipItem(InputAction.CallbackContext Context){
 		if (Context.performed){
 			if (ItemInstance){
@@ -138,8 +145,6 @@ public class Player_Controller : Controller{
 					ItemInstance.transform.SetParent(PlayerReference.ItemAnchor.transform, true);
 
 					ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
-
-					Debug.Log("Item created at " + ItemInstance.transform.position);
 
 					PlayerInput.ItemEquipped.Enable();
 				}
@@ -316,8 +321,6 @@ public class Player_Controller : Controller{
         else{
             PlayerReference.CameraReference.transform.localPosition = ThirdPersonCameraLocation;
         }
-
-        Debug.Log(PlayerReference.CameraReference.transform.localPosition);
     }
 
 	public void CreateSystemMenu(InputAction.CallbackContext Context){

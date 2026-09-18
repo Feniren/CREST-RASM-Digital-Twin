@@ -13,10 +13,14 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public GameObject LeftHandAnchor;
     public GameObject RightHandAnchor;
 
+	[ReadOnly]
+	public Item_Library ItemLibraryReference;
+
     public Camera CameraReference;
     public Health_Bar HealthBarReference;
-	public Item_Library ItemLibraryReference;
 	public Player_Settings PlayerSettings;
+
+	Player_Controller ControllerReference;
 
 	public InputSystemUIInputModule DesktopEventSystem;
 	public XRUIInputModule VREventSystem;
@@ -38,9 +42,10 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public override void Start(){
         base.Start();
 
-		StartCoroutine(LaunchXR(0.1f));
+		ControllerReference = GetComponent<Player_Controller>();
+		ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibrary;
 
-        ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibrary;
+		StartCoroutine(LaunchXR(0.1f));
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -86,6 +91,8 @@ public class Entity_Player : Entity, Save_Data_Interface{
 		SpawnPoint = FindFirstObjectByType<Spawn_Point>().gameObject;
 
 		gameObject.transform.position = SpawnPoint.transform.position;
+
+		ControllerReference.EnableInput();
 
 		GetComponent<Rigidbody>().useGravity = true;
 	}
