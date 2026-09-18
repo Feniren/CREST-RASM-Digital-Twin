@@ -130,9 +130,9 @@ MonoBehaviour:
     Include_In_Quiz: 0
   - Step_Id: milling_demo
     Kind: 3
-    Prompt_Text: "Milling demo \u2014 the guard doors open, the spindle plunges into
-      the perspex block, and the table cuts a square pocket: plunge \u2192 square
-      pass \u2192 retract."
+    Prompt_Text: "Milling demo \u2014 the guard doors close and the machine runs an NC
+      program: the spindle mounts a 10 mm end mill, plunges into the epoxy block and
+      cuts a 60 \u00d7 40 mm pocket 3 mm deep, then homes and the doors open."
     Practice_Prompt_Text: 
     Target_Marker_Id: 
     Narration: {fileID: 0}

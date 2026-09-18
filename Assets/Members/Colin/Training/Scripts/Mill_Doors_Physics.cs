@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-// Module 1 opens and closes the guard doors through Item_Mill_Doors.AlternateInteract —
-// Mill_Demo_Controller calls it around the milling demo and both Door_Click_Toggles call it
-// on a marker click. On the PM8000 rig that slid two AxisMovement components; the Intellitek
+// Module 1 opens and closes the guard doors through this component — Mill_Demo_Controller sets
+// a known state (Set_Open) around the milling demo and both Door_Click_Toggles toggle it
+// (Item_Mill_Doors.AlternateInteract) on a marker click. On the PM8000 rig that slid two AxisMovement components; the Intellitek
 // mill's doors are Rigidbodies on world-anchored ConfigurableJoints instead, so this subclass
 // keeps the same call surface and slides the bodies along the joint axis.
 //
@@ -36,12 +36,18 @@ public class Mill_Doors_Physics : Item_Mill_Doors{
     }
 
     public override void AlternateInteract(Entity_Player PlayerReference){
+        Set_Open(!_isOpen);
+    }
+
+    // Slides to a known state whatever the toggle history — a door dragged open by hand
+    // never updates _isOpen, so the milling demo asks for "closed" rather than "toggle".
+    public void Set_Open(bool open){
         if (LeftDoor == null || RightDoor == null){
             Debug.LogWarning("Mill_Doors_Physics: LeftDoor/RightDoor are not assigned.");
             return;
         }
 
-        _isOpen = !_isOpen;
+        _isOpen = open;
 
         if (_slide != null)
             StopCoroutine(_slide);

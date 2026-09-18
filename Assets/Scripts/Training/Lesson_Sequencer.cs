@@ -70,6 +70,9 @@ public class Lesson_Sequencer : MonoBehaviour{
         if (Registry != null)
             Registry.Set_All_Labels_Visible(false);
 
+        if (DemoController != null)
+            DemoController.Stop();
+
         Advance();
     }
 

@@ -10,6 +10,10 @@ public abstract class Training_Demo_Controller : MonoBehaviour{
 
     public abstract void Play(Lesson_Step step);
 
+    // Lesson_Sequencer.Begin calls this before the first step, so a restarted lesson
+    // (e.g. a wrist reset mid-demo) cancels whatever the previous run left going.
+    public virtual void Stop(){}
+
     protected void Raise_Demo_Finished(){
         Demo_Finished?.Invoke();
     }

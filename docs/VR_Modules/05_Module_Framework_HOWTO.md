@@ -135,6 +135,8 @@ automatically (`Desktop_Click_Select` raycasts when no headset is active).
 - `Info`, `Select_Component` and `Panel_Action` are handled by the sequencer.
   **Every other kind** is handed to the scene's `Training_Demo_Controller`
   subclass via `Play(step)`; call `Raise_Demo_Finished()` when your demo ends.
+  Override `Stop()` to cancel a running demo — `Begin` calls it on every
+  (re)start, e.g. a wrist reset mid-demo.
 - Need a new kind (e.g. `Lathe_Demo`)? **Append it to the end** of
   `Lesson_Step_Kind` — it serializes as an int, so reordering corrupts every
   existing lesson asset. The sequencer needs no changes.
