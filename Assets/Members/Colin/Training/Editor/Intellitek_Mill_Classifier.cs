@@ -353,6 +353,16 @@ public static class Intellitek_Mill_Classifier{
 
             Close_Sliding_Panel(members, groups);
 
+            // The bolted frame is fixed to the right door on the real machine, so it rides the
+            // door's Rigidbody as a child. Both nodes are world-baked at identity, so the
+            // world-preserving reparent gives the frame an identity local pose.
+            Transform rightDoor = members.FirstOrDefault(m => m.name == "RightMillDoor");
+            Transform boltedFrame = members.FirstOrDefault(m => m.name == "RightMillDoorBoltedFrame");
+            if (rightDoor != null && boltedFrame != null)
+                boltedFrame.SetParent(rightDoor, true);
+            else
+                Debug.LogWarning("Intellitek_Mill_Classifier: RightMillDoor/RightMillDoorBoltedFrame not found — frame left under Enclosure.");
+
             // Axis mapping in the drives' own frame: machine X = model X, machine Y = model Z,
             // machine Z = model Y. AxisMovement slides along its local axis (since 2026-09-17), so
             // the root's Y 270 and the scene placement are irrelevant; verified in the NC demo.
