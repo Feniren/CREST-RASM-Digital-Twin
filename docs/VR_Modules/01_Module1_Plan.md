@@ -64,8 +64,8 @@ additively; without a headset, desktop fallback runs in-editor.
 
 ## Phase 2 — Guided-Lesson System (new, reusable code)
 
-The one genuine gap. New scripts under `Assets/Scripts/Training/`, modeled on the existing `Job_Queue` FIFO
-pattern (`Assets/Scripts/Job_System/`).
+The one genuine gap. New scripts under `Assets/Scripts/Training/`, modeled on the existing `Job_Manager` FIFO
+pattern (`Assets/Scripts/Job System/`).
 
 ### `Lesson_Step`
 Serializable class / ScriptableObject describing one step:
@@ -76,7 +76,7 @@ Serializable class / ScriptableObject describing one step:
 - success condition.
 
 ### `Lesson_Sequencer` (MonoBehaviour)
-Drives an ordered `List<Lesson_Step>` (FIFO, mirrors `Job_Queue.jobPeek` / `jobPop`):
+Drives an ordered `List<Lesson_Step>` (FIFO, mirrors `Job_Manager.RunJob` / `DequeueJob`):
 - highlights the current target via the **XRI Fresnel affordance**;
 - shows the prompt on a world-space canvas;
 - waits for the correct interaction, then advances;

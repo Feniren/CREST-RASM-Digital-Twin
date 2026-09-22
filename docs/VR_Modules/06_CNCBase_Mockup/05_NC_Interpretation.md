@@ -377,7 +377,7 @@ synthesised op log — it is the trainee's own selected `.nc` file, block by blo
 ### 5.4 The other stations
 
 CNCBase drives all four Intelitek benchtop machines (`04_CNCBase_Reference.md` §2), so `Item_Lathe`
-(`Assets/Members/Alec/Item_Lathe.cs`, a `ProcessItem` stub) speaks the same dialect in a 2-axis X/Z frame —
+(`Assets/Members/Alec/Item_Lathe.cs`, an `Item_CNC_Machine` with no motion logic yet) speaks the same dialect in a 2-axis X/Z frame —
 which is precisely the contamination visible in §2.5's manual.
 
 **Do not generalise now.** `03_Build_Plan.md` §5's rule holds: one caller does not justify a shared file.

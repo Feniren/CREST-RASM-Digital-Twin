@@ -74,9 +74,9 @@ profiles, watertight and flat-normal checks on both stocks).
 
 ## Integration into the Digital Twin
 
-`Assets/Members/Colin/Item_Mill.cs` has the seam (`// add the capabilities to modify the item in
-the mill here`, just before `millingAnimation.Play()`). The shape that already works in the NC
-demo:
+The seam is `Job_Mill_Epoxy_Penholder.OnTargetFound` (`Assets/Scripts/Job System/`): that is where
+the mill swaps the plate's epoxy block for the finished penholder, so a carving pass would run there,
+before the swap. The shape that already works in the NC demo:
 
 1. The workpiece is a prefab with `Mill_Stock` + `MeshFilter` + `MeshRenderer` (see
    `NC_Demo/Prefabs/NC_Stock.prefab`), instantiated on the fixture that rides the table drives.
