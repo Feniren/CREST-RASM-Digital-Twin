@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class ASRSArmTester : MonoBehaviour
@@ -46,6 +47,10 @@ public class ASRSArmTester : MonoBehaviour
     [Tooltip("Seconds the arm pauses at each slot during auto-traverse before moving on.")]
     [SerializeField] private float autoTraverseDelay = 0.5f;
 
+    [Header("Search Home")]
+    [Tooltip("Seconds the arm pauses at each corner during Search Home, so the sweep reads as a visible sequence of moves rather than one instant jump.")]
+    [SerializeField] private float searchHomeCornerDelay = 0.3f;
+
     // Read-only so other scripts (e.g. the gripper controller) can match this
     // exact depth for their own "parked, not reaching in" moves instead of
     // needing a second field that could silently drift out of sync with it.
@@ -57,11 +62,15 @@ public class ASRSArmTester : MonoBehaviour
     private const int Rows = 6;
     private const int Cols = 6;
     private const int SlotsPerSide = Rows * Cols; // 36
-    private const int TotalSlots = SlotsPerSide * 2; // 72
+    // Public so other scripts (e.g. the SCORBASE panel's Pick and Place
+    // index validation) can reference the real slot count instead of a
+    // hardcoded magic number.
+    public const int TotalSlots = SlotsPerSide * 2; // 72
 
     private int currentSlotIndex = 0;
     private bool isAutoTraversing = false;
     private Coroutine traverseCoroutine;
+    private Coroutine searchHomeCoroutine;
 
     private void Awake()
     {
@@ -150,6 +159,13 @@ public class ASRSArmTester : MonoBehaviour
     private void Update()
     {
         if (Keyboard.current == null || armController == null)
+            return;
+
+        // Skip every debug keybind below while any UI element is focused —
+        // e.g. typing "12" or "34" into the SCORBASE panel's Source/Target
+        // Index fields (1-72) also presses these same digit keys, which
+        // would otherwise jog the arm mid-typing before OK is ever pressed.
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject != null)
             return;
 
         // ── Original keybinds (unchanged) ─────────────────────────────────
@@ -260,8 +276,91 @@ public class ASRSArmTester : MonoBehaviour
         }
     }
 
+    // SCORBASE-style "Search Home": a visible sweep of the rack's four
+    // corners (010001 -> 060001 -> 060006 -> 010006) on the 1-36 (NonU)
+    // side, ending parked at the bottom-right corner — 010006 — instead of
+    // an instant snap back to wherever the arm happened to rest. Retracts
+    // the depth axis first (a real ASRS/SCORBASE controller always fully
+    // retracts before any Z/Y travel), then rotates to the NonU side if
+    // needed, then walks the perimeter.
+    public void SearchHome()
+    {
+        if (armController == null || slotsA == null)
+        {
+            Debug.LogWarning("[ASRS] Arm controller or SlotsA not ready — can't Search Home.", this);
+            return;
+        }
+
+        StopAutoTraverse();
+
+        if (searchHomeCoroutine != null)
+            StopCoroutine(searchHomeCoroutine);
+
+        searchHomeCoroutine = StartCoroutine(SearchHomeRoutine());
+    }
+
+    private IEnumerator SearchHomeRoutine()
+    {
+        // Search Home is itself a GP-style commanded move — return to Safe
+        // Position first, same as any other, before starting its own
+        // corner-sweep sequence.
+        bool safeReached = false;
+        armController.ReturnToSafePosition(() => safeReached = true);
+        yield return new WaitUntil(() => safeReached);
+
+        armController.MoveX(0f);
+        yield return new WaitUntil(() => !armController.IsMoving);
+
+        if (armController.CurrentSide != ASRSArmController.Side.NonU)
+        {
+            armController.RotateY(0f);
+            yield return new WaitUntil(() => !armController.IsMoving);
+        }
+
+        int[] cornerLocalIndices =
+        {
+            0,                              // row 1, col 1 (010001) — bottom-left
+            (Rows - 1) * Cols,              // row 6, col 1 (060001) — top-left
+            (Rows - 1) * Cols + (Cols - 1), // row 6, col 6 (060006) — top-right
+            Cols - 1                        // row 1, col 6 (010006) — bottom-right, final
+        };
+
+        foreach (int localIndex in cornerLocalIndices)
+        {
+            if (!TryComputeSlotDelta(false, localIndex, out float targetZ, out float targetY))
+                continue;
+
+            armController.MoveZ(targetZ);
+            armController.MoveY(targetY);
+            yield return new WaitUntil(() => !armController.IsMoving);
+            yield return new WaitForSeconds(searchHomeCornerDelay);
+        }
+
+        currentSlotIndex = cornerLocalIndices[cornerLocalIndices.Length - 1];
+        searchHomeCoroutine = null;
+        armController.NotifyHomed();
+    }
+
     private bool SameSide(int indexA, int indexB) =>
         (indexA < SlotsPerSide) == (indexB < SlotsPerSide);
+
+    // Converts a plain 1-based slot number (1-TotalSlots) into the rack's
+    // own row*10000+col TableID string — the same addressing
+    // TryMoveToTableId already accepts, and the same math MoveToCurrentSlot
+    // uses for its own display string. Lets a trainee (or the SCORBASE
+    // panel's Source/Target Index fields) address a slot by its plain
+    // number instead of memorizing the row/column TableID format.
+    public static string IndexToTableId(int oneBasedIndex)
+    {
+        int slotsPerSide = Rows * Cols;
+        int zeroBasedIndex = oneBasedIndex - 1;
+        bool wantsB = zeroBasedIndex >= slotsPerSide;
+        int localIndex = wantsB ? zeroBasedIndex - slotsPerSide : zeroBasedIndex;
+        int row = localIndex / Cols;
+        int col = localIndex % Cols;
+        int displayRow = wantsB ? row + 7 : row + 1;
+        return (displayRow * 10000 + col + 1).ToString("D6");
+    }
 
     // Moves the arm to the current slot using a delta from that side's own
     // center slot. Rotates first if the target slot is on the other side from
@@ -409,12 +508,6 @@ public class ASRSArmTester : MonoBehaviour
             return false;
         }
 
-        if (!armController.IsReachable(id))
-        {
-            Debug.LogWarning($"[ASRS] Table ID {tableId} is on the far side — rotate the arm first.");
-            return false;
-        }
-
         bool wantsB = row > Rows;
         int localRow = wantsB ? row - Rows - 1 : row - 1;
         int localCol = col - 1;
@@ -428,10 +521,45 @@ public class ASRSArmTester : MonoBehaviour
 
         Debug.Log($"[ASRS] Go to {tableId} → Z={targetZ:F2} Y={targetY:F2}");
 
+        ASRSArmController.Side targetSide = wantsB ? ASRSArmController.Side.U : ASRSArmController.Side.NonU;
+
+        // Every GP-style commanded move returns to Safe Position first —
+        // Z/Y/X retracted to 0, rotated to whichever side counts as "safe"
+        // — before proceeding with the actual requested move, rather than
+        // jumping straight there from wherever the arm happens to be
+        // sitting.
+        armController.ReturnToSafePosition(() =>
+        {
+            if (armController.CurrentSide != targetSide)
+                armController.RotateY(targetSide == ASRSArmController.Side.U ? 180f : 0f);
+
+            MoveToZYViaCenter(targetZ, targetY);
+            armController.MoveX(parkedX);
+        });
+
+        return true;
+    }
+
+    // Center-crossing movement rule: every commanded Z/Y position change
+    // (a SCORBASE-style "GP"/Go-to-Position command, not a manual jog nudge)
+    // returns to the center — Z=0, Y=0, the same home-relative origin every
+    // slot delta is already measured from — before proceeding to its actual
+    // destination, matching the real SCORBASE/SmartCIM convention of
+    // Current Position -> Center -> Next Position rather than jumping
+    // directly between two arbitrary positions.
+    public void MoveToZYViaCenter(float targetZ, float targetY)
+    {
+        StartCoroutine(MoveToZYViaCenterRoutine(targetZ, targetY));
+    }
+
+    private IEnumerator MoveToZYViaCenterRoutine(float targetZ, float targetY)
+    {
+        armController.MoveZ(0f);
+        armController.MoveY(0f);
+        yield return new WaitUntil(() => !armController.IsMoving);
+
         armController.MoveZ(targetZ);
         armController.MoveY(targetY);
-        armController.MoveX(parkedX);
-        return true;
     }
 
     private void StartAutoTraverse()

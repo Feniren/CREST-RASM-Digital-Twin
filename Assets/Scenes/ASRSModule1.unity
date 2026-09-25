@@ -2497,6 +2497,8 @@ MonoBehaviour:
       to move onto the next step. '
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: 
+    passiveAction: 0
+    hintTarget: {fileID: 0}
   - targets:
     - {fileID: 254648658}
     infoText: This is the RFID tag on the slotted table. It's what the RFID sensor
@@ -2506,6 +2508,8 @@ MonoBehaviour:
       move onto the next step. '
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: 
+    passiveAction: 0
+    hintTarget: {fileID: 0}
   - targets:
     - {fileID: 1643142830}
     infoText: "This is the epoxy block \u2014 one of the standard parts used in this
@@ -2514,6 +2518,8 @@ MonoBehaviour:
       to move onto the next step. '
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: 
+    passiveAction: 0
+    hintTarget: {fileID: 0}
   - targets:
     - {fileID: 1704333287}
     infoText: "This is the ASRS-36 \u2014 the Automated Storage and Retrieval System.
@@ -2522,24 +2528,45 @@ MonoBehaviour:
     instructionsText: Interact with the ASRS unit to continue before you open it
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: 
+    passiveAction: 0
+    hintTarget: {fileID: 0}
   - targets:
     - {fileID: 456656642}
     infoText: 'Please walk over to the rack, and interact with the door handle. '
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
     requiredActionId: 
-  - targets:
-    - {fileID: 666719870}
-    infoText: 'Perform the following action
+    passiveAction: 0
+    hintTarget: {fileID: 0}
+  - targets: []
+    infoText: 'Perform the following action of loading the epoxy block onto the slotted
+      table
 
 '
-    instructionsText: 
+    instructionsText: Pick up the epoxy block and place it onto the slotted table
+      — it will snap into place once it's close enough.
+    RequiredOccupiedTable: {fileID: 1846906423}
+    requiredActionId: LoadSlottedTable
+    passiveAction: 0
+    hintTarget: {fileID: 0}
+  - targets: []
+    infoText: 'Perform the following action of loading the loaded slotted table into
+      the asrs
+
+'
+    instructionsText: Carry the slotted table to its empty slot in the ASRS rack
+      — it will snap into place once it's close enough.
     RequiredOccupiedTable: {fileID: 0}
-    requiredActionId: 
+    requiredActionId: LoadASRS
+    passiveAction: 0
+    hintTarget: {fileID: 0}
   infoPanel: {fileID: 531492106}
   nextButton: {fileID: 1515709773}
+  hintShowcase: {fileID: 0}
+  hintButton: {fileID: 0}
   completionText: "Great job \u2014 you've identified every part. Let's test what
     you've learned."
+  quizManager: {fileID: 0}
   onSequenceComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -3097,11 +3124,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86747cba90b5014ea3ccf2bc8452fc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item_Plate
+  Name: Plate
   AutomaticActivation: 0
   Owner: {fileID: 0}
   Pickup: 1
   Quantity: 1
-  Name: Plate
   OnGrabbed:
     m_PersistentCalls:
       m_Calls: []

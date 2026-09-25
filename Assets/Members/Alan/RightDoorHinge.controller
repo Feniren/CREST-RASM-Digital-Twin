@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LeftDoorHinge
+  m_Name: RightDoorHinge
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Open
@@ -55,12 +55,12 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: ed29659abd231ce46efe1a8c29a75ebb, type: 2}
-  m_Tag:
-  m_SpeedParameter:
-  m_MirrorParameter:
-  m_CycleOffsetParameter:
-  m_TimeParameter:
+  m_Motion: {fileID: 7400000, guid: c8915c1344b46f4c6481b8aa4fa3f1e0, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1102 &1518173752951444176
 AnimatorState:
   serializedVersion: 6
@@ -68,7 +68,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LeftDoorOpen
+  m_Name: RightDoorOpen
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -82,20 +82,20 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 3768418a5d13ed94ab53c75588a02276, type: 2}
+  m_Motion: {fileID: 7400000, guid: 0c53588ab930c3348ba0e71a9f7f89de, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
   m_CycleOffsetParameter:
   m_TimeParameter:
---- !u!1102 &1518173752951444177
+--- !u!1102 &1518173752951444178
 AnimatorState:
   serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LeftDoorClose
+  m_Name: RightDoorClose
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -108,7 +108,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 532f92b63a3d20b16322c3169bbe4d65, type: 2}
+  m_Motion: {fileID: 7400000, guid: 20da5aba6a863ab61ef91ef86d0d1f84, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
@@ -130,7 +130,7 @@ AnimatorStateMachine:
     m_State: {fileID: 1518173752951444176}
     m_Position: {x: 270, y: 30, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1518173752951444177}
+    m_State: {fileID: 1518173752951444178}
     m_Position: {x: 270, y: 130, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -139,7 +139,7 @@ AnimatorStateMachine:
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
-  m_ExitPosition: {x: 610, y: -10, z: 0}
+  m_ExitPosition: {x: 290, y: 100, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 477314765249535153}
 --- !u!1101 &7087387469935550012
@@ -148,7 +148,7 @@ AnimatorStateTransition:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name:
+  m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: Close

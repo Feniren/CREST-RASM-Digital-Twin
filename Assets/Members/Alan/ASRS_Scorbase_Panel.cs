@@ -13,7 +13,7 @@ using UnityEngine.UI;
 // NotifyAction() so a lesson step can gate on either.
 public class ASRS_Scorbase_Panel : MonoBehaviour
 {
-    private const float JogStep = 0.25f;
+    private const float JogStep = 0.10f;
 
     private enum Axis { X, Y, Z }
 
@@ -45,21 +45,21 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI robotCheck;
 
     [Header("Pick and Place")]
-    [Tooltip("Retrieves the table addressed by Source Index from the rack and carries it to the RFID reader/conveyor via the gripper — the only real destination this simulation delivers to.")]
-    [SerializeField] private Item_RFID_Sensor_ASRS rfidSensor;
+    [Tooltip("SCORBASE commands the arm's own controller directly for pick-and-place — the RFID sensor is no longer involved in starting one, it's just a physical prop the gripper delivers next to.")]
+    [SerializeField] private ASRS_Gripper_Controller gripper;
     [Tooltip("Defaults to TEMPLATE — the slotted table itself is 'the part' in this simulation, there's no separate part-type model to validate against yet.")]
     [SerializeField] private TMP_InputField partIdField;
     [Tooltip("Read-only display of the resolved rack TableID (e.g. 070001) — filled in automatically from Source Index when OK is pressed, not typed independently.")]
     [SerializeField] private TMP_InputField sourceIdField;
-    [Tooltip("Which system Source Index refers to (ASRS Slot / Conveyor Belt / Workstation) — not yet wired to different behavior per selection; Source Index currently always addresses an ASRS rack slot.")]
+    [Tooltip("Which location Source Index addresses. Only ASRS Slot is actually implemented as a source — picking any other option makes OK fail with a clear error instead of silently doing the wrong thing.")]
     [SerializeField] private TMP_Dropdown sourceDropdown;
     [Tooltip("The real address: a plain rack slot number, 1-72 (ASRSArmTester.TotalSlots). Converted to the rack's row/column TableID format and used directly to run the pick.")]
     [SerializeField] private TMP_InputField sourceIndexField;
     [Tooltip("Not currently used — there's no arbitrary target-slot routing yet (Item_ASRS.SlotInsert always returns a table to its own home slot), so this stays a plain field for now.")]
     [SerializeField] private TMP_InputField targetIdField;
-    [Tooltip("Which system Target Index refers to (ASRS Slot / Conveyor Belt / Workstation) — not yet wired to different behavior per selection, that's future work once arbitrary-target routing is designed.")]
+    [Tooltip("Which location Target Index addresses. Conveyor Belt and ASRS Slot are both implemented — picking Workstation makes OK fail with a clear error instead of silently doing the wrong thing.")]
     [SerializeField] private TMP_Dropdown targetDropdown;
-    [Tooltip("Validated as a slot number (1-72, matching ASRSArmTester.TotalSlots) before OK proceeds, but doesn't drive any routing yet — the only real destination is the conveyor/RFID reader, which every pick already delivers to regardless of this value.")]
+    [Tooltip("For Conveyor Belt: validated as a slot number (1-72) but doesn't drive routing — every pick already delivers to the conveyor/RFID reader regardless. For ASRS Slot: the real destination rack slot (1-72) the source table gets relocated to — must currently be empty.")]
     [SerializeField] private TMP_InputField targetIndexField;
     [SerializeField] private Button okButton;
     [SerializeField] private Button cancelButton;
@@ -257,8 +257,11 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
 
     private void OnSearchHome()
     {
-        if (armController == null)
+        if (armController == null || armTester == null)
+        {
+            Debug.LogError("[ASRS_Scorbase_Panel] Arm Controller/Arm Tester is not assigned — can't run Search Home.", this);
             return;
+        }
 
         if (!IsOnline)
         {
@@ -267,7 +270,7 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         }
 
         ClearChecks();
-        armController.HomeAll();
+        armTester.SearchHome();
     }
 
     private void OnAxisArrived(string axis)
@@ -301,14 +304,18 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         if (robotCheck != null) robotCheck.color = PendingColor;
     }
 
+
     // ------------------------------------------------------------------
     // Pick and Place
     // ------------------------------------------------------------------
 
     private void OnOk()
     {
-        if (rfidSensor == null)
+        if (gripper == null)
+        {
+            Debug.LogError("[ASRS_Scorbase_Panel] Gripper is not assigned — can't run pick and place.", this);
             return;
+        }
 
         if (!IsOnline)
         {
@@ -328,36 +335,55 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
             return;
         }
 
-        // Source Index (1-72) is the real address now — it's converted into
-        // the rack's own row/column TableID format and that's what actually
-        // drives the pick. Target Index is validated the same way but
-        // doesn't route anywhere yet — the only real destination this
-        // simulation delivers to is the conveyor/RFID reader, which is
-        // already where every pick lands regardless of Target.
+        // Source Index (1-72) is the real address — it's converted into the
+        // rack's own row/column TableID format by the gripper itself. Target
+        // Index is validated the same way but doesn't route anywhere yet —
+        // the only real destination this simulation delivers to is the
+        // conveyor/RFID reader, which is already where every pick lands.
         if (!TryValidateIndex(sourceIndexField, "Source Index", out int sourceIndex))
             return;
 
-        if (!TryValidateIndex(targetIndexField, "Target Index", out _))
+        if (!TryValidateIndex(targetIndexField, "Target Index", out int targetIndex))
             return;
 
-        string sourceId = ASRSArmTester.IndexToTableId(sourceIndex);
+        ASRS_Gripper_Controller.PickPlaceLocation sourceLocation =
+            ParseLocation(sourceDropdown, ASRS_Gripper_Controller.PickPlaceLocation.ASRSSlot);
+        ASRS_Gripper_Controller.PickPlaceLocation targetLocation =
+            ParseLocation(targetDropdown, ASRS_Gripper_Controller.PickPlaceLocation.ConveyorBelt);
 
-        // Reflects the resolved rack address back for the trainee to see —
-        // Source ID is now a read-out, not something typed independently.
-        if (sourceIdField != null)
-            sourceIdField.text = sourceId;
-
-        if (rfidSensor.TryManualPickAndPlace(sourceId))
+        if (gripper.ManualPickAndPlace(sourceIndex, targetIndex, sourceLocation, targetLocation))
         {
             SetError(string.Empty);
+
+            // Reflects the resolved rack address back for the trainee to
+            // see — Source ID is a read-out, not typed independently.
+            if (sourceIdField != null)
+                sourceIdField.text = ASRSArmTester.IndexToTableId(sourceIndex);
 
             if (sequenceManager != null)
                 sequenceManager.NotifyAction(goActionId);
         }
         else
         {
-            SetError($"Can't pick slot {sourceIndex} ({sourceId}) — check the index and that the arm isn't already busy.");
+            SetError($"Can't run {sourceLocation} → {targetLocation} — check the dropdowns/indexes, and that the arm isn't already busy.");
         }
+    }
+
+    // Maps a dropdown's currently selected option text back to the
+    // matching PickPlaceLocation. Falls back if the dropdown isn't wired or
+    // its options don't match the expected labels.
+    private static ASRS_Gripper_Controller.PickPlaceLocation ParseLocation(TMP_Dropdown dropdown, ASRS_Gripper_Controller.PickPlaceLocation fallback)
+    {
+        if (dropdown == null || dropdown.options.Count == 0 || dropdown.value >= dropdown.options.Count)
+            return fallback;
+
+        return dropdown.options[dropdown.value].text switch
+        {
+            "ASRS Slot" => ASRS_Gripper_Controller.PickPlaceLocation.ASRSSlot,
+            "Conveyor Belt" => ASRS_Gripper_Controller.PickPlaceLocation.ConveyorBelt,
+            "Workstation" => ASRS_Gripper_Controller.PickPlaceLocation.Workstation,
+            _ => fallback,
+        };
     }
 
     // Optional fields (Target Index) pass with index=0 when unassigned —

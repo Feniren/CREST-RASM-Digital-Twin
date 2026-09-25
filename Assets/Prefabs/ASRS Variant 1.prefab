@@ -2815,13 +2815,13 @@ Transform:
   m_GameObject: {fileID: 180980232292861189}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5418, y: 0.732, z: 0.98}
+  m_LocalPosition: {x: 0.0067601204, y: -0.08135998, z: 1.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5122765660004457300}
   - {fileID: 8049993709274877638}
-  m_Father: {fileID: 9087210565259356574}
+  m_Father: {fileID: 3784486316581740980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &183244430801338437
 GameObject:
@@ -7276,6 +7276,9 @@ GameObject:
   - component: {fileID: 5232226048869647245}
   - component: {fileID: 4087779792793713014}
   - component: {fileID: 7602932063563008888}
+  - component: {fileID: 1858087994137761768}
+  - component: {fileID: 1737748143337328923}
+  - component: {fileID: 4397178764465222063}
   m_Layer: 0
   m_Name: RightDoorHandle36
   m_TagString: Untagged
@@ -7355,6 +7358,58 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1858087994137761768
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887474425059621587}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -984142514099691025, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+--- !u!114 &1737748143337328923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887474425059621587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a586255b488f9428a6811d77129be6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_Select
+  OnInteractBegin:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4397178764465222063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887474425059621587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 932670178f1c0fb46916d833d733318b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door_Handle_Toggle
+  doorAnimator: {fileID: 1657780489331587455}
+  openStateName: RightDoorOpen
+  closeStateName: RightDoorClose
 --- !u!1 &904111172430217062
 GameObject:
   m_ObjectHideFlags: 0
@@ -12046,6 +12101,8 @@ GameObject:
   - component: {fileID: 8049993709274877638}
   - component: {fileID: 5327893617156311545}
   - component: {fileID: 7375558629196258829}
+  - component: {fileID: 8357371006438248870}
+  - component: {fileID: 3917280421749721086}
   m_Layer: 0
   m_Name: RightDoorHandle36u
   m_TagString: Untagged
@@ -12125,6 +12182,41 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8357371006438248870
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561671272768535886}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 6944392771026202376, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+--- !u!114 &3917280421749721086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561671272768535886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 098bb0dd486a4924fa263e4273e22b49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_Handle
+  PlayerReference: {fileID: 0}
 --- !u!1 &1570604184307623046
 GameObject:
   m_ObjectHideFlags: 0
@@ -31592,6 +31684,8 @@ GameObject:
   - component: {fileID: 6281666769934801724}
   - component: {fileID: 6696825789260725496}
   - component: {fileID: 4838596571880524177}
+  - component: {fileID: 618607520334259629}
+  - component: {fileID: 7064610458087503485}
   m_Layer: 0
   m_Name: LeftDoorHandle36u
   m_TagString: Untagged
@@ -31671,6 +31765,41 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &618607520334259629
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4518274079982231464}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5224128056819749372, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+--- !u!114 &7064610458087503485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4518274079982231464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 098bb0dd486a4924fa263e4273e22b49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_Handle
+  PlayerReference: {fileID: 0}
 --- !u!1 &4519765791191661034
 GameObject:
   m_ObjectHideFlags: 0
@@ -38091,6 +38220,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2752330349956719553}
+  - component: {fileID: 1657780489331587455}
   m_Layer: 0
   m_Name: RightHingeJoint
   m_TagString: Untagged
@@ -38115,6 +38245,28 @@ Transform:
   - {fileID: 8796645305907152298}
   m_Father: {fileID: 9087210565259356574}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1657780489331587455
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5323388163926282196}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 11aa804626a89af4aa10bdba56957f0c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5324659092735817849
 GameObject:
   m_ObjectHideFlags: 0
@@ -38124,6 +38276,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7795083072263017769}
+  - component: {fileID: 3836159675483606655}
   m_Layer: 0
   m_Name: LeftHingeJoint
   m_TagString: Untagged
@@ -38148,6 +38301,28 @@ Transform:
   - {fileID: 3580155534284484441}
   m_Father: {fileID: 9087210565259356574}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &3836159675483606655
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5324659092735817849}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 05dfb131412d42448b46a2565c2f1578, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5364356767758971784
 GameObject:
   m_ObjectHideFlags: 0
@@ -48146,6 +48321,7 @@ Transform:
   m_Children:
   - {fileID: 8583969654794216279}
   - {fileID: 6281666769934801724}
+  - {fileID: 4644619085352001845}
   m_Father: {fileID: 9087210565259356574}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6866639661105612508
@@ -49730,7 +49906,6 @@ Transform:
   - {fileID: 2797375848582586397}
   - {fileID: 7096764554444731737}
   - {fileID: 3784486316581740980}
-  - {fileID: 4644619085352001845}
   - {fileID: 1256974372449528975}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -49768,11 +49943,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25e475db19debbf4fa69cd62b3f9f69c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item_ASRS
+  Name: ASRS
   AutomaticActivation: 0
   Owner: {fileID: 0}
   Pickup: 0
   Quantity: 1
-  Name: ASRS
   OnGrabbed:
     m_PersistentCalls:
       m_Calls: []
@@ -54563,6 +54738,9 @@ GameObject:
   - component: {fileID: 3766548286912936014}
   - component: {fileID: 6959178895375209959}
   - component: {fileID: 2079294041568278135}
+  - component: {fileID: 1744703858270852385}
+  - component: {fileID: 4217683413525070735}
+  - component: {fileID: 2451534114946401548}
   m_Layer: 0
   m_Name: LeftDoorHandle36
   m_TagString: Untagged
@@ -54642,6 +54820,58 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1744703858270852385
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601785752919524621}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4487749286560037242, guid: 99618fe26d1b7574cab48734536057b9, type: 3}
+--- !u!114 &4217683413525070735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601785752919524621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a586255b488f9428a6811d77129be6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable_Select
+  OnInteractBegin:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2451534114946401548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601785752919524621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 932670178f1c0fb46916d833d733318b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door_Handle_Toggle
+  doorAnimator: {fileID: 3836159675483606655}
+  openStateName: LeftDoorOpen
+  closeStateName: LeftDoorClose
 --- !u!1 &7602236260459967731
 GameObject:
   m_ObjectHideFlags: 0
@@ -58766,6 +58996,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2434870974678209320}
+  - component: {fileID: 1528985081084411331}
   m_Layer: 0
   m_Name: RackHand
   m_TagString: Untagged
@@ -58791,6 +59022,26 @@ Transform:
   - {fileID: 2163591551003593207}
   m_Father: {fileID: 2267519674276265256}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1528985081084411331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172281723154005376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153a139b296ab144a9fa4822f0936f64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Gripper_Controller
+  armController: {fileID: 3110069642204364374}
+  armTester: {fileID: 0}
+  rackHand: {fileID: 2434870974678209320}
+  rack: {fileID: 1128974877098888665}
+  conveyorBelt: {fileID: 0}
+  rfidSensor: {fileID: 0}
+  reachDepth: 0.15
+  carrySpeed: 0.15
 --- !u!1 &8176440293118766850
 GameObject:
   m_ObjectHideFlags: 0
@@ -73652,7 +73903,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ASRS_Power_Interactable
   PoweredOnMaterial: {fileID: 2100000, guid: 073e58a762f985047a1f1ae6d13df576, type: 2}
   PoweredOffMaterial: {fileID: -382652638819485698, guid: adf695e81179d454c8947d6457e29f94, type: 3}
-  RevealOnPowerOn: {fileID: 0}
+  RevealOnPowerOn:
+  - {fileID: 0}
   Sequence_Manager: {fileID: 0}
   PowerOnActionId: controller_power_on
 --- !u!1001 &7915289031754549116

@@ -365,6 +365,115 @@ public class Item_ASRS : Item_CNC_Machine
         return !TableMap.TryGetValue(index, out Item_Slotted_Table occupied) || occupied == null;
     }
 
+    // Whether the given rack slot (any valid row/col TableID, not
+    // necessarily a table's own home) currently has a table in it — used to
+    // fail an arbitrary slot-to-slot relocation fast, before ever touching
+    // the source table.
+    public bool IsSlotOccupied(int tableId)
+    {
+        int index;
+        try
+        {
+            index = GetIndex(tableId);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return true; // an invalid slot can't be moved into either
+        }
+
+        return TableMap.TryGetValue(index, out Item_Slotted_Table occupied) && occupied != null;
+    }
+
+    // World anchor for an arbitrary rack slot (by plain row/col TableID),
+    // regardless of which table (if any) actually lives there right now —
+    // lets a caller (e.g. the gripper) compute a drop point for a slot
+    // that isn't necessarily the carried table's own home.
+    public bool TryGetSlotAnchor(int tableId, out Vector3 position, out Quaternion rotation)
+    {
+        position = Vector3.zero;
+        rotation = Quaternion.identity;
+
+        int index;
+        try
+        {
+            index = GetIndex(tableId);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+
+        return anchorPositions.TryGetValue(index, out position) && anchorRotations.TryGetValue(index, out rotation);
+    }
+
+    // Places 'target' into an ARBITRARY rack slot (by plain row/col
+    // TableID) rather than target's own baked TableID — SlotInsert only
+    // ever returns a table to its own home slot, which isn't enough for a
+    // genuine slot-to-slot relocation (e.g. testing Pick and Place without
+    // a conveyor). Re-tags target.TableID to match its new home afterward,
+    // so the rack's own bookkeeping (TableMap, the on-table label next
+    // Start()) stays consistent with where it now physically sits. Fails
+    // safely — no changes — if the destination is invalid or occupied.
+    public bool PlaceAtSlot(Item_Slotted_Table target, int tableId)
+    {
+        if (target == null)
+        {
+            Debug.LogError("PlaceAtSlot: target table is null.");
+            return false;
+        }
+
+        int index;
+        try
+        {
+            index = GetIndex(tableId);
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            Debug.LogError($"PlaceAtSlot: Invalid destination TableID {tableId}. {ex.Message}", target);
+            return false;
+        }
+
+        if (TableMap.TryGetValue(index, out Item_Slotted_Table occupied) && occupied != null)
+        {
+            Debug.LogWarning($"PlaceAtSlot: Rack slot at index {index} is already occupied.", target);
+            return false;
+        }
+
+        if (!anchorPositions.TryGetValue(index, out Vector3 anchorPosition) ||
+            !anchorRotations.TryGetValue(index, out Quaternion anchorRotation))
+        {
+            Debug.LogError($"PlaceAtSlot: Missing saved anchor transform for index {index}.", target);
+            return false;
+        }
+
+        target.transform.SetParent(transform, true);
+        target.transform.position = anchorPosition;
+        target.transform.rotation = anchorRotation;
+
+        Spline_Animate splineAnimate = target.GetComponent<Spline_Animate>();
+        if (splineAnimate == null)
+            splineAnimate = target.GetComponentInParent<Spline_Animate>();
+
+        if (splineAnimate != null)
+        {
+            splineAnimate.Pause();
+            splineAnimate.Container = null;
+            splineAnimate.enabled = false;
+        }
+
+        target.TableID = tableId.ToString("D6");
+        TableMap[index] = target;
+
+        if (target.Item != null)
+            materialLocations[target.Item] = index;
+
+        target.gameObject.SetActive(true);
+        SetTableVisibility(target.gameObject, true);
+
+        Debug.Log($"PlaceAtSlot: Table placed into rack slot {index} (TableID {target.TableID}).");
+        return true;
+    }
+
     public int GetIndex(int tableId)
     {
         int row = tableId / 10000;

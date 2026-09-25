@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ASRSArmController : MonoBehaviour
 {
-    public enum Side { NonU, U } // NonU = 0deg (rows 01-06), U = 180deg (rows 07-12)
+    public enum Side { NonU, U, Safe } // NonU = 0deg (rows 01-06), U = 180deg (rows 07-12), Safe = the hardcoded Safe Position rotation (Y = -90), reachable from either side but not itself a rack-facing side
 
     [Header("Axis Transforms")]
     [SerializeField] private Transform armZ;
@@ -36,7 +36,6 @@ public class ASRSArmController : MonoBehaviour
     private float? targetY;
     private float? targetX;
     private bool isRotating;
-    private bool homingInProgress;
 
     private float homeZ;
     private float homeY;
@@ -66,8 +65,81 @@ public class ASRSArmController : MonoBehaviour
     // needed before reaching non-U slots, not the other way around.
     public Side CurrentSide { get; private set; } = Side.U;
 
+    // Safe Position is hardcoded, not read/derived from anything at
+    // runtime: Z/Y/X = 0 (home, the same reference every offset is already
+    // measured from) and the rotation object's own local Y = -90 — a fixed
+    // third orientation, distinct from both the U (180) and NonU (0) sides,
+    // driven by its own Animator state ("SafeRotation" on the Rotation
+    // controller) rather than RotateY's two-side logic. Kept constant on
+    // purpose so it can't drift if the rig's resting pose changes later.
+    private const string SafeRotationStateName = "SafeRotation";
+    private const float SafeRotationTransitionSeconds = 1.5f;
+
+    // Blends the rotation object smoothly into the Safe Position pose from
+    // wherever it currently is (CrossFade, not Play — there's no authored
+    // "swing" clip covering every possible starting angle, so the blend
+    // itself supplies the motion). CurrentSide becomes Side.Safe once done,
+    // which is neither U nor NonU — deliberately forcing any subsequent
+    // move to explicitly rotate to whatever side it actually needs, rather
+    // than assuming it's already there.
+    public void RotateToSafeRotation()
+    {
+        if (isRotating || rotationAnimator == null)
+            return;
+
+        StartCoroutine(RotateToSafeRotationRoutine());
+    }
+
+    private IEnumerator RotateToSafeRotationRoutine()
+    {
+        isRotating = true;
+
+        // CrossFadeInFixedTime, not CrossFade: its transition duration is
+        // real seconds, not normalized against the destination clip's own
+        // length — which matters here because SafeRotation is a
+        // zero-length single-pose clip (no authored "swing" covering every
+        // possible starting angle), so a normalized duration against it
+        // would be meaningless.
+        rotationAnimator.CrossFadeInFixedTime(SafeRotationStateName, SafeRotationTransitionSeconds, 0, 0f);
+
+        yield return new WaitForSeconds(SafeRotationTransitionSeconds);
+
+        isRotating = false;
+        CurrentSide = Side.Safe;
+        AxisArrived?.Invoke("Rotate");
+    }
+
+    // Drives every axis back to Safe Position (Z/Y/X = 0, rotation object
+    // at Y = -90) before a GP-style commanded move (Search Home, Pick and
+    // Place, Go-to-slot) proceeds with whatever it actually asked for.
+    // Manual jog nudges deliberately don't go through this — only
+    // higher-level commanded moves do.
+    public void ReturnToSafePosition(Action onComplete = null)
+    {
+        StartCoroutine(ReturnToSafePositionRoutine(onComplete));
+    }
+
+    private IEnumerator ReturnToSafePositionRoutine(Action onComplete)
+    {
+        MoveX(0f);
+        MoveZ(0f);
+        MoveY(0f);
+        RotateToSafeRotation();
+
+        yield return new WaitUntil(() => !IsMoving);
+
+        onComplete?.Invoke();
+    }
+
     public bool IsMoving =>
         targetZ.HasValue || targetY.HasValue || targetX.HasValue || isRotating;
+
+    // True once Search Home (ASRSArmTester.SearchHome -> NotifyHomed) has
+    // completed at least once this session — lets
+    // callers (e.g. the SCORBASE panel's Pick and Place OK) require the
+    // robot to actually be homed first, matching real SCORBASE/SmartCIM
+    // where nothing trusts a position until Search Home has run.
+    public bool IsHomed { get; private set; }
 
     private void Awake()
     {
@@ -85,12 +157,6 @@ public class ASRSArmController : MonoBehaviour
         MoveAxis(armZ, ref targetZ, Axis.Z);
         MoveAxis(armY, ref targetY, Axis.Y);
         MoveAxis(armX, ref targetX, Axis.X);
-
-        if (homingInProgress && !IsMoving)
-        {
-            homingInProgress = false;
-            AllAxesHomed?.Invoke();
-        }
     }
 
     // Called once by ASRSArmTester at startup, after it loads the rack's slot
@@ -104,17 +170,16 @@ public class ASRSArmController : MonoBehaviour
         maxY = newMaxY;
     }
 
-    // Drives every axis back to its recorded home offset and the default
-    // (U) side, mirroring SCORBASE's "Search Home" — each axis (and the
-    // rotation) reports back via AxisArrived, then AllAxesHomed fires once
-    // the whole arm is idle again.
-    public void HomeAll()
+    // Called by ASRSArmTester once its own Search Home routine — a visible
+    // sweep of the rack's corners, ending parked at the resting slot —
+    // finishes. Kept as an explicit call rather than Update() polling
+    // IsMoving, because a multi-leg routine has IsMoving go true/false
+    // between legs, which would otherwise fire AllAxesHomed after just the
+    // first leg instead of the whole sequence.
+    public void NotifyHomed()
     {
-        homingInProgress = true;
-        MoveZ(0f);
-        MoveY(0f);
-        MoveX(0f);
-        RotateY(180f);
+        IsHomed = true;
+        AllAxesHomed?.Invoke();
     }
 
     // Arm Y's baked local rotation only cancels Rotatation's tilt at

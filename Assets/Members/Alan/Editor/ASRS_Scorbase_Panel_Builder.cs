@@ -50,7 +50,7 @@ public static class ASRS_Scorbase_Panel_Builder
     {
         ASRSArmController armController = Object.FindFirstObjectByType<ASRSArmController>();
         ASRSArmTester armTester = Object.FindFirstObjectByType<ASRSArmTester>();
-        Item_RFID_Sensor_ASRS rfidSensor = Object.FindFirstObjectByType<Item_RFID_Sensor_ASRS>();
+        ASRS_Gripper_Controller gripper = Object.FindFirstObjectByType<ASRS_Gripper_Controller>();
 
         if (armController == null || armTester == null)
         {
@@ -58,8 +58,8 @@ public static class ASRS_Scorbase_Panel_Builder
             return;
         }
 
-        if (rfidSensor == null)
-            Debug.LogWarning("ASRS_Scorbase_Panel_Builder: no Item_RFID_Sensor_ASRS found in the open scene — the Pick and Place section's OK button won't do anything until one is assigned.");
+        if (gripper == null)
+            Debug.LogWarning("ASRS_Scorbase_Panel_Builder: no ASRS_Gripper_Controller found in the open scene — the Pick and Place section's OK button won't do anything until one is assigned.");
 
         if (GameObject.Find(PanelName) != null)
         {
@@ -226,7 +226,7 @@ public static class ASRS_Scorbase_Panel_Builder
         SetRef(panel, "xCheck", xCheck);
         SetRef(panel, "rotateCheck", rotateCheck);
         SetRef(panel, "robotCheck", robotCheck);
-        SetRef(panel, "rfidSensor", rfidSensor);
+        SetRef(panel, "gripper", gripper);
         SetRef(panel, "partIdField", partIdField);
         SetRef(panel, "sourceIdField", sourceIdField);
         SetRef(panel, "sourceDropdown", sourceDropdown);

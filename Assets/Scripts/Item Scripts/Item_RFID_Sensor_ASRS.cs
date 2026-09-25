@@ -18,6 +18,12 @@ public class Item_RFID_Sensor_ASRS : Item_Parent{
 	public Item_Slotted_Table ActiveTable { get; private set; }
 	public bool IsProcessing { get; private set; }
 
+	// Read-only — queried by ASRS_Gripper_Controller.ManualPickAndPlace()
+	// before it delivers a table here, so it doesn't drop one on top of
+	// another that's already in the scanner zone. This sensor no longer
+	// owns or triggers pick-and-place itself, it's purely a data source now.
+	public bool HasPalletPresent => tablesInTrigger.Count > 0;
+
 	private readonly HashSet<Item_Slotted_Table> tablesInTrigger = new HashSet<Item_Slotted_Table>();
 
 	public Item_RFID_Sensor_ASRS(){
@@ -28,32 +34,6 @@ public class Item_RFID_Sensor_ASRS : Item_Parent{
 
 	public void OnTriggerEnter(Collider OverlappedCollider){
 		HandleRackTriggerEnter(OverlappedCollider);
-	}
-
-	// Manual entry point for the SCORBASE panel's Pick and Place section —
-	// retrieves 'sourceTableId' from the rack and carries it to this
-	// sensor's own position via the gripper (or falls back to instant
-	// placement if no gripper is wired), reusing the exact same delivery
-	// path as the automatic RFID-triggered retrieve. Returns false without
-	// starting anything if a table is already being processed, or if the
-	// required references aren't assigned.
-	public bool TryManualPickAndPlace(string sourceTableId){
-		if (rack == null || ConveyorBeltReference == null){
-			Debug.LogError("Item_RFID_Sensor_ASRS: Rack or conveyor reference is not assigned.", this);
-			return false;
-		}
-
-		if (string.IsNullOrWhiteSpace(sourceTableId))
-			return false;
-
-		if (IsProcessing)
-			return false;
-
-		IsProcessing = true;
-		ConveyorBeltReference.PauseMovement();
-
-		StartCoroutine(RetrieveAndReturnToConveyor(sourceTableId, transform.position, transform.rotation, 0f));
-		return true;
 	}
 
 	private void HandleRackTriggerEnter(Collider other){
