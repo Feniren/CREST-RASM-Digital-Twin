@@ -146,6 +146,7 @@ public class ASRS_Gripper_Controller : MonoBehaviour
 
         Spline_Animate retrievedSpline = retrieved.GetComponent<Spline_Animate>();
         if (retrievedSpline == null)
+        
             retrievedSpline = retrieved.GetComponentInParent<Spline_Animate>();
         if (retrievedSpline != null)
             retrievedSpline.enabled = false;

@@ -111,7 +111,10 @@ public static class Workpiece_GreenInsert_Builder
                 (p1, p3) = (p3, p1);
                 normal = -normal;
             }
-            normal.Normalize();
+            // Not Normalize(): it zeroes vectors under 1e-5 long, which small
+            // faces (e.g. the chamfer corners) fall below — a zero normal
+            // renders black.
+            normal /= normal.magnitude;
 
             int start = verts.Count;
             verts.Add(p0); verts.Add(p1); verts.Add(p2); verts.Add(p3);
@@ -129,7 +132,10 @@ public static class Workpiece_GreenInsert_Builder
                 (p1, p2) = (p2, p1);
                 normal = -normal;
             }
-            normal.Normalize();
+            // Not Normalize(): it zeroes vectors under 1e-5 long, which small
+            // faces (e.g. the chamfer corners) fall below — a zero normal
+            // renders black.
+            normal /= normal.magnitude;
 
             int start = verts.Count;
             verts.Add(p0); verts.Add(p1); verts.Add(p2);
@@ -194,15 +200,9 @@ public static class Workpiece_GreenInsert_Builder
         }
     }
 
-    // Picks a shader that actually matches the ACTIVE render pipeline
-    // instead of copying Epoxy.mat's — that material's shader turned out to
-    // be the Built-in "Standard" shader (guid 933532a4..., which resolves
-    // to nothing inside Assets, confirming it's the global built-in one),
-    // while this project has a custom SRP (URP, package
-    // com.unity.render-pipelines.universal) assigned in Graphics Settings.
-    // A Built-in-shader material renders solid black/magenta under URP —
-    // which is almost certainly why the new prop showed up blacked out,
-    // and Epoxy.mat is likely equally broken wherever it's actually seen.
+    // Picks a shader that matches the active render pipeline (URP/Lit here)
+    // rather than assuming Built-in "Standard", which renders black under
+    // URP.
     private static Material BuildMaterial()
     {
         Shader shader = GraphicsSettings.currentRenderPipeline != null

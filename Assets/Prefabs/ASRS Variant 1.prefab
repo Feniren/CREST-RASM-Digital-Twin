@@ -49959,8 +49959,13 @@ MonoBehaviour:
   material: {fileID: 0}
   splineAnimate: {fileID: 0}
   conveyor: {fileID: 0}
-  EpoxyBlockPrefab: {fileID: 0}
-  MaterialList: []
+  EpoxyBlockPrefab: {fileID: 8480719488249995161, guid: 1c93cb0a5a36d9a479f8017a8a670d31, type: 3}
+  MaterialList:
+  - {fileID: 7328209182356697330, guid: 20dcee24e7a4d38468ad5b39db1235d0, type: 3}
+  - {fileID: 4980506209102910519, guid: eaa019e956a067042bf135de9ab22c1c, type: 3}
+  - {fileID: 7974706965962791927, guid: ed5d2a722834e5741adad0ea9e1ee4b4, type: 3}
+  - {fileID: 2555023217059191448, guid: 0804d1dca8918a2478a26e71f4108eee, type: 3}
+  - {fileID: 3995667568617887544, guid: 9a888997bc51a104c813dbcad7efd969, type: 3}
   SlottedTablePrefab: {fileID: 0}
   RackOrigin: {x: 0, y: 0, z: 0}
   ColumnStep: {x: 0.5, y: 0, z: 0}
@@ -49984,10 +49989,10 @@ MonoBehaviour:
   armX: {fileID: 2267519674276265256}
   moveSpeed: 1
   rotationAnimator: {fileID: 6053832450417316874}
-  minZ: -5
-  maxZ: 5
-  minY: -5
-  maxY: 5
+  minZ: -0.55
+  maxZ: 0.45
+  minY: -0.38
+  maxY: 0.48
   minX: -2
   maxX: 2
 --- !u!1 &7069985091801077206
