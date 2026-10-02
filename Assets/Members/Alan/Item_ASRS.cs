@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Item_ASRS : Item_CNC_Machine
 {
-    public RACK_TASK task;
-    public Item_Slotted_Table item = null;
-    public Item_Epoxy_Block material = null;
-    public Spline_Animate splineAnimate;
     public Item_Conveyor_Belt conveyor;
 
     [Tooltip("Default/fallback material prefab. Used for any row with no entry in MaterialList (or once MaterialList runs out).")]
@@ -39,14 +35,6 @@ public class Item_ASRS : Item_CNC_Machine
 
     public Dictionary<int, Item_Slotted_Table> TableMap = new Dictionary<int, Item_Slotted_Table>();
 
-	// public List<Machine_Job> Jobs = new List<Machine_Job>();
-	public List<Item_Slotted_Table> TableList = new List<Item_Slotted_Table>();
-
-    // Reverse index: material GameObject -> the rack slot its table currently
-    // occupies. Kept in sync wherever TableMap itself changes, so "where is
-    // this material" is an O(1) lookup instead of scanning every slot.
-    private readonly Dictionary<GameObject, int> materialLocations = new Dictionary<GameObject, int>();
-
     private readonly Dictionary<int, Vector3> anchorPositions = new Dictionary<int, Vector3>();
     private readonly Dictionary<int, Quaternion> anchorRotations = new Dictionary<int, Quaternion>();
 
@@ -64,7 +52,6 @@ public class Item_ASRS : Item_CNC_Machine
         anchorPositions.Clear();
         anchorRotations.Clear();
         TableMap.Clear();
-        materialLocations.Clear();
 
         if (GetComponentsInChildren<Item_Slotted_Table>(true).Length == 0)
         {
@@ -137,10 +124,6 @@ public class Item_ASRS : Item_CNC_Machine
             else
             {
                 TableMap[index] = table;
-
-                if (table.Item != null)
-                    materialLocations[table.Item] = index;
-
                 SetTableVisibility(table.gameObject, true);
             }
         }
@@ -164,19 +147,6 @@ public class Item_ASRS : Item_CNC_Machine
 
     public override void AlternateInteract(Entity_Player PlayerReference)
     {
-    }
-
-    // O(1) reverse lookup: given a material's GameObject, find the rack slot
-    // index and the Item_Slotted_Table it's currently sitting on (if any).
-    public bool TryFindMaterial(GameObject material, out Item_Slotted_Table table, out int slotIndex)
-    {
-        table = null;
-        slotIndex = -1;
-
-        if (material == null || !materialLocations.TryGetValue(material, out slotIndex))
-            return false;
-
-        return TableMap.TryGetValue(slotIndex, out table) && table != null;
     }
 
     // Builds the full 12x6 rack of Item_Slotted_Table instances from SlottedTablePrefab,
@@ -238,8 +208,6 @@ public class Item_ASRS : Item_CNC_Machine
             GameObject block = Instantiate(GetMaterialForTable(table));
             table.Item = block;
             table.SetItem();
-
-            materialLocations[block] = kvp.Key;
         }
     }
 
@@ -258,52 +226,18 @@ public class Item_ASRS : Item_CNC_Machine
         return EpoxyBlockPrefab;
     }
 
-    private int CountVacantSlots()
+    // A table's Spline_Animate lives either on the table itself or on a
+    // parent, depending on how it was spawned.
+    public static Spline_Animate GetSplineAnimate(Item_Slotted_Table table)
     {
-        int vacant = 0;
-
-        foreach (var kvp in TableMap)
-        {
-            if (kvp.Value == null)
-                vacant++;
-        }
-
-        return vacant;
-    }
-
-    public Item_Slotted_Table SlotRetrieve(Item_Slotted_Table requestTable)
-    {
-        if (!TryGetTableIndex(requestTable, out int index))
+        if (table == null)
             return null;
 
-        if (!TableMap.TryGetValue(index, out Item_Slotted_Table storedTable) || storedTable == null)
-        {
-            Debug.LogError("No table in rack slot to retrieve.");
-            return null;
-        }
-
-        TableMap[index] = null;
-
-        if (storedTable.Item != null)
-            materialLocations.Remove(storedTable.Item);
-
-        storedTable.gameObject.SetActive(true);
-        SetTableVisibility(storedTable.gameObject, true);
-
-        Spline_Animate splineAnimate = storedTable.GetComponent<Spline_Animate>();
-        if (splineAnimate == null)
-            splineAnimate = storedTable.GetComponentInParent<Spline_Animate>();
-
-        if (splineAnimate != null)
-        {
-            splineAnimate.enabled = true;
-        }
-
-        Debug.Log($"Retrieved table {storedTable.TableID} from rack.");
-
-        return storedTable;
+        Spline_Animate splineAnimate = table.GetComponent<Spline_Animate>();
+        return splineAnimate != null ? splineAnimate : table.GetComponentInParent<Spline_Animate>();
     }
 
+    // Returns 'target' to its own home slot (the one its TableID names).
     public void SlotInsert(Item_Slotted_Table target)
     {
         if (target == null)
@@ -315,27 +249,34 @@ public class Item_ASRS : Item_CNC_Machine
         if (!TryGetTableIndex(target, out int index))
             return;
 
+        if (PlaceAtIndex(target, index, "SlotInsert"))
+            Debug.Log($"SlotInsert: Table '{target.TableID}' placed into rack slot {index}.");
+    }
+
+    // Shared by SlotInsert and PlaceAtSlot: snaps 'target' onto slot
+    // 'index''s saved anchor, detaches it from any conveyor spline, and
+    // records it in TableMap. Fails safely — no changes — if the slot is
+    // occupied or has no saved anchor.
+    private bool PlaceAtIndex(Item_Slotted_Table target, int index, string caller)
+    {
         if (TableMap.TryGetValue(index, out Item_Slotted_Table occupied) && occupied != null)
         {
-            Debug.LogWarning($"SlotInsert: Rack slot at index {index} is already occupied.", target);
-            return;
+            Debug.LogWarning($"{caller}: Rack slot at index {index} is already occupied.", target);
+            return false;
         }
 
         if (!anchorPositions.TryGetValue(index, out Vector3 anchorPosition) ||
             !anchorRotations.TryGetValue(index, out Quaternion anchorRotation))
         {
-            Debug.LogError($"SlotInsert: Missing saved anchor transform for index {index}.", target);
-            return;
+            Debug.LogError($"{caller}: Missing saved anchor transform for index {index}.", target);
+            return false;
         }
 
         target.transform.SetParent(transform, true);
         target.transform.position = anchorPosition;
         target.transform.rotation = anchorRotation;
 
-        Spline_Animate splineAnimate = target.GetComponent<Spline_Animate>();
-        if (splineAnimate == null)
-            splineAnimate = target.GetComponentInParent<Spline_Animate>();
-
+        Spline_Animate splineAnimate = GetSplineAnimate(target);
         if (splineAnimate != null)
         {
             splineAnimate.Pause();
@@ -345,13 +286,9 @@ public class Item_ASRS : Item_CNC_Machine
 
         TableMap[index] = target;
 
-        if (target.Item != null)
-            materialLocations[target.Item] = index;
-
         target.gameObject.SetActive(true);
         SetTableVisibility(target.gameObject, true);
-
-        Debug.Log($"SlotInsert: Table '{target.TableID}' placed into rack slot {index}.");
+        return true;
     }
 
     public bool NeedsRackReturn(Item_Slotted_Table target)
@@ -433,42 +370,10 @@ public class Item_ASRS : Item_CNC_Machine
             return false;
         }
 
-        if (TableMap.TryGetValue(index, out Item_Slotted_Table occupied) && occupied != null)
-        {
-            Debug.LogWarning($"PlaceAtSlot: Rack slot at index {index} is already occupied.", target);
+        if (!PlaceAtIndex(target, index, "PlaceAtSlot"))
             return false;
-        }
-
-        if (!anchorPositions.TryGetValue(index, out Vector3 anchorPosition) ||
-            !anchorRotations.TryGetValue(index, out Quaternion anchorRotation))
-        {
-            Debug.LogError($"PlaceAtSlot: Missing saved anchor transform for index {index}.", target);
-            return false;
-        }
-
-        target.transform.SetParent(transform, true);
-        target.transform.position = anchorPosition;
-        target.transform.rotation = anchorRotation;
-
-        Spline_Animate splineAnimate = target.GetComponent<Spline_Animate>();
-        if (splineAnimate == null)
-            splineAnimate = target.GetComponentInParent<Spline_Animate>();
-
-        if (splineAnimate != null)
-        {
-            splineAnimate.Pause();
-            splineAnimate.Container = null;
-            splineAnimate.enabled = false;
-        }
 
         target.TableID = tableId.ToString("D6");
-        TableMap[index] = target;
-
-        if (target.Item != null)
-            materialLocations[target.Item] = index;
-
-        target.gameObject.SetActive(true);
-        SetTableVisibility(target.gameObject, true);
 
         Debug.Log($"PlaceAtSlot: Table placed into rack slot {index} (TableID {target.TableID}).");
         return true;
@@ -531,20 +436,12 @@ public class Item_ASRS : Item_CNC_Machine
 
         TableMap[index] = null;
 
-        if (storedTable.Item != null)
-            materialLocations.Remove(storedTable.Item);
-
         storedTable.gameObject.SetActive(true);
         SetTableVisibility(storedTable.gameObject, true);
 
-        Spline_Animate splineAnimate = storedTable.GetComponent<Spline_Animate>();
-        if (splineAnimate == null)
-            splineAnimate = storedTable.GetComponentInParent<Spline_Animate>();
-
+        Spline_Animate splineAnimate = GetSplineAnimate(storedTable);
         if (splineAnimate != null)
-        {
             splineAnimate.enabled = true;
-        }
 
         Debug.Log($"ASRS: Retrieved table '{storedTable.TableID}'");
 

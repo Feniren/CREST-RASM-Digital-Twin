@@ -144,37 +144,7 @@ public class ASRS_Gripper_Controller : MonoBehaviour
             yield break;
         }
 
-        Spline_Animate retrievedSpline = retrieved.GetComponent<Spline_Animate>();
-        if (retrievedSpline == null)
-        
-            retrievedSpline = retrieved.GetComponentInParent<Spline_Animate>();
-        if (retrievedSpline != null)
-            retrievedSpline.enabled = false;
-
-        bool started = RetrieveToPoint(retrieved, dropPosition, dropRotation, () =>
-        {
-            if (retrievedSpline != null)
-                retrievedSpline.enabled = true;
-
-            rack.PlaceAtSlot(retrieved, targetTableId);
-            retrieved.task = RACK_TASK.NONE;
-            pickAndPlaceRunning = false;
-        });
-
-        if (!started)
-        {
-            // Shouldn't normally happen — pickAndPlaceRunning/IsBusy were
-            // already checked before this coroutine started — but fall
-            // back to instant placement so the operation still completes.
-            retrieved.transform.position = dropPosition;
-            retrieved.transform.rotation = dropRotation;
-            if (retrievedSpline != null)
-                retrievedSpline.enabled = true;
-
-            rack.PlaceAtSlot(retrieved, targetTableId);
-            retrieved.task = RACK_TASK.NONE;
-            pickAndPlaceRunning = false;
-        }
+        CarryAndHandOff(retrieved, dropPosition, dropRotation, () => rack.PlaceAtSlot(retrieved, targetTableId));
     }
 
     private IEnumerator ManualPickAndPlaceRoutine(string tableId)
@@ -197,37 +167,40 @@ public class ASRS_Gripper_Controller : MonoBehaviour
         Vector3 dropPosition = rfidSensor != null ? rfidSensor.transform.position : transform.position;
         Quaternion dropRotation = rfidSensor != null ? rfidSensor.transform.rotation : transform.rotation;
 
-        Spline_Animate retrievedSpline = retrieved.GetComponent<Spline_Animate>();
-        if (retrievedSpline == null)
-            retrievedSpline = retrieved.GetComponentInParent<Spline_Animate>();
-        if (retrievedSpline != null)
-            retrievedSpline.enabled = false;
-
-        bool started = RetrieveToPoint(retrieved, dropPosition, dropRotation, () =>
+        CarryAndHandOff(retrieved, dropPosition, dropRotation, () =>
         {
-            if (retrievedSpline != null)
-                retrievedSpline.enabled = true;
-
             conveyorBelt.AddPlate(retrieved.gameObject, 0f);
-            retrieved.task = RACK_TASK.NONE;
             conveyorBelt.ResumeMovement();
-            pickAndPlaceRunning = false;
         });
+    }
 
-        if (!started)
+    // Shared tail of both pick-and-place routines: hands the table's
+    // movement from its spline to the gripper, carries it to the drop
+    // point, then runs 'handOff' (re-seat in the rack, or give it to the
+    // belt) and ends the pick-and-place.
+    private void CarryAndHandOff(Item_Slotted_Table table, Vector3 dropPosition, Quaternion dropRotation, Action handOff)
+    {
+        Spline_Animate spline = Item_ASRS.GetSplineAnimate(table);
+        if (spline != null)
+            spline.enabled = false;
+
+        void OnArrived()
+        {
+            if (spline != null)
+                spline.enabled = true;
+
+            handOff();
+            table.task = RACK_TASK.NONE;
+            pickAndPlaceRunning = false;
+        }
+
+        if (!RetrieveToPoint(table, dropPosition, dropRotation, OnArrived))
         {
             // Shouldn't normally happen — pickAndPlaceRunning/IsBusy were
-            // already checked before this coroutine started — but fall back
+            // already checked before the routine started — but fall back
             // to instant placement so the operation still completes.
-            retrieved.transform.position = dropPosition;
-            retrieved.transform.rotation = dropRotation;
-            if (retrievedSpline != null)
-                retrievedSpline.enabled = true;
-
-            conveyorBelt.AddPlate(retrieved.gameObject, 0f);
-            retrieved.task = RACK_TASK.NONE;
-            conveyorBelt.ResumeMovement();
-            pickAndPlaceRunning = false;
+            table.transform.SetPositionAndRotation(dropPosition, dropRotation);
+            OnArrived();
         }
     }
 

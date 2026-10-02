@@ -35,12 +35,12 @@ public class ASRSArmTester : MonoBehaviour
     [Tooltip("Parent GameObject whose children are the 36 SlotsB Transforms, ordered left→right bottom→top.")]
     [SerializeField] private Transform slotsContainerB;
 
-    [Tooltip("Index (within whichever side's slots) of the slot the arm physically sits at when all axes are at local 0. " +
-             "Default 15 = the center of a 6×6 grid.")]
+    [Tooltip("Index within SlotsB (the U side the rig rests facing) of the slot the arm physically sits at when all axes are at local 0. " +
+             "This one physical position is the home reference for BOTH sides — SlotsA's columns run in the opposite Z direction, so the same index there is a different column.")]
     [SerializeField] private int centerSlotIndex = 15;
     [Tooltip("Additional world-space nudge applied to every slot position. Fine-tune if the slot pivot is not exactly where the arm should align.")]
     [SerializeField] private Vector3 slotOffset = Vector3.zero;
-    [Tooltip("Optional override for the Z distance between two adjacent columns (e.g. -0.0194 if column 2 sits -0.0194 in Z from column 1 — sign included). When non-zero, Z is computed arithmetically from the column difference instead of read from the slot Transform positions, for whichever axis actually drives column-to-column movement on this rig. Leave at 0 to keep using the measured Transform positions.")]
+    [Tooltip("Optional override for the Z distance between two physically adjacent columns, in SlotsB's column order (col 1 → col 6), sign included. When non-zero, Z is computed arithmetically from the column difference instead of read from the slot Transform positions. SlotsA's reversed column order is accounted for automatically. Leave at 0 to keep using the measured Transform positions.")]
     [SerializeField] private float columnSpacingZ = 0f;
     [Tooltip("Local X when the arm is parked in front of a slot (not extended). X is the depth axis.")]
     [SerializeField] private float parkedX = 0f;
@@ -471,67 +471,89 @@ public class ASRSArmTester : MonoBehaviour
             return false;
         }
 
-        Transform center = slots[centerSlotIndex];
+        if (!TryGetHomeReference(out Transform center))
+            return false;
+
+        // World-space vector from the arm's home reference to the target
+        // slot. InverseTransformDirection maps direction (no translation)
+        // into local space, giving the correct per-axis delta regardless of
+        // parent position.
+        Vector3 worldDelta = slot.position + slotOffset - center.position;
+        ToArmAxes(worldDelta, out targetZ, out targetY);
+
+        // Manual override: replace the measured Z with an exact arithmetic
+        // value from the column difference, instead of trusting the slot
+        // Transforms' real positions (which may not be perfectly consistent
+        // slot-to-slot). SlotsA is the mirror image of SlotsB (its column 1
+        // sits where SlotsB's column 6 does), so convert to SlotsB's
+        // physical column order before comparing against the reference.
+        if (!Mathf.Approximately(columnSpacingZ, 0f))
+        {
+            int col = localIndex % Cols;
+            int physicalCol = wantsB ? col : (Cols - 1) - col;
+            int centerCol = centerSlotIndex % Cols;
+            targetZ = (physicalCol - centerCol) * columnSpacingZ;
+        }
+
+        return true;
+    }
+
+    // The arm's home (all axes at local 0) is ONE physical position — it
+    // doesn't move when the rig rotates to face the other rack. So every slot
+    // on both sides must be measured from that same point.
+    //
+    // Previously each side was measured from its OWN slot at centerSlotIndex,
+    // but the two racks are mirror images: SlotsB's columns run +Z (col 1 at
+    // the low-Z end) while SlotsA's run -Z (col 1 at the high-Z end). Index 15
+    // is therefore a different physical column on each side — one full
+    // slotted-table width apart (~0.197). The U side lined up, but every NonU
+    // (SlotsA) target, and the travel limits derived from its corners, was
+    // shifted one column: short of the rack at one Z end and past it at the
+    // other. A single slotOffset couldn't fix it because the error only
+    // existed on one side.
+    private bool TryGetHomeReference(out Transform center)
+    {
+        center = null;
+
+        if (slotsB == null || centerSlotIndex < 0 || centerSlotIndex >= slotsB.Length)
+        {
+            Debug.LogWarning("[ASRS] Center slot index is out of range for SlotsB.");
+            return false;
+        }
+
+        center = slotsB[centerSlotIndex];
         if (center == null)
         {
             Debug.LogWarning("[ASRS] Center slot transform is null.");
             return false;
         }
 
-        // World-space vector from this side's center slot to the target slot.
-        // InverseTransformDirection maps direction (no translation) into local space,
-        // giving the correct per-axis delta regardless of parent position.
-        Vector3 worldDelta = slot.position + slotOffset - center.position;
+        return true;
+    }
 
+    private void ToArmAxes(Vector3 worldDelta, out float targetZ, out float targetY)
+    {
         Transform zParent = armController.ArmZ != null ? armController.ArmZ.parent : null;
         Transform yParent = armController.ArmY != null ? armController.ArmY.parent : null;
 
         targetZ = zParent != null ? zParent.InverseTransformDirection(worldDelta).z : worldDelta.z;
         targetY = yParent != null ? yParent.InverseTransformDirection(worldDelta).y : worldDelta.y;
-
-        // Manual override: replace the measured Z with an exact arithmetic
-        // value from the column difference, instead of trusting the slot
-        // Transforms' real positions (which may not be perfectly consistent
-        // slot-to-slot).
-        if (!Mathf.Approximately(columnSpacingZ, 0f))
-        {
-            int col = localIndex % Cols;
-            int centerCol = centerSlotIndex % Cols;
-            targetZ = (col - centerCol) * columnSpacingZ;
-        }
-
-        return true;
     }
 
     // General-purpose version of the slot-delta math for an arbitrary world
     // point — e.g. where the gripper should drop a table at the conveyor —
-    // rather than one of the rack's own numbered slots. Uses whichever
-    // side's center the arm is CURRENTLY facing, so the result is only
-    // meaningful for a point reachable from the current rotation.
+    // rather than one of the rack's own numbered slots. Measured from the
+    // same shared home reference as the slots, so it's correct whichever
+    // side the arm is facing.
     public bool TryComputeDeltaToWorldPoint(Vector3 worldPoint, out float targetZ, out float targetY)
     {
         targetZ = 0f;
         targetY = 0f;
 
-        if (armController == null)
+        if (armController == null || !TryGetHomeReference(out Transform center))
             return false;
 
-        Transform[] slots = armController.CurrentSide == ASRSArmController.Side.U ? slotsB : slotsA;
-
-        if (slots == null || centerSlotIndex < 0 || centerSlotIndex >= slots.Length)
-            return false;
-
-        Transform center = slots[centerSlotIndex];
-        if (center == null)
-            return false;
-
-        Vector3 worldDelta = worldPoint - center.position;
-
-        Transform zParent = armController.ArmZ != null ? armController.ArmZ.parent : null;
-        Transform yParent = armController.ArmY != null ? armController.ArmY.parent : null;
-
-        targetZ = zParent != null ? zParent.InverseTransformDirection(worldDelta).z : worldDelta.z;
-        targetY = yParent != null ? yParent.InverseTransformDirection(worldDelta).y : worldDelta.y;
+        ToArmAxes(worldPoint - center.position, out targetZ, out targetY);
         return true;
     }
 

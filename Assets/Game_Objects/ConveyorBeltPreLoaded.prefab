@@ -47,11 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a382389cafc104181571feec2840fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item_Conveyor_Belt
+  Name: Conveyor Belt
   AutomaticActivation: 0
   Owner: {fileID: 0}
   Pickup: 0
   Quantity: 1
-  Name: Conveyor Belt
   OnGrabbed:
     m_PersistentCalls:
       m_Calls: []
@@ -106,6 +106,10 @@ PrefabInstance:
     - target: {fileID: 941791499567811077, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: TableID
       value: 005001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050001
       objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target
@@ -929,6 +933,10 @@ PrefabInstance:
       propertyPath: TableID
       value: 005002
       objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050002
+      objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target
       value: 
@@ -1286,6 +1294,10 @@ PrefabInstance:
       propertyPath: TableID
       value: 005005
       objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050005
+      objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target
       value: 
@@ -1408,6 +1420,10 @@ PrefabInstance:
       propertyPath: TableID
       value: 005006
       objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050006
+      objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target
       value: 
@@ -1528,6 +1544,10 @@ PrefabInstance:
     - target: {fileID: 941791499567811077, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: TableID
       value: 005004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050004
       objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target
@@ -1650,6 +1670,10 @@ PrefabInstance:
     - target: {fileID: 941791499567811077, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: TableID
       value: 005003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404540957388301629, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      propertyPath: TableID
+      value: 050003
       objectReference: {fileID: 0}
     - target: {fileID: 2531738637203770737, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Target

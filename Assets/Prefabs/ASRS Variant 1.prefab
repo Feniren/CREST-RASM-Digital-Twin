@@ -49966,6 +49966,8 @@ MonoBehaviour:
   - {fileID: 7974706965962791927, guid: ed5d2a722834e5741adad0ea9e1ee4b4, type: 3}
   - {fileID: 2555023217059191448, guid: 0804d1dca8918a2478a26e71f4108eee, type: 3}
   - {fileID: 3995667568617887544, guid: 9a888997bc51a104c813dbcad7efd969, type: 3}
+  - {fileID: 5236207909095938877, guid: 69ada3a9eba5bf94abbb6f1e3a0b92cc, type: 3}
+  - {fileID: 3897230503895577367, guid: 72e9066f0f91e4d41aee721279bf2f3e, type: 3}
   SlottedTablePrefab: {fileID: 0}
   RackOrigin: {x: 0, y: 0, z: 0}
   ColumnStep: {x: 0.5, y: 0, z: 0}
