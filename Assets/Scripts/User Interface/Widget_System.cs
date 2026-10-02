@@ -9,6 +9,10 @@ public class Widget_System : Widget_Parent{
 		CreateWidget("Control", true);
 	}
 
+	public void OnSettingsPressed(){
+		CreateWidget("Settings", true);
+	}
+
 	public void OnLoadMapPressed(){
 		CreateWidget("Map Select", true);
 	}

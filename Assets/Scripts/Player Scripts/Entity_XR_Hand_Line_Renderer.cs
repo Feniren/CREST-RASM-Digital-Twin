@@ -116,7 +116,7 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 		Vector3 ControlPoint;
 
 		if (Mathf.Abs((LineEnd.magnitude - SmoothedLineEnd.magnitude)) < 2.0f){
-			SmoothedLineEnd = Vector3.Lerp(SmoothedLineEnd, LineEnd, (PlayerSettingsReference.SmoothXRRayEndPointMovementSpeed * (Time.deltaTime * 40.0f)));
+			SmoothedLineEnd = Vector3.Lerp(SmoothedLineEnd, LineEnd, (PlayerSettingsReference.XRRayEndpointInterpolationSpeed * (Time.deltaTime * 40.0f)));
 		}
 		else{
 			SmoothedLineEnd = LineEnd;
@@ -124,7 +124,7 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 		
 		ForwardVector.Normalize();
 
-		if (!PlayerSettingsReference.SmoothXRRayEndPointMovement){
+		if (!PlayerSettingsReference.XRRayEndpointInterpolation){
 			ControlPoint = Vector3.Lerp(LineStart, LineEnd, 0.5f);
 		}
 		else{
@@ -139,7 +139,7 @@ public class Entity_XR_Hand_Line_Renderer : MonoBehaviour{
 		for (int Index = 0; Index < SegmentCount; Index++){
 			float T = ((float)Index / (float)(SegmentCount - 1));
 
-			if (!PlayerSettingsReference.SmoothXRRayEndPointMovement){
+			if (!PlayerSettingsReference.XRRayEndpointInterpolation){
 				LinePoints[Index] = QuadraticBezier(LineStart, ControlPoint, LineEnd, T);
 			}
 			else{

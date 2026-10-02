@@ -51,7 +51,7 @@ public class Widget_Job_Manager : Widget_Parent{
 		ActiveJobs.Clear();
 
 		for (int Index = 0; Index < JobManager.JobQueue.Count; Index++){
-			GameObject ActiveJob = Instantiate(DataLoader.WidgetLibrary.GetWidgetFromName("List Item"), ContentContainer);
+			GameObject ActiveJob = CreateWidget("List Item", ContentContainer);
 			Widget_List_Item ListItem = ActiveJob.GetComponent<Widget_List_Item>();
 
 			ActiveJob.GetComponentInChildren<TextMeshProUGUI>().text = JobManager.JobQueue[Index].Name;
@@ -76,7 +76,7 @@ public class Widget_Job_Manager : Widget_Parent{
 		Widget_Job_Details JobDetailsReference;
 
 		if (JobDetailsPanel == null){
-			JobDetailsPanel = CreateWidget("Job Details", new Vector3(0.6f, 0.0f, 2.1f), new Vector3(0.0f, 45.0f, 0.0f), false, false);
+			JobDetailsPanel = CreateWidget("Job Details", new Vector3(0.42f, 0.0f, 1.41f), new Vector3(0.0f, 45.0f, 0.0f), false, false);
 		}
 
 		JobDetailsReference = JobDetailsPanel.GetComponent<Widget_Job_Details>();
