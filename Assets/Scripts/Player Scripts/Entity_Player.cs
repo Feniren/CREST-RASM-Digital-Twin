@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -20,7 +21,12 @@ public class Entity_Player : Entity, Save_Data_Interface{
     public Health_Bar HealthBarReference;
 	public Player_Settings PlayerSettings;
 
+	public static GameObject Instance;
+
+	static Entity_Player PlayerReference;
+
 	Player_Controller ControllerReference;
+	Data_Loader DataLoader;
 
 	public InputSystemUIInputModule DesktopEventSystem;
 	public XRUIInputModule VREventSystem;
@@ -28,22 +34,31 @@ public class Entity_Player : Entity, Save_Data_Interface{
 	public Entity_XR_Hand ActiveHand;
 
     void Awake(){
-        PlayerSettings = new Player_Settings();
-
-        PlayerSettings.LookSpeedX = 0.5f;
-        PlayerSettings.LookSpeedY = 0.5f;
-		PlayerSettings.SmoothXRRayEndPointMovement = true;
-		PlayerSettings.SmoothXRRayEndPointMovementSpeed = 0.2f;
-		PlayerSettings.XRRayThickness = 0.05f;
+		SetLocalPlayer();
 
 		GetComponent<Rigidbody>().useGravity = false;
     }
+
+	public void OnDestroy(){
+		if (Instance == gameObject){
+			Instance = null;
+		}
+	}
+
+	public void OnDisable(){
+		SceneManager.sceneLoaded -= OnSceneLoaded;
+	}
+
+	public void OnEnable(){
+		SceneManager.sceneLoaded += OnSceneLoaded;
+	}
 
     public override void Start(){
         base.Start();
 
 		ControllerReference = GetComponent<Player_Controller>();
-		ItemLibraryReference = FindFirstObjectByType<Data_Loader>().ItemLibrary;
+		DataLoader = FindFirstObjectByType<Data_Loader>();
+		ItemLibraryReference = DataLoader.ItemLibrary;
 
 		StartCoroutine(LaunchXR(0.1f));
 
@@ -55,6 +70,16 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
     void Update(){
     }
+
+	public void OnSceneLoaded(Scene scene, LoadSceneMode mode){
+		if (Instance == null){
+			SetLocalPlayer();
+		}
+	}
+
+	public static Entity_Player GetLocalPlayer(){
+		return PlayerReference;
+	}
 
 	private IEnumerator LaunchXR(float Timeout){
 		yield return new WaitForSeconds(Timeout);
@@ -101,6 +126,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
         gameObject.transform.position = SaveData.PlayerLocation;
         gameObject.transform.rotation = SaveData.PlayerRotation;
         gameObject.transform.localScale = SaveData.PlayerScale;
+		PlayerSettings = SaveData.PlayerSettings;
 
 		Debug.Log("Save Data Loaded");
     }
@@ -109,7 +135,19 @@ public class Entity_Player : Entity, Save_Data_Interface{
         SaveData.PlayerLocation = gameObject.transform.position;
         SaveData.PlayerRotation = gameObject.transform.rotation;
         SaveData.PlayerScale = gameObject.transform.localScale;
+		SaveData.PlayerSettings = PlayerSettings;
     }
+
+	void SetLocalPlayer(){
+		if ((Instance != null) && (Instance != gameObject)){
+			Debug.LogWarning("Reference not set to local player");
+
+			return;
+		}
+
+		Instance = gameObject;
+		PlayerReference = this;
+	}
 
     public override void TakeDamage(Damage_Event DamageEvent){
         base.TakeDamage(DamageEvent);
