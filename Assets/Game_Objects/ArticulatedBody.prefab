@@ -1601,6 +1601,7 @@ MonoBehaviour:
   ItemInstance: {fileID: 0}
   LeftHand: {fileID: 9166325542469448531}
   RightHand: {fileID: 4268794636867867076}
+  ActiveWidget: {fileID: 0}
 --- !u!114 &8535134499384648863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1635,13 +1636,16 @@ MonoBehaviour:
   ItemAnchor: {fileID: 6976731901817273467}
   LeftHandAnchor: {fileID: 708017444173431688}
   RightHandAnchor: {fileID: 5723858274441386849}
+  ItemLibraryReference: {fileID: 0}
   CameraReference: {fileID: 4771338484410660247}
   HealthBarReference: {fileID: 0}
-  ItemLibraryReference: {fileID: 0}
   PlayerSettings:
     LookSpeedX: 0
     LookSpeedY: 0
+    XRRayEndpointInterpolation: 0
+    XRRayEndpointInterpolationSpeed: 0
     XREnabled: 0
+    XRRayThickness: 0
   DesktopEventSystem: {fileID: 0}
   VREventSystem: {fileID: 0}
   ActiveHand: {fileID: 0}

@@ -8,7 +8,10 @@ public class Widget_Parent : MonoBehaviour{
 		Name = "";
 	}
 
-	public void OnEnable(){
+	public virtual void OnDisable(){
+	}
+
+	public virtual void OnEnable(){
 	}
 
 	public GameObject CreateWidget(string WidgetName, bool SetNewActiveWidget = false, bool DestroyWidget = true){
@@ -21,6 +24,12 @@ public class Widget_Parent : MonoBehaviour{
 		if (DestroyWidget){
 			Destroy(gameObject);
 		}
+
+		return Widget;
+	}
+
+	public GameObject CreateWidget(string WidgetName, Transform WidgetTransform){
+		GameObject Widget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName(WidgetName), WidgetTransform);
 
 		return Widget;
 	}

@@ -722,15 +722,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b3fe7d98f4b19442a7f0dfedb0cb2b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Item_Lathe
+  Name: Lathe
   AutomaticActivation: 0
   Owner: {fileID: 0}
   Pickup: 0
   Quantity: 1
-  Name: Lathe
   OnGrabbed:
     m_PersistentCalls:
       m_Calls: []
   ID: 
+  SensorReference: {fileID: 0}
+  ProcessingItem: 0
   ActiveTable: {fileID: 0}
 --- !u!64 &773258966296531085
 MeshCollider:
