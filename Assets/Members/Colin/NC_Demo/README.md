@@ -100,9 +100,20 @@ Tests: Test Runner → EditMode → `NC.Tests`.
 | `NC_Output_Table` | `Output_Table_Top` | Authored rows/slots + label prefab. Demo furniture. |
 | `NC_Demo_Readout` | `HUD` | CNCBase-style text readout (TMP, 10×/s). The CNCBase panel will replace it. |
 | `NC_Demo_Controls` | `NC_Demo` | Keyboard and camera views. Demo only. |
+| `NC_Mill_Station` | `ManufacturingLine` → `IntellitekMill_Training/NC_Mill` | The Digital Twin mill's side of `Job_NC_Program`: loads a program by file name, then plate block off → fresh stock in the vise → cut → carved part back on the plate. |
 
 ## For the Digital Twin
 
+- The line's mill is `IntellitekMill_Training` inside `ManufacturingLine.prefab`, with the same rig
+  as this scene (`Tool_Holder`, `Stock_Mount/Work_Origin`, `Tool_Rack`, `NC_Mill` with link, runner
+  and `NC_Mill_Station`) added under the instance. `Job_NC_Program` (`Assets/Scripts/Job System/`)
+  carries the file name and arms the mill's RFID sensor; the station swaps a plain block for
+  `NC_Epoxy_Workpiece.prefab` (item root with rigidbody and collider, `Mill_Stock` child at -Size/2),
+  or puts a part it cut before back in the vise with its cut, and holds
+  `Item_CNC_Machine.ProcessingItem` for the whole cycle, which keeps the belt stopped at the sensor.
+  One job so far: `Assets/Game_Objects/Job/JobNCPocket.prefab` (`01_pocket.nc`, in `JobLibrary.asset`),
+  queued by the Job Select panel's NC Pocket button. `NC Demo/8 Debug - Queue Mill Job (Next Program)`
+  queues any program in Play mode.
 - The per-part datum: here `Work_Origin` is authored once under the mount because every program
   cuts the same block in the same vise. A slotted-table workflow needs the origin per part
   (front-left-top corner of the part as mounted); a child transform on the part prefab, assigned

@@ -39,6 +39,10 @@ public class Widget_Job_Select : Widget_Parent{
 		JobManager.QueueJob("Lathe Metal Penholder");
 	}
 
+	public void OnNCPocketPressed(){
+		JobManager.QueueJob("NC 01_pocket");
+	}
+
 	public void Cancel(){
 		//GameObject NewWidget = Instantiate(PreviousWidget, transform.position, transform.rotation);
 
