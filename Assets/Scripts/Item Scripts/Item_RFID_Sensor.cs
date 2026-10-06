@@ -34,7 +34,7 @@ public class Item_RFID_Sensor : Item_Parent{
 
 							OnTargetFound.Invoke();
 
-							Invoke(nameof(PauseConveyorBelt), 3.0f);
+							StartCoroutine(ResumeConveyorBelt());
 						}
 					}
 				}
@@ -52,5 +52,13 @@ public class Item_RFID_Sensor : Item_Parent{
 
 	public void PauseConveyorBelt(){
 		ConveyorBeltReference.ToggleMovement();
+	}
+
+	IEnumerator ResumeConveyorBelt(){
+		yield return new WaitForSeconds(3.0f);
+
+		yield return new WaitUntil(() => !CNCMachineReference.ProcessingItem);
+
+		PauseConveyorBelt();
 	}
 }
