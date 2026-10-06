@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// Play-mode debug drivers for the NC demo, usable over MCP (which cannot press keys or move
@@ -40,6 +43,35 @@ public static class NC_Demo_Debug_Menu
     {
         var c = Find<NC_Demo_Controls>();
         if (c != null) c.Next_View();
+    }
+
+    static int next_program;
+
+    // DigitalTwin: stands in for the job prefabs and Job Select buttons that do not exist yet.
+    [MenuItem("NC Demo/8 Debug - Queue Mill Job (Next Program)")]
+    static void Queue_Next_Program()
+    {
+        string[] files = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, "NC"), NC_Program_Library.Pattern);
+        Array.Sort(files, StringComparer.Ordinal);
+        Queue_Mill_Job(Path.GetFileName(files[next_program++ % files.Length]));
+    }
+
+    [MenuItem("NC Demo/8 Debug - Queue Mill Job (Missing File)")]
+    static void Queue_Missing_File()
+    {
+        Queue_Mill_Job("missing.nc");
+    }
+
+    static void Queue_Mill_Job(string file)
+    {
+        var manager = Find<Job_Manager>();
+        if (manager == null) return;
+        var job = new GameObject("Job_NC_" + file).AddComponent<Job_NC_Program>();
+        job.ProgramFile = file;
+        job.Name = "NC " + Path.GetFileNameWithoutExtension(file);
+        job.StockReference = AssetDatabase.LoadAssetAtPath<Item_Epoxy_Block>("Assets/Game_Objects/Item/Item_Epoxy_Block.prefab");
+        Debug.Log("NC Demo: queued " + job.Name);
+        manager.QueueJob(job);
     }
 
     static T Find<T>() where T : Object
