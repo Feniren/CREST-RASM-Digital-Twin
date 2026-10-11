@@ -15,7 +15,9 @@ public class Widget_Job_Select : Widget_Parent{
 		Name = "Job Select";
 	}
 
-	public void Start(){
+	public override void Start(){
+		base.Start();
+
 		JobManager = FindFirstObjectByType<Job_Manager>();
 
 		UpdateJobManagerText();
