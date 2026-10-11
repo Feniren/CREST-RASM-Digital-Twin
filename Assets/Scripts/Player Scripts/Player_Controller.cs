@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Utilities;
-using UnityEngine.InputSystem.XR;
 
 public class Player_Controller : Controller{
     public InputAction InputSystem;
@@ -24,9 +21,8 @@ public class Player_Controller : Controller{
 
     Vector3 MovementVelocity;
     Vector2 ControlRotation;
-    Vector3 FirstPersonCameraLocation;
     bool IsFirstPerson;
-    Vector3 ThirdPersonCameraLocation;
+	Spring_Arm SpringArm;
     float ThrowStartTime;
     float ThrowEndTime;
 
@@ -47,34 +43,48 @@ public class Player_Controller : Controller{
         PlayerInput.Player.ShootPhysical.performed += LeftClick;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
-        PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
-		PlayerInput.ItemEquipped.ThrowItem.canceled += ThrowItem;
-        PlayerInput.Player.XRRightGrab.started += GrabStart;
         PlayerInput.Player.XRLeftGrab.started += GrabStart;
-        PlayerInput.Player.XRRightGrab.canceled += GrabEnd;
         PlayerInput.Player.XRLeftGrab.canceled += GrabEnd;
+		PlayerInput.Player.XRRightGrab.started += GrabStart;
+		PlayerInput.Player.XRRightGrab.canceled += ThrowItem;
+		PlayerInput.ItemEquipped.ThrowItem.started += StartThrow;
+		PlayerInput.ItemEquipped.ThrowItem.canceled += ThrowItem;
 
-        FirstPersonCameraLocation = new Vector3(0.0f, 1.4968f, 0.328f);
         IsFirstPerson = true;
-        ThirdPersonCameraLocation = new Vector3(0.0f, 1.14f, -2.161f);
     }
 
     void Start(){
         RigidBodyReference = GetComponent<Rigidbody>();
         PlayerReference = GetComponent<Entity_Player>();
+		SpringArm = PlayerReference.CameraReference.GetComponent<Spring_Arm>();
 
         MovementVelocity = Vector2.zero;
         ControlRotation = Vector2.zero;
 	}
 
     private void OnEnable(){
-        //InputSystem.Enable();
     }
 
     private void OnDisable(){
-		InputSystem.Disable();
-
-		PlayerInput.Disable();
+		PlayerInput.Player.EquipItem.performed -= EquipItem;
+		PlayerInput.Player.Interact.performed -= Interact;
+		PlayerInput.Player.AlternateInteract.performed -= AlternateInteract;
+		PlayerInput.Player.Jump.performed -= Jump;
+		PlayerInput.Player.Look.performed -= Look;
+		PlayerInput.Player.Look.canceled -= Look;
+		PlayerInput.Player.Move.performed -= Move;
+		PlayerInput.Player.Move.canceled -= StopMoving;
+		PlayerInput.Player.ResetPosition.performed -= ResetPosition;
+		PlayerInput.Player.ToggleBag.performed -= ToggleBag;
+		PlayerInput.Player.SystemMenu.performed -= CreateSystemMenu;
+		PlayerInput.Player.ShootPhysical.performed -= LeftClick;
+		PlayerInput.Player.SwitchCameraPerspective.performed -= SwitchCameraPerspective;
+		PlayerInput.Player.XRLeftGrab.started -= GrabStart;
+		PlayerInput.Player.XRLeftGrab.canceled -= GrabEnd;
+		PlayerInput.Player.XRRightGrab.started -= GrabStart;
+		PlayerInput.Player.XRRightGrab.canceled -= GrabEnd;
+		PlayerInput.ItemEquipped.ThrowItem.started -= StartThrow;
+		PlayerInput.ItemEquipped.ThrowItem.canceled -= ThrowItem;
     }
 
     private void FixedUpdate(){
@@ -258,8 +268,18 @@ public class Player_Controller : Controller{
 			ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
 
 			Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
-			
-			gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+
+			if (IsFirstPerson){
+				gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+			}
+			else{
+				if (PlayerReference.PlayerSettings.ThirdPersonControlRotation){
+					gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+				}
+				else{
+					SpringArm.GetOrigin().Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+				}
+			}
 
 			if (!PlayerReference.PlayerSettings.XREnabled){
 				PlayerReference.CameraReference.transform.localRotation = XQuaternion;
@@ -313,14 +333,16 @@ public class Player_Controller : Controller{
 	}
 
 	public void SwitchCameraPerspective(InputAction.CallbackContext Context){
-        IsFirstPerson = !IsFirstPerson;
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			IsFirstPerson = !IsFirstPerson;
 
-        if (IsFirstPerson){
-            PlayerReference.CameraReference.transform.localPosition = FirstPersonCameraLocation;
-        }
-        else{
-            PlayerReference.CameraReference.transform.localPosition = ThirdPersonCameraLocation;
-        }
+			if (IsFirstPerson){
+				SpringArm.SetThirdPerson(false);
+			}
+			else{
+				SpringArm.SetThirdPerson(true);
+			}
+		}
     }
 
 	public void CreateSystemMenu(InputAction.CallbackContext Context){

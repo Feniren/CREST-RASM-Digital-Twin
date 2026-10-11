@@ -4,6 +4,8 @@ public class Widget_Parent : MonoBehaviour{
 	[ReadOnly]
 	public string Name;
 
+	protected Data_Loader DataLoader;
+
 	public Widget_Parent(){
 		Name = "";
 	}
@@ -14,8 +16,12 @@ public class Widget_Parent : MonoBehaviour{
 	public virtual void OnEnable(){
 	}
 
+	public virtual void Start(){
+		DataLoader = Data_Loader.GetDataLoader();
+	}
+
 	public GameObject CreateWidget(string WidgetName, bool SetNewActiveWidget = false, bool DestroyWidget = true){
-		GameObject Widget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName(WidgetName), transform.position, transform.rotation);
+		GameObject Widget = Instantiate(DataLoader.WidgetLibrary.GetWidgetFromName(WidgetName), transform.position, transform.rotation);
 
 		if (SetNewActiveWidget){
 			FindFirstObjectByType<Player_Controller>().ActiveWidget = Widget;
@@ -29,13 +35,13 @@ public class Widget_Parent : MonoBehaviour{
 	}
 
 	public GameObject CreateWidget(string WidgetName, Transform WidgetTransform){
-		GameObject Widget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName(WidgetName), WidgetTransform);
+		GameObject Widget = Instantiate(DataLoader.WidgetLibrary.GetWidgetFromName(WidgetName), WidgetTransform);
 
 		return Widget;
 	}
 
 	public GameObject CreateWidget(string WidgetName, Vector3 PositionOffset, Vector3 RotationOffset, bool SetNewActiveWidget = false, bool DestroyWidget = true){
-		GameObject Widget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName(WidgetName), (transform.position + PositionOffset), transform.rotation);
+		GameObject Widget = Instantiate(DataLoader.WidgetLibrary.GetWidgetFromName(WidgetName), (transform.position + PositionOffset), transform.rotation);
 
 		Widget.transform.Rotate(RotationOffset);
 

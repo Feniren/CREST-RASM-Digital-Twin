@@ -1,13 +1,12 @@
 using UnityEngine;
 
 public class Interactable_Handle : Interactable_Parent{
-	public Entity_Player PlayerReference;
+	BoxCollider BoxColliderReference;
+	Entity_Player PlayerReference;
+	Rigidbody RigidBodyReference;
 
-	private BoxCollider BoxColliderReference;
-	private Rigidbody RigidBodyReference;
-
-	private float DampingForce = 80.0f;
-	private float PullForce = 100.0f;
+	float DampingForce = 80.0f;
+	float PullForce = 100.0f;
 
 	bool Grabbed;
 	Vector3 Velocity;
@@ -17,6 +16,7 @@ public class Interactable_Handle : Interactable_Parent{
 
 	public void Start(){
 		BoxColliderReference = GetComponent<BoxCollider>();
+		PlayerReference = Entity_Player.GetLocalPlayer();
 		RigidBodyReference = GetComponent<Rigidbody>();
 	}
 
@@ -41,8 +41,6 @@ public class Interactable_Handle : Interactable_Parent{
 
 	public override void AlternateInteract(Entity_Player PlayerReference){
 		base.Interact(PlayerReference);
-
-		this.PlayerReference = PlayerReference;
 
 		PlayerReference.LeftHandAnchor.GetComponentInChildren<Entity_XR_Hand>().OnGrabEnd.AddListener(OnGrabEnd);
 		PlayerReference.RightHandAnchor.GetComponentInChildren<Entity_XR_Hand>().OnGrabEnd.AddListener(OnGrabEnd);

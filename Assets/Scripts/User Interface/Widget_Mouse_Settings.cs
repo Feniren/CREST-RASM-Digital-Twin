@@ -32,7 +32,9 @@ public class Widget_Mouse_Settings : Widget_Parent{
 		MouseYSlider.SliderReference.onValueChanged.AddListener(OnMouseYValueChanged);
 	}
 
-	public void Start(){
+	public override void Start(){
+		base.Start();
+
 		PlayerSettings = Entity_Player.GetLocalPlayer().PlayerSettings;
 
 		MouseXSlider.SliderReference.value = PlayerSettings.LookSpeedX;

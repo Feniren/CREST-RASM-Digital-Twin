@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.Management;
 using System.Linq;
 
 public class Data_Loader : MonoBehaviour{
@@ -18,36 +19,76 @@ public class Data_Loader : MonoBehaviour{
 	[SerializeField]
 	public Widget_Library WidgetLibrary;
 
-    public Data_Loader Instance{get; private set;}
+	[ReadOnly]
+	public XRManagerSettings XRManager;
+
+	public static GameObject Instance;
+
+	static Data_Loader DataLoaderReference;
 
     private void Awake(){
         if (Instance != null && Instance != this){
-            Debug.LogError("Save Data Loader duplicate detected");
+            Debug.LogWarning("Data Loader duplicate detected");
 
 			Destroy(gameObject);
 
 			return;
         }
 
-        Instance = this;
+		Instance = gameObject;
+		DataLoaderReference = this;
 
-		DontDestroyOnLoad(gameObject);
+		DontDestroyOnLoad(Instance);
+
+		StartCoroutine(LaunchXR());
     }
 
-    private void Start(){
-        FileData = new File_Data(Application.persistentDataPath, FileName);
+    private void OnApplicationQuit(){
+        SaveGame();
+
+		if (XRManager.isInitializationComplete){
+			XRManager.StopSubsystems();
+			XRManager.DeinitializeLoader();
+		}
+    }
+
+	private void OnDisable(){
+		SceneManager.sceneLoaded -= OnSceneLoaded;
+	}
+
+	private void OnEnable(){
+		SceneManager.sceneLoaded += OnSceneLoaded;
+	}
+
+	private void Start(){
+    }
+	
+	private void OnSceneLoaded(Scene scene, LoadSceneMode mode){
+		FileData = new File_Data(Application.persistentDataPath, FileName);
         SaveableObjects = FindSaveableObjects();
 
-        Debug.Log(SaveableObjects.Count);
+        Debug.Log("Saveable objects found: " + SaveableObjects.Count);
 
         LoadGame();
+	}
+
+	private List<Save_Data_Interface> FindSaveableObjects(){
+        IEnumerable<Save_Data_Interface> SaveableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<Save_Data_Interface>();
+
+        return new List<Save_Data_Interface>(SaveableObjects);
     }
 
-    public void NewGame(){
-        SaveData = new Save_Data();
-    }
+	public static Data_Loader GetDataLoader(){
+		return DataLoaderReference;
+	}
 
-    public void LoadGame(){
+	IEnumerator LaunchXR(){
+		XRManager = XRGeneralSettings.Instance.Manager;
+
+		yield return XRManager.InitializeLoader();
+	}
+
+	public void LoadGame(){
         SaveData = FileData.Load();
 
         if (SaveData == null){
@@ -59,37 +100,15 @@ public class Data_Loader : MonoBehaviour{
         }
     }
 
+	public void NewGame(){
+        SaveData = new Save_Data();
+    }
+
     public void SaveGame(){
         foreach (Save_Data_Interface SaveableObject in SaveableObjects){
             SaveableObject.SaveData(ref SaveData);
         }
 
         FileData.Save(SaveData);
-    }
-
-    private void OnApplicationQuit(){
-        SaveGame();
-    }
-
-	private void OnDisable(){
-		SceneManager.sceneLoaded -= OnSceneLoaded;
-	}
-
-	private void OnEnable(){
-		SceneManager.sceneLoaded += OnSceneLoaded;
-	}
-	
-	private void OnSceneLoaded(Scene scene, LoadSceneMode mode){
-		/*GameObject PlayerReference = FindFirstObjectByType<Entity_Player>().gameObject;
-
-		PlayerReference.transform.position += new Vector3(0.0f, 10.0f, 0.0f);
-
-		Debug.Log("New Scene loaded. Player position adjusted");*/
-	}
-
-	private List<Save_Data_Interface> FindSaveableObjects(){
-        IEnumerable<Save_Data_Interface> SaveableObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<Save_Data_Interface>();
-
-        return new List<Save_Data_Interface>(SaveableObjects);
     }
 }

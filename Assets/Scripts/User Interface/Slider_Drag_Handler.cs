@@ -53,7 +53,7 @@ public class Slider_Drag_Handler : MonoBehaviour, IPointerDownHandler, IPointerU
 					MouseDelta = Mouse.current.delta.ReadValue().x;
 
 					if (MouseDelta != 0.0f){
-						SliderReference.value = Mathf.Clamp((SliderReference.value + (MouseDelta * Sensitivity)), SliderReference.minValue, SliderReference.maxValue);
+						SliderReference.value = (SliderReference.value + (MouseDelta * Sensitivity));
 					}
 				}
 			}

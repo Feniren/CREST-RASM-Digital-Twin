@@ -6,28 +6,28 @@ using UnityEngine.UI;
 using TMPro;
 
 public class Widget_Job_Manager : Widget_Parent{
-	private List<GameObject> ActiveJobs = new List<GameObject>();
+	List<GameObject> ActiveJobs = new List<GameObject>();
 
-	private Data_Loader DataLoader;
-	private Job_Manager JobManager;
-
-	[SerializeField]
-	private Transform ContentContainer;
+	Job_Manager JobManager;
 
 	[SerializeField]
-	private TextMeshProUGUI JobManagerText;
+	Transform ContentContainer;
 
 	[SerializeField]
-	private ScrollRect ScrollBox;
+	TextMeshProUGUI JobManagerText;
 
-	private GameObject JobDetailsPanel;
+	[SerializeField]
+	ScrollRect ScrollBox;
+
+	GameObject JobDetailsPanel;
 
 	public Widget_Job_Manager(){
 		Name = "Job Manager";
 	}
 
-	public void Start(){
-		DataLoader = FindFirstObjectByType<Data_Loader>();
+	public override void Start(){
+		base.Start();
+
 		JobManager = FindFirstObjectByType<Job_Manager>();
 
 		JobManager.OnJobQueueUpdate.AddListener(UpdateJobList);

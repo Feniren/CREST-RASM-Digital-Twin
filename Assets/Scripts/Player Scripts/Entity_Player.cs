@@ -1,12 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR;
-using UnityEngine.XR.Management;
-using UnityEngine.XR.Interaction.Toolkit.UI;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit.UI;
+using UnityEngine.XR.Management;
 
 public class Entity_Player : Entity, Save_Data_Interface{
     public GameObject HUDReference;
@@ -17,9 +15,11 @@ public class Entity_Player : Entity, Save_Data_Interface{
 	[ReadOnly]
 	public Item_Library ItemLibraryReference;
 
+	[ReadOnly]
+	public Player_Settings PlayerSettings;
+
     public Camera CameraReference;
     public Health_Bar HealthBarReference;
-	public Player_Settings PlayerSettings;
 
 	public static GameObject Instance;
 
@@ -27,6 +27,7 @@ public class Entity_Player : Entity, Save_Data_Interface{
 
 	Player_Controller ControllerReference;
 	Data_Loader DataLoader;
+	XRManagerSettings XRManager;
 
 	public InputSystemUIInputModule DesktopEventSystem;
 	public XRUIInputModule VREventSystem;
@@ -39,90 +40,26 @@ public class Entity_Player : Entity, Save_Data_Interface{
 		GetComponent<Rigidbody>().useGravity = false;
     }
 
-	public void OnDestroy(){
-		if (Instance == gameObject){
-			Instance = null;
-		}
-	}
-
-	public void OnDisable(){
-		SceneManager.sceneLoaded -= OnSceneLoaded;
-	}
-
-	public void OnEnable(){
-		SceneManager.sceneLoaded += OnSceneLoaded;
-	}
-
     public override void Start(){
         base.Start();
 
 		ControllerReference = GetComponent<Player_Controller>();
-		DataLoader = FindFirstObjectByType<Data_Loader>();
+		DataLoader = Data_Loader.GetDataLoader();
 		ItemLibraryReference = DataLoader.ItemLibrary;
-
-		StartCoroutine(LaunchXR(0.1f));
+		XRManager = DataLoader.XRManager;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         Instantiate(HUDReference);
+
+		ConnectXR();
 	}
 
     void Update(){
     }
 
-	public void OnSceneLoaded(Scene scene, LoadSceneMode mode){
-		if (Instance == null){
-			SetLocalPlayer();
-		}
-	}
-
-	public static Entity_Player GetLocalPlayer(){
-		return PlayerReference;
-	}
-
-	private IEnumerator LaunchXR(float Timeout){
-		yield return new WaitForSeconds(Timeout);
-
-		VREventSystem = FindFirstObjectByType<XRUIInputModule>();
-		DesktopEventSystem = FindFirstObjectByType<InputSystemUIInputModule>();
-
-		if (XRSettings.isDeviceActive){
-			VREventSystem.enabled = true;
-			DesktopEventSystem.enabled = false;
-
-			PlayerSettings.XREnabled = true;
-
-			CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
-			LeftHandAnchor.SetActive(true);
-			RightHandAnchor.SetActive(true);
-
-			Debug.Log("XR Device running");
-		}
-		else{
-			XRGeneralSettings.Instance.Manager.DeinitializeLoader();
-
-			VREventSystem.enabled = false;
-			DesktopEventSystem.enabled = true;
-
-			PlayerSettings.XREnabled = false;
-
-			LeftHandAnchor.SetActive(false);
-			RightHandAnchor.SetActive(false);
-
-			Debug.Log("XR Device not detected");
-		}
-
-		SpawnPoint = FindFirstObjectByType<Spawn_Point>().gameObject;
-
-		gameObject.transform.position = SpawnPoint.transform.position;
-
-		ControllerReference.EnableInput();
-
-		GetComponent<Rigidbody>().useGravity = true;
-	}
-
-    public void LoadData(Save_Data SaveData){
+	public void LoadData(Save_Data SaveData){
         gameObject.transform.position = SaveData.PlayerLocation;
         gameObject.transform.rotation = SaveData.PlayerRotation;
         gameObject.transform.localScale = SaveData.PlayerScale;
@@ -138,15 +75,56 @@ public class Entity_Player : Entity, Save_Data_Interface{
 		SaveData.PlayerSettings = PlayerSettings;
     }
 
-	void SetLocalPlayer(){
-		if ((Instance != null) && (Instance != gameObject)){
-			Debug.LogWarning("Reference not set to local player");
+	void ConnectXR(){
+		VREventSystem = FindFirstObjectByType<XRUIInputModule>();
+		DesktopEventSystem = FindFirstObjectByType<InputSystemUIInputModule>();
 
-			return;
+		if (XRManager.activeLoader){
+			if (XRSettings.isDeviceActive){
+				VREventSystem.enabled = true;
+				DesktopEventSystem.enabled = false;
+
+				PlayerSettings.XREnabled = true;
+
+				CameraReference.GetComponent<TrackedPoseDriver>().enabled = true;
+				LeftHandAnchor.SetActive(true);
+				RightHandAnchor.SetActive(true);
+
+				Debug.Log("XR Device running");
+			}
+		}
+		else{
+			VREventSystem.enabled = false;
+			DesktopEventSystem.enabled = true;
+
+			PlayerSettings.XREnabled = false;
+
+			LeftHandAnchor.SetActive(false);
+			RightHandAnchor.SetActive(false);
+
+			Debug.Log("XR Device not detected");
 		}
 
+		Spawn();
+
+		ControllerReference.EnableInput();
+
+		GetComponent<Rigidbody>().useGravity = true;
+	}
+
+	public static Entity_Player GetLocalPlayer(){
+		return PlayerReference;
+	}
+
+	void SetLocalPlayer(){
 		Instance = gameObject;
 		PlayerReference = this;
+	}
+
+	void Spawn(){
+		SpawnPoint = FindFirstObjectByType<Spawn_Point>().gameObject;
+
+		gameObject.transform.position = SpawnPoint.transform.position;
 	}
 
     public override void TakeDamage(Damage_Event DamageEvent){

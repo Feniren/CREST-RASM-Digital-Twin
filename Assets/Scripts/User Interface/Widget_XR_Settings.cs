@@ -36,7 +36,9 @@ public class Widget_XR_Settings : Widget_Parent{
 		RayEndpointInterpolationToggle.ToggleReference.onValueChanged.AddListener(OnRayEndpointInterpolationValueChanged);
 	}
 
-	public void Start(){
+	public override void Start(){
+		base.Start();
+
 		PlayerSettings = Entity_Player.GetLocalPlayer().PlayerSettings;
 
 		RayThicknessSlider.SliderReference.value = PlayerSettings.XRRayThickness;

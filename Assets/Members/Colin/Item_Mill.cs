@@ -2,14 +2,14 @@ using System.Collections;
 using UnityEngine;
 using ProMill8000;
 
-public class Item_Mill : Item_Station{
+public class Item_Mill : Item_CNC_Machine{
 	public Transform ProcessPoint;
 	[SerializeField] private MillingAnimation millingAnimation;
 	public Item_Robot_Arm RobotArm;
 
 	private bool _isProcessing;
 
-	public override bool IsProcessing => _isProcessing;
+	//public override bool IsProcessing => _isProcessing;
 
 	public Item_Mill(){
 		Name = "Mill";
@@ -21,7 +21,7 @@ public class Item_Mill : Item_Station{
 		base.Start();
 	}
 
-	public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
+	/*public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
 		if (_isProcessing) return;
 		StartCoroutine(ProcessCoroutine(table, queue, spline));
 	}
@@ -86,7 +86,7 @@ public class Item_Mill : Item_Station{
 		spline.Play();
 
 		_isProcessing = false;
-	}
+	}*/
 
 	public override void Interact(Entity_Player PlayerReference){
 		base.Interact(PlayerReference);
