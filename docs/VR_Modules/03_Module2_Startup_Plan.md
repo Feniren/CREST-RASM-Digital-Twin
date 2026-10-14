@@ -127,6 +127,10 @@ unchanged, not restated here).
 
 Both panels are dark/inert until their PC's power button has been pressed (screen-off material → UI).
 
+**Superseded for the mill panel:** `06_CNCBase_Mockup/` plans a scope-reduced CNCBase mockup that drives
+the ProMill 8000 live (jog moves real axes, DRO reads real positions, Run drives `MillingAnimation`). The
+SCORBASE panel above is unchanged.
+
 ---
 
 ## Lab Verification Checklist
@@ -160,7 +164,7 @@ this lab's hardware. Verify on-site before the module is considered accurate:
 **Reuse / extend**
 - Bootstrap scene, `Module_Loader`, `Lesson_Sequencer`, `Lesson_Controller` (built in M1 — unchanged)
 - `Training_Builder.cs` — extend generation to Module 2 (scene, markers, lesson asset, menu button)
-- Mill prefab (`reconstructedPM8000`), rigged GP8 arm model, `02_HUD_and_Interaction_Pattern.md` UX layer
+- Mill prefab (`IntellitekMill_Training`, nesting `ClassifyIntellitekMill` — replaced `reconstructedPM8000` 2026-08-06), rigged GP8 arm model, `02_HUD_and_Interaction_Pattern.md` UX layer
 
 ---
 

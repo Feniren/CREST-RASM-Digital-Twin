@@ -64,8 +64,8 @@ additively; without a headset, desktop fallback runs in-editor.
 
 ## Phase 2 — Guided-Lesson System (new, reusable code)
 
-The one genuine gap. New scripts under `Assets/Scripts/Training/`, modeled on the existing `Job_Queue` FIFO
-pattern (`Assets/Scripts/Job_System/`).
+The one genuine gap. New scripts under `Assets/Scripts/Training/`, modeled on the existing `Job_Manager` FIFO
+pattern (`Assets/Scripts/Job System/`).
 
 ### `Lesson_Step`
 Serializable class / ScriptableObject describing one step:
@@ -76,7 +76,7 @@ Serializable class / ScriptableObject describing one step:
 - success condition.
 
 ### `Lesson_Sequencer` (MonoBehaviour)
-Drives an ordered `List<Lesson_Step>` (FIFO, mirrors `Job_Queue.jobPeek` / `jobPop`):
+Drives an ordered `List<Lesson_Step>` (FIFO, mirrors `Job_Manager.RunJob` / `DequeueJob`):
 - highlights the current target via the **XRI Fresnel affordance**;
 - shows the prompt on a world-space canvas;
 - waits for the correct interaction, then advances;
@@ -132,8 +132,10 @@ the model, with an on-screen axis indicator:
 | Z | 270 mm | spindle up–down |
 
 ### 3.4 Milling-operation demo
-Call `MillingAnimation.Play()` (`MillingAnimation.cs`) to show the cutting sequence (plunge → square →
-retract) on a perspex block using `Blue_Glass.mat` / `Epoxy.mat`.
+The `milling_demo` step runs a real NC program (`Assets/StreamingAssets/NC/01_pocket.nc`) through the NC
+demo's runtime (`NC_Runner` / `NC_Mill_Link`, see `Assets/Members/Colin/NC_Demo/README.md`) on the epoxy
+block in the vise: guard closes, T1 plunges and cuts a 60 × 40 mm pocket 3 mm deep, the machine homes, guard
+opens. `MillingAnimation` is no longer used by Module 1.
 
 ### 3.5 Practice + assessment
 Same scene, help removed:
@@ -174,8 +176,8 @@ Same scene, help removed:
    in-editor.
 3. **Guided flow:** each of the 6 components highlights on hover; its prompt shows; selecting the correct one
    advances the sequencer; a wrong selection does not.
-4. **Demos:** axis-motion demo drives X/Y/Z correctly; `MillingAnimation.Play()` runs the full sequence on
-   the perspex block.
+4. **Demos:** axis-motion demo drives X/Y/Z correctly; the milling demo runs `01_pocket.nc` to completion on
+   the epoxy block (pocket visible, machine homed, doors open) and advances the lesson.
 5. **Practice mode:** prompts + highlights suppressed; quiz records answers; pass-gate enforces ≥ 4/6 before
    "complete."
 6. **Persistence:** complete the module, restart, confirm progress + quiz score reload via

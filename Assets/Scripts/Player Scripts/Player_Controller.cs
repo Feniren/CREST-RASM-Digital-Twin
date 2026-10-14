@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
+using UnityEngine.InputSystem.XR;
 
 public class Player_Controller : Controller{
     public InputAction InputSystem;
@@ -16,6 +18,7 @@ public class Player_Controller : Controller{
 	public GameObject ItemInstance = null;
     public GameObject LeftHand;
     public GameObject RightHand;
+	public GameObject ActiveWidget = null;
 
     Player_Input PlayerInput;
 
@@ -30,7 +33,6 @@ public class Player_Controller : Controller{
     private void Awake(){
         PlayerInput = new Player_Input();
 
-        PlayerInput.Player.Enable();
         PlayerInput.Player.EquipItem.performed += EquipItem;
         PlayerInput.Player.Interact.performed += Interact;
         PlayerInput.Player.AlternateInteract.performed += AlternateInteract;
@@ -41,6 +43,7 @@ public class Player_Controller : Controller{
         PlayerInput.Player.Move.canceled += StopMoving;
         PlayerInput.Player.ResetPosition.performed += ResetPosition;
 		PlayerInput.Player.ToggleBag.performed += ToggleBag;
+		PlayerInput.Player.SystemMenu.performed += CreateSystemMenu;
         PlayerInput.Player.ShootPhysical.performed += LeftClick;
         //PlayerInput.Player.ShootSpell.performed += ShootSpell;
         PlayerInput.Player.SwitchCameraPerspective.performed += SwitchCameraPerspective;
@@ -62,7 +65,7 @@ public class Player_Controller : Controller{
 
         MovementVelocity = Vector2.zero;
         ControlRotation = Vector2.zero;
-    }
+	}
 
     private void OnEnable(){
         //InputSystem.Enable();
@@ -75,7 +78,7 @@ public class Player_Controller : Controller{
     }
 
     private void FixedUpdate(){
-        Vector3 Movement = ((PlayerReference.CameraReference.transform.right * MovementVelocity.x) + (PlayerReference.CameraReference.transform.forward * MovementVelocity.y));
+		Vector3 Movement = ((transform.right * MovementVelocity.x) + (transform.forward * MovementVelocity.y));
 
         Movement.y = RigidBodyReference.linearVelocity.y;
 
@@ -94,7 +97,7 @@ public class Player_Controller : Controller{
     public void Interact(InputAction.CallbackContext Context){
         RaycastHit Hit;
 
-        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
             if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().Interact(PlayerReference);
             }
@@ -104,12 +107,20 @@ public class Player_Controller : Controller{
     public void AlternateInteract(InputAction.CallbackContext Context){
         RaycastHit Hit;
 
-        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
+        if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
 			if (Hit.collider.gameObject.GetComponentInParent<Item_Parent>()){
                 Hit.collider.gameObject.GetComponentInParent<Item_Parent>().AlternateInteract(PlayerReference);
 			}
         }
     }
+
+	public void DisableInput(){
+		PlayerInput.Disable();
+	}
+
+	public void EnableInput(){
+		PlayerInput.Enable();
+	}
 
 	public void EquipItem(InputAction.CallbackContext Context){
 		if (Context.performed){
@@ -135,10 +146,7 @@ public class Player_Controller : Controller{
 
 					ItemInstance.transform.position = PlayerReference.ItemAnchor.transform.position;
 
-					Debug.Log("Item created at " + ItemInstance.transform.position);
-
 					PlayerInput.ItemEquipped.Enable();
-					PlayerInput.Player.ShootPhysical.Disable();
 				}
 			}
 		}
@@ -213,9 +221,30 @@ public class Player_Controller : Controller{
 	public void LeftClick(InputAction.CallbackContext Context){
 		RaycastHit Hit;
 
-		if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 100.0f, 1)){
-			if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
-				Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			if (Physics.Raycast(PlayerReference.CameraReference.transform.position, PlayerReference.CameraReference.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
+			}
+		}
+		else{
+			GameObject ActiveHand;
+
+			if (Context.control.device.usages.IndexOf(x => x == CommonUsages.LeftHand) >= 0){
+				ActiveHand = LeftHand;
+			}
+			else if (Context.control.device.usages.IndexOf(x => x == CommonUsages.RightHand) >= 0){
+				ActiveHand = RightHand;
+			}
+			else{
+				return;
+			}
+
+			if (Physics.Raycast(ActiveHand.transform.position, ActiveHand.transform.TransformDirection(Vector3.forward), out Hit, 10.0f, 1)){
+				if (Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>()){
+					Hit.collider.gameObject.GetComponentInParent<Interactable_Parent>().Interact(PlayerReference);
+				}
 			}
 		}
 	}
@@ -292,9 +321,26 @@ public class Player_Controller : Controller{
         else{
             PlayerReference.CameraReference.transform.localPosition = ThirdPersonCameraLocation;
         }
-
-        Debug.Log(PlayerReference.CameraReference.transform.localPosition);
     }
+
+	public void CreateSystemMenu(InputAction.CallbackContext Context){
+		Vector3 Position;
+
+		if (!PlayerReference.PlayerSettings.XREnabled){
+			Position = (transform.position + (transform.forward * 2.0f));
+		}
+		else{
+			Position = (LeftHand.transform.position + (transform.forward * 2.0f));
+		}
+
+		if (ActiveWidget == null){
+			ActiveWidget = Instantiate(FindFirstObjectByType<Data_Loader>().WidgetLibrary.GetWidgetFromName("System"), Position, transform.rotation);
+		}
+		else{
+			ActiveWidget.transform.position = Position;
+			ActiveWidget.transform.rotation = transform.rotation;
+		}
+	}
 
 	public void ThrowItem(InputAction.CallbackContext Context){
 		float ElapsedThrowTime;

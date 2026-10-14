@@ -4,9 +4,16 @@ namespace ProMill8000
 {
     public enum MovementAxis { X, Y, Z }
 
+    /// <summary>
+    /// Slides this transform, plus any dependents, along one of its OWN local axes. The axis is
+    /// declared in the drive's frame, so a mill instance can sit at any rotation in a scene and
+    /// the declaration stays right; anything that needs the direction in world space reads
+    /// WorldDirection. Positions along the axis are scalar projections onto that direction.
+    /// </summary>
     public class AxisMovement : MonoBehaviour
     {
         [Header("Axis Configuration")]
+        [Tooltip("Local axis of this transform to slide along")]
         [SerializeField] private MovementAxis axis = MovementAxis.Y;
         [SerializeField] private float speed = 1f;
 
@@ -22,11 +29,26 @@ namespace ProMill8000
         private float _originPosition;
         private float? _targetPosition;
 
-        public float CurrentPosition => GetAxisValue(transform.position);
+        public float CurrentPosition => Vector3.Dot(transform.position, WorldDirection);
 
         public bool IsMoving => _targetPosition.HasValue;
 
         public float OffsetFromOrigin => CurrentPosition - _originPosition;
+
+        public MovementAxis Axis => axis;
+
+        /// <summary>Unit vector of the drive axis in world space.</summary>
+        public Vector3 WorldDirection => transform.TransformDirection(LocalDirection);
+
+        private Vector3 LocalDirection
+        {
+            get
+            {
+                if (axis == MovementAxis.X) return Vector3.right;
+                if (axis == MovementAxis.Z) return Vector3.forward;
+                return Vector3.up;
+            }
+        }
 
         private void Awake()
         {
@@ -53,9 +75,9 @@ namespace ProMill8000
             ApplyPosition(Clamp(newPos));
         }
 
-        public void MoveToTarget(float worldPosition)
+        public void MoveToTarget(float axisPosition)
         {
-            _targetPosition = Clamp(worldPosition);
+            _targetPosition = Clamp(axisPosition);
         }
 
         public void MoveToOffset(float offset)
@@ -76,32 +98,18 @@ namespace ProMill8000
 
         private void ApplyPosition(float value)
         {
-            float delta = value - GetAxisValue(transform.position);
-            transform.position = SetAxisValue(transform.position, value);
+            Vector3 direction = WorldDirection;
+            float delta = value - Vector3.Dot(transform.position, direction);
+            transform.position += direction * delta;
 
             if (dependents != null)
             {
                 foreach (Transform dep in dependents)
                 {
                     if (dep != null)
-                        dep.position = SetAxisValue(dep.position, GetAxisValue(dep.position) + delta);
+                        dep.position += direction * delta;
                 }
             }
-        }
-
-        private float GetAxisValue(Vector3 pos)
-        {
-            if (axis == MovementAxis.X) return pos.x;
-            if (axis == MovementAxis.Z) return pos.z;
-            return pos.y;
-        }
-
-        private Vector3 SetAxisValue(Vector3 pos, float value)
-        {
-            if (axis == MovementAxis.X) pos.x = value;
-            else if (axis == MovementAxis.Z) pos.z = value;
-            else pos.y = value;
-            return pos;
         }
 
         private float Clamp(float value)

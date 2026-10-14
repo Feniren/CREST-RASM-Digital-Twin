@@ -1,0 +1,216 @@
+using System;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Lesson_Sequencer : MonoBehaviour{
+    // The lesson this scene implements. Bootstrap still pushes the definition via
+    // Begin(); this is the scene's own record of it — Training_Validator and the
+    // debug menus read it, and Begin() warns if the two ever disagree.
+    public Lesson_Definition Lesson;
+
+    [SerializeField] private Marker_Registry Registry;
+    [SerializeField] private Training_Demo_Controller DemoController;
+
+    [Header("Prompt UI")]
+    [SerializeField] private GameObject PromptPanel;
+    [SerializeField] private TMP_Text PromptText;
+    [SerializeField] private Button ContinueButton;
+
+    [Header("Results UI")]
+    [SerializeField] private GameObject ResultsPanel;
+    [SerializeField] private TMP_Text ResultsText;
+    public Button RetryButton;
+    public Button ReturnButton;
+
+    public event Action<Lesson_Step, int, int> Step_Changed;
+    public event Action<Lesson_Result> Lesson_Completed;
+    public event Action<string> Action_Performed;
+
+    public Lesson_Mode Mode { get; private set; }
+    public Lesson_Step Current_Step => steps != null && stepIndex >= 0 && stepIndex < steps.Count ? steps[stepIndex] : null;
+    public int Step_Index => stepIndex;
+    public int Step_Count => steps != null ? steps.Count : 0;
+
+    private Lesson_Definition definition;
+    private List<Lesson_Step> steps;
+    private int stepIndex;
+    private int correctAnswers;
+    private int quizTotal;
+    private int errors;
+    private readonly HashSet<string> completedActions = new HashSet<string>();
+    private float startTime;
+
+    private void Awake(){
+        ContinueButton.onClick.AddListener(OnContinuePressed);
+
+        if (DemoController != null)
+            DemoController.Demo_Finished += OnDemoFinished;
+
+        PromptPanel.SetActive(false);
+        ResultsPanel.SetActive(false);
+    }
+
+    public void Begin(Lesson_Definition def, Lesson_Mode mode){
+        if (Lesson != null && def != Lesson)
+            Debug.LogWarning($"Lesson_Sequencer: began '{def.name}' but this scene's Lesson is '{Lesson.name}' — Bootstrap and the scene disagree.");
+
+        definition = def;
+        Mode = mode;
+        steps = mode == Lesson_Mode.Guided ? def.Steps : def.Build_Practice_Steps(new System.Random());
+        quizTotal = steps.FindAll(s => s.Kind == Lesson_Step_Kind.Select_Component || s.Kind == Lesson_Step_Kind.Panel_Action).Count;
+        stepIndex = -1;
+        correctAnswers = 0;
+        errors = 0;
+        completedActions.Clear();
+        startTime = Time.time;
+        ResultsPanel.SetActive(false);
+
+        if (Registry != null)
+            Registry.Set_All_Labels_Visible(false);
+
+        if (DemoController != null)
+            DemoController.Stop();
+
+        Advance();
+    }
+
+    public void Notify_Marker_Selected(Component_Marker marker){
+        Lesson_Step step = Current_Step;
+
+        if (step == null || step.Kind != Lesson_Step_Kind.Select_Component)
+            return;
+
+        // Guided identification is a demonstration now, not a click test: the part glides
+        // out of the parts table into place and Continue advances. Clicking the mill does
+        // nothing until the quiz.
+        if (Mode == Lesson_Mode.Guided)
+            return;
+
+        if (marker.Marker_Id == step.Target_Marker_Id)
+            correctAnswers++;
+
+        Advance();
+    }
+
+    public void Notify_Action(string actionId){
+        Lesson_Step step = Current_Step;
+
+        if (step == null || step.Kind != Lesson_Step_Kind.Panel_Action)
+            return;
+
+        // Already performed — ignore (absorbs double-clicks / VR ray jitter).
+        if (completedActions.Contains(actionId))
+            return;
+
+        bool isNext = actionId == step.Target_Marker_Id;
+
+        if (Mode == Lesson_Mode.Guided){
+            if (isNext){
+                completedActions.Add(actionId);
+                Action_Performed?.Invoke(actionId);
+                Advance();
+            }
+            else{
+                PromptText.text = ActivePrompt(step) + "\n<color=#FF6666>Not yet — follow the highlighted step.</color>";
+            }
+        }
+        else{
+            if (isNext){
+                correctAnswers++;
+                completedActions.Add(actionId);
+                Action_Performed?.Invoke(actionId);
+                Advance();
+            }
+            else{
+                errors++;
+                PromptText.text = ActivePrompt(step) + "\n<color=#FF6666>Out of order — try a different action.</color>";
+            }
+        }
+    }
+
+    public void Show_Results(Lesson_Result result, bool passed){
+        PromptPanel.SetActive(false);
+        ResultsPanel.SetActive(true);
+        string verdict = passed ? "<color=#66FF88>Module complete!</color>" : "<color=#FF6666>Not passed — try again.</color>";
+
+        if (definition.Steps.Exists(s => s.Kind == Lesson_Step_Kind.Panel_Action)){
+            ResultsText.text = $"Actions completed: {result.Correct_Answers} / {result.Quiz_Total}\nOut-of-order errors: {result.Errors}\n\n{verdict}";
+        }
+        else{
+            ResultsText.text = $"Quiz score: {result.Correct_Answers} / {result.Quiz_Total}\n\n{verdict}";
+        }
+
+        RetryButton.gameObject.SetActive(!passed);
+    }
+
+    private void OnContinuePressed(){
+        if (Current_Step != null && Continues_On_Button(Current_Step))
+            Advance();
+    }
+
+    // Info steps have always been Continue-driven; guided Select_Component steps are too,
+    // because the trainee watches the part glide into place rather than hunting for it.
+    // The quiz keeps click-to-select, so this is false there.
+    private bool Continues_On_Button(Lesson_Step step){
+        return step.Kind == Lesson_Step_Kind.Info
+            || (Mode == Lesson_Mode.Guided && step.Kind == Lesson_Step_Kind.Select_Component);
+    }
+
+    private void OnDemoFinished(){
+        Lesson_Step step = Current_Step;
+
+        if (step != null && Is_Demo_Kind(step.Kind))
+            Advance();
+    }
+
+    // Anything that isn't Info / Select_Component / Panel_Action is a demo-style
+    // step: the sequencer hands it to the scene's Training_Demo_Controller and
+    // waits for Demo_Finished. New Lesson_Step_Kind values need no changes here.
+    private static bool Is_Demo_Kind(Lesson_Step_Kind kind){
+        return kind != Lesson_Step_Kind.Info
+            && kind != Lesson_Step_Kind.Select_Component
+            && kind != Lesson_Step_Kind.Panel_Action;
+    }
+
+    private void Advance(){
+        stepIndex++;
+
+        if (stepIndex >= steps.Count){
+            Complete();
+            return;
+        }
+
+        Lesson_Step step = steps[stepIndex];
+        PromptPanel.SetActive(true);
+        PromptText.text = ActivePrompt(step);
+        ContinueButton.gameObject.SetActive(Continues_On_Button(step));
+
+        Step_Changed?.Invoke(step, stepIndex, steps.Count);
+
+        if (Is_Demo_Kind(step.Kind) && DemoController != null)
+            DemoController.Play(step);
+    }
+
+    private void Complete(){
+        PromptPanel.SetActive(false);
+
+        Lesson_Result result = new Lesson_Result{
+            Module_Id = definition.Module_Id,
+            Mode = Mode,
+            Correct_Answers = correctAnswers,
+            Quiz_Total = quizTotal,
+            Errors = errors,
+            Elapsed_Seconds = Time.time - startTime
+        };
+
+        Lesson_Completed?.Invoke(result);
+    }
+
+    private string ActivePrompt(Lesson_Step step){
+        if (Mode == Lesson_Mode.Practice && !string.IsNullOrEmpty(step.Practice_Prompt_Text))
+            return step.Practice_Prompt_Text;
+        return step.Prompt_Text;
+    }
+}
