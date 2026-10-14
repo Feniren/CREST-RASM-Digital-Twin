@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
   m_Name: LM2_Lesson
   m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
-  Module_Id: M2
+  Module_Id: LM2
   Scene_Name: Module2_Startup
   Display_Name: "M2 \u2014 System Startup & Program Execution"
   Steps:

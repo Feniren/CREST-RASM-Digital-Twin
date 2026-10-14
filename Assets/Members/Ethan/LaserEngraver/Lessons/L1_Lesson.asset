@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
+  m_Name: L1_Lesson
+  m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
+  Module_Id: LM1
+  Scene_Name: LaserModule1_Components
+  Display_Name: "M1 \u2014 Laser Engraver Components"
+  Steps:
+  - Step_Id: intro_laser
+    Kind: 0
+    Prompt_Text: "Welcome to the laser engraver \u2014 the marking station of the
+      cell. A focused CO2 laser beam burns or vaporizes a thin layer of the workpiece
+      surface, so it can engrave text and images without touching the part.\n\nPress
+      Continue."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: laser_head
+    Kind: 1
+    Prompt_Text: "This is the LASER HEAD \u2014 the carriage that rides along the
+      motion arm. It holds the focus lens and points the beam straight down onto
+      the workpiece.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Laser Head'
+    Target_Marker_Id: laser_head
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: bed
+    Kind: 1
+    Prompt_Text: "This is the BED \u2014 the engraving table the workpiece sits on.
+      It raises and lowers in Z to set the focus distance between the lens and the
+      surface.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Bed'
+    Target_Marker_Id: bed
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: optics
+    Kind: 1
+    Prompt_Text: "These are the OPTICS \u2014 the mirrors and focus lens that steer
+      the beam from the laser cartridge to the laser head. Dirty optics lose power
+      and can crack, so keep them clean.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Optics'
+    Target_Marker_Id: optics
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: exhaust
+    Kind: 1
+    Prompt_Text: "This is the EXHAUST \u2014 the openings at the back of the engraving
+      area that pull smoke and fumes out to the fume extractor. The exhaust must
+      be running whenever the laser fires.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Exhaust'
+    Target_Marker_Id: exhaust
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: control_interface
+    Kind: 1
+    Prompt_Text: "This is the CONTROL INTERFACE \u2014 the machine's control panel.
+      It starts, pauses and stops jobs, jogs the bed for focus, and shows machine
+      status.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Control Interface'
+    Target_Marker_Id: control_interface
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: interlocks
+    Kind: 1
+    Prompt_Text: "These are the INTERLOCKS \u2014 safety switches at the front corners
+      of the lid that shut the laser off the moment the lid opens. Never bypass or
+      defeat them.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Interlocks'
+    Target_Marker_Id: interlocks
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: guided_done
+    Kind: 0
+    Prompt_Text: 'That''s the tour. Next you''ll be asked to find each component
+      yourself.
+
+
+      Press Continue.'
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  Quiz_Pass_Threshold: 4
+  Practice_Shuffles_Quiz: 1

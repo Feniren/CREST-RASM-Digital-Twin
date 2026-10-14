@@ -109,15 +109,10 @@ public static class Training_Validator{
 
     // A lesson that validates clean but is not in Lesson_Controller.AvailableModules
     // never appears on the menu — the old registry check covered this; a GUID scan
-    // of the committed Bootstrap scene covers it now.
+    // of the committed Bootstrap scenes covers it now.
     private static void CheckBootstrapReferences(Lesson_Definition lesson, List<string> warnings){
-        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(lesson));
-
-        if (!System.IO.File.Exists(Training_Play_Redirect.BootstrapScenePath))
-            return;
-
-        if (!System.IO.File.ReadAllText(Training_Play_Redirect.BootstrapScenePath).Contains(guid))
-            warnings.Add($"'{lesson.name}' is not referenced by Bootstrap.unity — add it to Lesson_Controller.AvailableModules or it will never appear in the menu.");
+        if (Training_Play_Redirect.FindBootstrapFor(lesson) == null)
+            warnings.Add($"'{lesson.name}' is not referenced by any Bootstrap scene — add it to Lesson_Controller.AvailableModules or it will never appear in the menu.");
     }
 
     // Every unconditional field here is dereferenced without a null check somewhere

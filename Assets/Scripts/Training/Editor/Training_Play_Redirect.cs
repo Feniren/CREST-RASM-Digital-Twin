@@ -9,15 +9,20 @@ using UnityEngine.SceneManagement;
 // makes Play start Bootstrap instead and auto-enters the module that was open,
 // through the normal Lesson_Controller.Start_Module path.
 // A module scene is recognized by containing a Lesson_Sequencer (Bootstrap does
-// not); Bootstrap's path is the single const below.
+// not). Each station has its own Bootstrap (listed below); the redirect starts
+// whichever one lists the open module's lesson in AvailableModules.
 // Note: playModeStartScene is ignored if "Enter Play Mode Options -> Reload
 // Scene" is ever disabled — the redirect silently stops working in that case.
 [InitializeOnLoad]
 public static class Training_Play_Redirect{
     private const string AutoStartKey = "Training.AutoStartScene";
 
-    // Shared with Training_Validator's Bootstrap-reference check.
-    internal const string BootstrapScenePath = "Assets/Members/Colin/Scenes/Bootstrap.unity";
+    // Shared with Training_Validator's Bootstrap-reference check. The first
+    // entry is the fallback when no Bootstrap references the module's lesson.
+    internal static readonly string[] BootstrapScenePaths = {
+        "Assets/Members/Colin/Scenes/Bootstrap.unity",
+        "Assets/Members/Ethan/LaserEngraver/LaserBootstrap.unity",
+    };
 
     private static bool autoStartHooked;
     private static bool autoStartDone;
@@ -35,25 +40,43 @@ public static class Training_Play_Redirect{
 
     // Mirrors Lesson_Controller.OnModuleLoaded: a module scene is one with a
     // Lesson_Sequencer in it.
-    private static bool IsModuleScene(Scene scene){
+    private static Lesson_Sequencer FindSequencer(Scene scene){
         if (!scene.IsValid() || !scene.isLoaded)
-            return false;
+            return null;
 
-        foreach (GameObject root in scene.GetRootGameObjects())
-            if (root.GetComponentInChildren<Lesson_Sequencer>(true) != null)
-                return true;
+        foreach (GameObject root in scene.GetRootGameObjects()){
+            Lesson_Sequencer sequencer = root.GetComponentInChildren<Lesson_Sequencer>(true);
 
-        return false;
+            if (sequencer != null)
+                return sequencer;
+        }
+
+        return null;
+    }
+
+    // GUID scan of the committed Bootstrap scenes, same as Training_Validator.
+    internal static string FindBootstrapFor(Lesson_Definition lesson){
+        string guid = lesson != null ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(lesson)) : null;
+
+        if (!string.IsNullOrEmpty(guid))
+            foreach (string path in BootstrapScenePaths)
+                if (System.IO.File.Exists(path) && System.IO.File.ReadAllText(path).Contains(guid))
+                    return path;
+
+        return null;
     }
 
     private static void Refresh(){
         Scene activeScene = SceneManager.GetActiveScene();
 
-        if (IsModuleScene(activeScene)){
-            SceneAsset bootstrap = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootstrapScenePath);
+        Lesson_Sequencer sequencer = FindSequencer(activeScene);
+
+        if (sequencer != null){
+            string bootstrapPath = FindBootstrapFor(sequencer.Lesson) ?? BootstrapScenePaths[0];
+            SceneAsset bootstrap = AssetDatabase.LoadAssetAtPath<SceneAsset>(bootstrapPath);
 
             if (bootstrap == null){
-                Debug.LogError($"Training_Play_Redirect: no scene at '{BootstrapScenePath}' — update BootstrapScenePath.");
+                Debug.LogError($"Training_Play_Redirect: no scene at '{bootstrapPath}' — update BootstrapScenePaths.");
                 EditorSceneManager.playModeStartScene = null;
                 SessionState.EraseString(AutoStartKey);
                 return;

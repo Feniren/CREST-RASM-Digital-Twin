@@ -26,6 +26,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Members/Ethan/RobotArm/Arm-Module.unity
     guid: 4165e5dd05783c740a5567e27e686760
+  - enabled: 1
+    path: Assets/Members/Ethan/LaserEngraver/LaserBootstrap.unity
+    guid: 3900a5478ce242188bad20e32e0f97b4
+  - enabled: 1
+    path: Assets/Members/Ethan/LaserEngraver/LaserModule1_Components.unity
+    guid: e9226f8dcd1bc43d1b49d332fd214bf1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 716874782a15f004b8ba33b1db74f011, type: 2}
