@@ -46,9 +46,9 @@ MonoBehaviour:
     Include_In_Quiz: 1
   - Step_Id: optics
     Kind: 1
-    Prompt_Text: "These are the OPTICS \u2014 the focus lens at the bottom of the laser
-      head, fed by mirrors that steer the beam from the laser cartridge. Dirty optics
-      lose power and can crack, so keep them clean.\n\nPress Continue."
+    Prompt_Text: "These are the OPTICS \u2014 the mirrors and focus lens that steer
+      the beam from the laser cartridge to the laser head. Dirty optics lose power
+      and can crack, so keep them clean.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Optics'
     Target_Marker_Id: optics
     Narration: {fileID: 0}
@@ -56,9 +56,8 @@ MonoBehaviour:
   - Step_Id: exhaust
     Kind: 1
     Prompt_Text: "This is the EXHAUST \u2014 the openings at the back of the engraving
-      area where smoke and fumes leave the machine. A separate fume extractor attaches
-      to the outside of the engraver and sucks the exhaust out, so it must be running
-      whenever the laser fires.\n\nPress Continue."
+      area that pull smoke and fumes out to the fume extractor. The exhaust must
+      be running whenever the laser fires.\n\nPress Continue."
     Practice_Prompt_Text: 'Select the: Exhaust'
     Target_Marker_Id: exhaust
     Narration: {fileID: 0}
