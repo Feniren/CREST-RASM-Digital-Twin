@@ -19,9 +19,4 @@ public class Marker_Registry : MonoBehaviour{
     public Component_Marker Resolve(string id){
         return id != null && markers.TryGetValue(id, out Component_Marker marker) ? marker : null;
     }
-
-    public void Set_All_Labels_Visible(bool visible){
-        foreach (Component_Marker marker in markers.Values)
-            marker.Set_Label_Visible(visible);
-    }
 }

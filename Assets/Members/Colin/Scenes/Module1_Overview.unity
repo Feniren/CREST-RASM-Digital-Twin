@@ -731,10 +731,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.19999999
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.0662
@@ -802,10 +798,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_spindle_head
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Spindle Head
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -2503,10 +2495,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.13017176
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.275
@@ -2574,10 +2562,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_door_unlock
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Door Unlock
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -6015,10 +5999,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.52235
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.082
@@ -6086,10 +6066,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_electronics_cabinet
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Electronics Cabinet
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -6704,10 +6680,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.19999999
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.0748
@@ -6775,10 +6747,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_spindle_motor
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Spindle Motor
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -7320,10 +7288,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.1634437
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.0751
@@ -7391,10 +7355,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_vice
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Vise
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -9546,10 +9506,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.16491397
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.17656697
@@ -9617,10 +9573,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_power_on
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Power On
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -11951,10 +11903,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.14415085
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.278
@@ -12022,10 +11970,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_emergency_stop
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Emergency Stop Button
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -12424,10 +12368,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1002723542}
     m_Modifications:
-    - target: {fileID: 1765122034676027922, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.5001608
-      objectReference: {fileID: 0}
     - target: {fileID: 2056423439414706789, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.32394928
@@ -12495,10 +12435,6 @@ PrefabInstance:
     - target: {fileID: 2837475375676683198, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: m_Name
       value: Marker_guard_door
-      objectReference: {fileID: 0}
-    - target: {fileID: 4928343456739607550, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
-      propertyPath: m_text
-      value: Guard Door
       objectReference: {fileID: 0}
     - target: {fileID: 7036953738808987681, guid: 9d82dca29e4ca454ea686b3f4d7b3184, type: 3}
       propertyPath: Marker_Id
@@ -12705,7 +12641,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lesson_Sequencer
   Lesson: {fileID: 11400000, guid: 347ae1e0a6ecfd145a9045e5f0ba5116, type: 2}
-  Registry: {fileID: 1758252714}
   DemoController: {fileID: 1758252712}
   PromptPanel: {fileID: 1159278514}
   PromptText: {fileID: 1159278513}

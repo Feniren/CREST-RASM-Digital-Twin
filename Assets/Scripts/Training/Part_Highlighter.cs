@@ -36,10 +36,8 @@ public class Part_Highlighter : MonoBehaviour{
 
         currentTarget = Registry.Resolve(step.Target_Marker_Id);
 
-        if (currentTarget != null){
+        if (currentTarget != null)
             currentTarget.Set_Persistent_Glow(true, TargetGlow);
-            currentTarget.Set_Label_Visible(true);
-        }
     }
 
     private void OnLessonCompleted(Lesson_Result result){
@@ -57,10 +55,8 @@ public class Part_Highlighter : MonoBehaviour{
     }
 
     private void ClearTarget(){
-        if (currentTarget != null){
+        if (currentTarget != null)
             currentTarget.Set_Persistent_Glow(false, TargetGlow);
-            currentTarget.Set_Label_Visible(false);
-        }
 
         currentTarget = null;
     }

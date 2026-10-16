@@ -8,7 +8,6 @@ public class Component_Marker : MonoBehaviour{
     public string Display_Name;
 
     [SerializeField] private Renderer GlowShell;
-    [SerializeField] private GameObject LabelRoot;
 
     public event Action<Component_Marker> Selected;
     public event Action<Component_Marker, bool> Hover_Changed;
@@ -62,11 +61,6 @@ public class Component_Marker : MonoBehaviour{
     public void Clear_Hover_Tint(){
         hoverOn = false;
         Refresh();
-    }
-
-    public void Set_Label_Visible(bool visible){
-        if (LabelRoot != null)
-            LabelRoot.SetActive(visible);
     }
 
     // Selection entry point shared by XRI select and Desktop_Click_Select —

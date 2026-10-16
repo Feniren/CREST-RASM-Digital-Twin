@@ -10,7 +10,6 @@ public class Lesson_Sequencer : MonoBehaviour{
     // debug menus read it, and Begin() warns if the two ever disagree.
     public Lesson_Definition Lesson;
 
-    [SerializeField] private Marker_Registry Registry;
     [SerializeField] private Training_Demo_Controller DemoController;
 
     [Header("Prompt UI")]
@@ -66,9 +65,6 @@ public class Lesson_Sequencer : MonoBehaviour{
         completedActions.Clear();
         startTime = Time.time;
         ResultsPanel.SetActive(false);
-
-        if (Registry != null)
-            Registry.Set_All_Labels_Visible(false);
 
         if (DemoController != null)
             DemoController.Stop();

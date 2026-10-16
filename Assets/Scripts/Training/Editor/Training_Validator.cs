@@ -31,7 +31,7 @@ public static class Training_Validator{
         }
         else{
             lesson = FindLesson(sequencer, scene, errors);
-            CheckSequencerRefs(sequencer, lesson, errors);
+            CheckSequencerRefs(sequencer, errors);
         }
 
         CheckBuildSettings(scene, errors);
@@ -122,9 +122,7 @@ public static class Training_Validator{
 
     // Every unconditional field here is dereferenced without a null check somewhere
     // in Lesson_Sequencer.Awake or Begin, so an empty slot is a play-mode exception.
-    // Registry is null-guarded at runtime and only needed by Select_Component steps
-    // (M2 has none and legitimately leaves it empty).
-    private static void CheckSequencerRefs(Lesson_Sequencer sequencer, Lesson_Definition lesson, List<string> errors){
+    private static void CheckSequencerRefs(Lesson_Sequencer sequencer, List<string> errors){
         string[] required = { "PromptPanel", "PromptText", "ContinueButton", "ResultsPanel", "ResultsText" };
         SerializedObject so = new SerializedObject(sequencer);
 
@@ -135,15 +133,6 @@ public static class Training_Validator{
                 errors.Add($"Lesson_Sequencer has no field '{field}' — this validator is out of date with the runtime.");
             else if (prop.objectReferenceValue == null)
                 errors.Add($"Lesson_Sequencer.{field} is empty.");
-        }
-
-        if (lesson != null && lesson.Steps.Exists(s => s.Kind == Lesson_Step_Kind.Select_Component)){
-            SerializedProperty registryProp = so.FindProperty("Registry");
-
-            if (registryProp == null)
-                errors.Add("Lesson_Sequencer has no field 'Registry' — this validator is out of date with the runtime.");
-            else if (registryProp.objectReferenceValue == null)
-                errors.Add("Lesson_Sequencer.Registry is empty but the lesson has Select_Component steps.");
         }
 
         if (sequencer.RetryButton == null) errors.Add("Lesson_Sequencer.RetryButton is empty.");
