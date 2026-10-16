@@ -93,9 +93,7 @@ GameObject:
   - component: {fileID: 7834885251304694076}
   - component: {fileID: 7610705521141925827}
   - component: {fileID: 1233625388162685855}
-  - component: {fileID: 5468443102082467064}
   - component: {fileID: 3873118223310919134}
-  - component: {fileID: 106264668081930928}
   m_Layer: 5
   m_Name: XRSettingsPanel
   m_TagString: Untagged
@@ -205,27 +203,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
---- !u!65 &5468443102082467064
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1670477113955323098}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 100, y: 100, z: 0.1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3873118223310919134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,18 +219,6 @@ MonoBehaviour:
   RayThicknessSlider: {fileID: 6818130031133229400}
   RayEndpointInterpolationSpeedSlider: {fileID: 4555046254695257299}
   RayEndpointInterpolationToggle: {fileID: 2914737173223746519}
---- !u!114 &106264668081930928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1670477113955323098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4afeec4bf838104faa38b8ef2c57977, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interactable_User_Interface
 --- !u!1 &2819872576204367889
 GameObject:
   m_ObjectHideFlags: 0

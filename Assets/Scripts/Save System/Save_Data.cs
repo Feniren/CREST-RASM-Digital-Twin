@@ -19,6 +19,10 @@ public class Save_Data{
 
 		PlayerSettings.LookSpeedX = 0.5f;
 		PlayerSettings.LookSpeedY = 0.5f;
+		PlayerSettings.ThirdPersonCameraDistance = 2.0f;
+		PlayerSettings.ThirdPersonCameraOffset = new Vector3(0.0f, 2.0f, 0.0f);
+		PlayerSettings.ThirdPersonCameraSpringArmForce = 4.0f;
+		PlayerSettings.ThirdPersonControlRotation = true;
 		PlayerSettings.XRRayEndpointInterpolation = true;
 		PlayerSettings.XRRayEndpointInterpolationSpeed = 0.2f;
 		PlayerSettings.XRRayThickness = 0.05f;

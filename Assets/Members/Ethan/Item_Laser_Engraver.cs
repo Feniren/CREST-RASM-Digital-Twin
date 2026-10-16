@@ -1,15 +1,6 @@
 using UnityEngine;
 
-public class Item_Laser_Engraver : Item_Station{
-
-	private bool _isProcessing;
-
-	public override bool IsProcessing => _isProcessing;
-
-	public override void ProcessItem(Item_Slotted_Table table, Job_Queue queue, Spline_Animate spline){
-		// TODO: implement laser engraver processing
-	}
-
+public class Item_Laser_Engraver : Item_CNC_Machine{
 	public Item_Laser_Engraver(){
 		Name = "Laser Engraver";
 		Pickup = false;

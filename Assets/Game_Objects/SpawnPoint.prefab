@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 500197614073275862}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,4 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68307417c7eec2f438e6c87204f6dfbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawn_Point
+  PlayerPrefab: {fileID: 4042314620155725101, guid: dee4ea75492103e4aa61b05f15f2f089, type: 3}
   SpawnRadius: 0

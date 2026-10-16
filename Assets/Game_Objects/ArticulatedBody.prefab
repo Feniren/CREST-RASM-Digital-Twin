@@ -1203,6 +1203,7 @@ GameObject:
   - component: {fileID: 8864930196609900472}
   - component: {fileID: 4985612207034374277}
   - component: {fileID: 2123934556422569224}
+  - component: {fileID: 6725349803084987261}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1421,6 +1422,27 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+--- !u!114 &6725349803084987261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3739309842971812640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05222bd791bacd549b4a4afc991e519a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Spring_Arm
+  CollisionMask:
+    serializedVersion: 2
+    m_Bits: 1
+  FirstPersonLocation: {x: 0, y: 1.5, z: 0.1}
+  OriginOffset: {x: 0, y: 1.2, z: 0}
+  SphereCastPadding: 0.05
+  SphereCastRadius: 0.2
+  SpringForce: 4
+  TargetArmLength: 2
 --- !u!1 &4042314620155725101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1637,8 +1659,6 @@ MonoBehaviour:
   LeftHandAnchor: {fileID: 708017444173431688}
   RightHandAnchor: {fileID: 5723858274441386849}
   ItemLibraryReference: {fileID: 0}
-  CameraReference: {fileID: 4771338484410660247}
-  HealthBarReference: {fileID: 0}
   PlayerSettings:
     LookSpeedX: 0
     LookSpeedY: 0
@@ -1646,6 +1666,8 @@ MonoBehaviour:
     XRRayEndpointInterpolationSpeed: 0
     XREnabled: 0
     XRRayThickness: 0
+  CameraReference: {fileID: 4771338484410660247}
+  HealthBarReference: {fileID: 0}
   DesktopEventSystem: {fileID: 0}
   VREventSystem: {fileID: 0}
   ActiveHand: {fileID: 0}
