@@ -2,11 +2,16 @@
   <Project Path="Unity.Robotics.UrdfImporter.Editor.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.Robotics.UrdfImporter.csproj" />
-  <Project Path="Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator.csproj" />
-  <Project Path="Unity.Robotics.UrdfImporter.Runtime.Tests.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Unity.XR.Interaction.Toolkit.Samples.DeviceSimulator.csproj" />
+  <Project Path="Carving.csproj" />
+  <Project Path="Unity.Robotics.UrdfImporter.Runtime.Tests.csproj" />
   <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.csproj" />
+  <Project Path="NC.Tests.csproj" />
+  <Project Path="NC.csproj" />
+  <Project Path="Carving.Tests.csproj" />
   <Project Path="vhacd.csproj" />
   <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.Editor.csproj" />
   <Project Path="Unity.Robotics.UrdfImporter.Editor.Tests.csproj" />
+  <Project Path="Carving.Editor.csproj" />
 </Solution>
