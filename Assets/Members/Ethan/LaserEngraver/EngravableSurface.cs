@@ -347,6 +347,42 @@ public sealed class EngravableSurface : MonoBehaviour
     }
 
     /// <summary>
+    /// Estimates atlas pixels per world unit at a hit triangle by comparing
+    /// the triangle's UV area (in atlas pixels) with its world-space area.
+    /// </summary>
+    public bool TryGetAtlasPixelsPerUnit(int triangleIndex, out float pixelsPerUnit)
+    {
+        pixelsPerUnit = 0f;
+
+        if (_runtimeMesh == null || Atlas == null || triangleIndex < 0)
+            return false;
+
+        int[] tris = _runtimeMesh.triangles;
+        int i = triangleIndex * 3;
+        if (i + 2 >= tris.Length) return false;
+
+        Vector3[] verts = _runtimeMesh.vertices;
+        Vector2[] uvs = _runtimeMesh.uv;
+        if (uvs.Length != verts.Length) return false;
+
+        int a = tris[i], b = tris[i + 1], c = tris[i + 2];
+        Transform t = meshFilter.transform;
+
+        float worldArea = 0.5f * Vector3.Cross(
+            t.TransformPoint(verts[b]) - t.TransformPoint(verts[a]),
+            t.TransformPoint(verts[c]) - t.TransformPoint(verts[a])).magnitude;
+
+        Vector2 e1 = uvs[b] - uvs[a];
+        Vector2 e2 = uvs[c] - uvs[a];
+        float uvArea = 0.5f * Mathf.Abs(e1.x * e2.y - e1.y * e2.x);
+
+        if (worldArea <= 1e-9f || uvArea <= 1e-9f) return false;
+
+        pixelsPerUnit = Mathf.Sqrt(uvArea * Atlas.width * Atlas.height / worldArea);
+        return true;
+    }
+
+    /// <summary>
     /// Converts normalized UV coordinates into atlas pixel coordinates.
     /// </summary>
     public Vector2Int UVToAtlasPixel(Vector2 uv)

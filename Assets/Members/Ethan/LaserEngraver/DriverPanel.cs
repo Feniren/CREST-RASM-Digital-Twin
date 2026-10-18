@@ -10,6 +10,8 @@ public class DriverPanel : MonoBehaviour
     public GameObject imagePanel;
     public JobLaserEngrave managedJob;
     public List<Texture2D> images;
+    [Tooltip("Printed image width in inches.")]
+    public float jobWidthInches = 1f;
     public TextMeshProUGUI operationModeText;
 
     // TODO: Get rid of this as soon as LM2ObjManager is replaced
@@ -88,7 +90,7 @@ public class DriverPanel : MonoBehaviour
     void OnImageClicked(int index)
     {
         // TODO: Add height/width settings for the print job
-        managedJob.Image2Engrave = EngraveMask.FromImage(images[index], 100, 100);
+        managedJob.Image2Engrave = EngraveMask.FromImage(images[index], jobWidthInches, 100);
         managedJob.DownloadJob();
         // TODO: Change logic below when LM2ObjManager is replaced
         manager.PrintFileDownloaded();

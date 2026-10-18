@@ -3259,6 +3259,7 @@ MonoBehaviour:
   managedJob: {fileID: 2127056139}
   images:
   - {fileID: 2800000, guid: 351776f8a24f08941816d0761dc5659d, type: 3}
+  jobWidthInches: 1
   operationModeText: {fileID: 1670029461}
   manager: {fileID: 435620178}
   imageContent: {fileID: 1110749530}
@@ -11060,7 +11061,7 @@ Transform:
   m_GameObject: {fileID: 8164078559908102849}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -5.6843392e-14, w: 1}
-  m_LocalPosition: {x: 0, y: -3.5315967, z: 0}
+  m_LocalPosition: {x: 2.35, y: -3.5315967, z: 2.31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26892,6 +26893,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Laser_Head
   intensity: 0.8
   atlasPixelsPerInch: 100
+  unitsToMeters: 1
   engravingLayerMask:
     serializedVersion: 2
     m_Bits: 131072

@@ -6,7 +6,11 @@ public class Laser_Head : MonoBehaviour
 	public float intensity = 100f;
 	public EngraveMask ActiveMask;
 
+	[Tooltip("Fallback scale, used only if it can't be measured from the surface.")]
 	public float atlasPixelsPerInch = 100f;
+
+	[Tooltip("World units per meter. 1 if one Unity unit is one meter.")]
+	public float unitsToMeters = 1f;
 
 	[Tooltip("Only layers containing engraving proxy colliders.")]
 	public LayerMask engravingLayerMask;
@@ -133,7 +137,13 @@ public class Laser_Head : MonoBehaviour
 
 		surface.ClearRevealMask();
 
-		Texture2D mask = ActiveMask.GetResampledMask(atlasPixelsPerInch);
+		float ppi = atlasPixelsPerInch;
+		if (surface.TryGetAtlasPixelsPerUnit(hit.triangleIndex, out float pixelsPerUnit))
+			ppi = pixelsPerUnit / (unitsToMeters * 39.3701f);
+		else
+			Debug.LogWarning("[Laser_Head] Could not measure atlas scale; using atlasPixelsPerInch.", this);
+
+		Texture2D mask = ActiveMask.GetResampledMask(ppi);
 
 		if (mask == null)
 		{
