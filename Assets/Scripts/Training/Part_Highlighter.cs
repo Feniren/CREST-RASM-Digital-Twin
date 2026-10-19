@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Part_Highlighter : MonoBehaviour{
@@ -11,6 +12,7 @@ public class Part_Highlighter : MonoBehaviour{
 
     private Component_Marker currentTarget;
     private Step_Demonstrator demonstrator;
+    private readonly HashSet<Component_Marker> hovered = new HashSet<Component_Marker>();
 
     private void Awake(){
         demonstrator = GetComponent<Step_Demonstrator>();
@@ -25,6 +27,7 @@ public class Part_Highlighter : MonoBehaviour{
 
     private void OnStepChanged(Lesson_Step step, int index, int count){
         ClearTarget();
+        Refresh_Hover();
 
         if (Sequencer.Mode != Lesson_Mode.Guided || step.Kind != Lesson_Step_Kind.Select_Component)
             return;
@@ -42,16 +45,40 @@ public class Part_Highlighter : MonoBehaviour{
 
     private void OnLessonCompleted(Lesson_Result result){
         ClearTarget();
+        Refresh_Hover();
     }
 
-    // Both modes: the quiz needs it to show what is about to be picked, and it costs
-    // nothing in the guided tour. The persistent target glow stays Guided-only — that is
-    // the one that would give the answer away.
+    // The hover tint shows what is about to be picked, so it only appears while a quiz
+    // question is up — nothing is pickable in the tour or around it. The persistent target
+    // glow stays Guided-only; that is the one that would give the answer away.
     private void OnHoverChanged(Component_Marker marker, bool entered){
         if (entered)
+            hovered.Add(marker);
+        else
+            hovered.Remove(marker);
+
+        Set_Hover(marker, entered && Quiz_Active());
+    }
+
+    // A pointer already resting on a part when the quiz starts or ends raises no hover
+    // event, so step changes re-apply the tint to whatever is hovered.
+    private void Refresh_Hover(){
+        bool on = Quiz_Active();
+
+        foreach (Component_Marker marker in hovered)
+            Set_Hover(marker, on);
+    }
+
+    private void Set_Hover(Component_Marker marker, bool on){
+        if (on)
             marker.Set_Hover_Tint(Hover);
         else
             marker.Clear_Hover_Tint();
+    }
+
+    private bool Quiz_Active(){
+        Lesson_Step step = Sequencer.Current_Step;
+        return Sequencer.Mode == Lesson_Mode.Practice && step != null && step.Kind == Lesson_Step_Kind.Select_Component;
     }
 
     private void ClearTarget(){

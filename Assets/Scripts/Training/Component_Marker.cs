@@ -69,16 +69,21 @@ public class Component_Marker : MonoBehaviour{
         Selected?.Invoke(this);
     }
 
+    // Hover entry point, shared the same way: XRI ray hover and the desktop crosshair.
+    public void Notify_Hover(bool entered){
+        Hover_Changed?.Invoke(this, entered);
+    }
+
     private void OnSelectEntered(SelectEnterEventArgs args){
         Notify_Selected();
     }
 
     private void OnHoverEntered(HoverEnterEventArgs args){
-        Hover_Changed?.Invoke(this, true);
+        Notify_Hover(true);
     }
 
     private void OnHoverExited(HoverExitEventArgs args){
-        Hover_Changed?.Invoke(this, false);
+        Notify_Hover(false);
     }
 
     private void Refresh(){
