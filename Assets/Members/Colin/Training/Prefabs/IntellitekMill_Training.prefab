@@ -74,9 +74,9 @@ MonoBehaviour:
   leftDoor: {fileID: 0}
   rightDoor: {fileID: 0}
   slideDistance: 0.5
-  LeftDoor: {fileID: 1367481096702420774}
-  RightDoor: {fileID: 5948854477338060574}
-  SlideDistance: 0.3
+  LeftDoor: {fileID: 4667333324459881750}
+  RightDoor: {fileID: 1177726821169748263}
+  SlideDistance: 0.2
   SlideSeconds: 0.8
 --- !u!1 &6733175327788539061
 GameObject:
@@ -383,9 +383,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6737233578083719683}
   m_SourcePrefab: {fileID: 100100000, guid: 03608ca58cc74fd4e90f2a07c59d1c0a, type: 3}
---- !u!54 &1367481096702420774 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 8626157976799230411, guid: 03608ca58cc74fd4e90f2a07c59d1c0a, type: 3}
+--- !u!4 &4667333324459881750 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2704889692083547131, guid: 03608ca58cc74fd4e90f2a07c59d1c0a, type: 3}
   m_PrefabInstance: {fileID: 7299209328283049709}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1623730485209079522 stripped
@@ -454,8 +454,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3df1d0c06010904aab7005c6ef71f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProMill8000.AxisMovement
---- !u!54 &5948854477338060574 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 4017936093910235635, guid: 03608ca58cc74fd4e90f2a07c59d1c0a, type: 3}
+--- !u!4 &1177726821169748263 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8436403717909153738, guid: 03608ca58cc74fd4e90f2a07c59d1c0a, type: 3}
   m_PrefabInstance: {fileID: 7299209328283049709}
   m_PrefabAsset: {fileID: 0}

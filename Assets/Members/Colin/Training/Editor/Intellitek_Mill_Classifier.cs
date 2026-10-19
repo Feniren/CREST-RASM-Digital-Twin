@@ -19,8 +19,9 @@ using UnityEngine.SceneManagement;
 // the scaffold, save over the same asset path (GUID stays stable). FBX mesh/material edits
 // keep flowing via references; new/renamed/deleted FBX nodes and base-prefab component
 // changes only land on a re-run — run Rebuild after such changes. Re-runs carry over the
-// existing asset's root pose and AxisMovement values, so hand-tuned axis mappings survive.
-// Classification sources, in order: explicit English names, ATC springs, fastener patterns
+// existing asset's root pose, AxisMovement values and group placements, so hand-tuned axis
+// mappings and hand regrouping survive. Classification sources, in order: the existing asset's
+// placements, explicit English names, ATC springs, fastener patterns
 // (deferred to hardware buckets), cabinet CJK keywords, a name-join against
 // reconstructedPM8000's classified tree (same source CAD assembly), then spatial bounds
 // matching. Leftovers land in Unclassified.
@@ -69,6 +70,8 @@ public static class Intellitek_Mill_Classifier{
         Enclosure + "/SlidingPanel",
         Enclosure + "/SlidingPanel/SlidingPanel_Moving",
         Enclosure + "/doors",
+        Enclosure + "/doors/LeftDoor",
+        Enclosure + "/doors/RightDoor",
         Unclassified,
     };
 
@@ -107,8 +110,8 @@ public static class Intellitek_Mill_Classifier{
     // Keyed by Normalize(Decode(name)): the hand-renamed English nodes plus review-confirmed
     // overrides for parts the join/spatial passes provably misplace (2026-07-30 review).
     private static readonly Dictionary<string, string> ExplicitNames = new Dictionary<string, string>{
-        {"MillCover", Enclosure}, {"LeftMillDoor", Enclosure}, {"RightMillDoor", Enclosure},
-        {"RightMillDoorBoltedFrame", Enclosure}, {"LeftSidePanel", Enclosure}, {"RightSidePanel", Enclosure},
+        {"MillCover", Enclosure}, {"LeftMillDoor", "LeftDoor"}, {"RightMillDoor", "RightDoor"},
+        {"RightMillDoorBoltedFrame", "RightDoor"}, {"LeftSidePanel", Enclosure}, {"RightSidePanel", Enclosure},
         {"RightSidePanelFrame", Enclosure}, {"RightSideSlidingPanel", "SlidingPanel_Moving"},
         {"BackShelf", Enclosure}, {"BackShelfPlate", Enclosure}, {"BackShelfHolder", Enclosure},
         {"FrontLeftFoot", Enclosure},
@@ -219,6 +222,7 @@ public static class Intellitek_Mill_Classifier{
         // previously baked prefab) so re-runs don't lose hand-set values.
         GameObject current = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         Dictionary<string, Axis_Snapshot> tuned = Snapshot_Axes(current);
+        Dictionary<string, string> kept = Snapshot_Groups(current);
 
         Scene preview = EditorSceneManager.NewPreviewScene();
         try{
@@ -249,6 +253,7 @@ public static class Intellitek_Mill_Classifier{
                 string decoded = Decode(m.name);
                 string key = Normalize(decoded);
 
+                if (kept.TryGetValue(m.name, out string keptGroup)){ Assign(m, keptGroup, "kept"); continue; }
                 if (ExplicitNames.TryGetValue(key, out string explicitGroup)){ Assign(m, explicitGroup, "explicit"); continue; }
                 if (m.name.StartsWith("Spring") || m.name.StartsWith("WideSpring")){ Assign(m, "TC_Carousel", "springs"); continue; }
                 if (Is_Fastener(decoded)){ deferredFasteners.Add(m); continue; }
@@ -353,15 +358,8 @@ public static class Intellitek_Mill_Classifier{
 
             Close_Sliding_Panel(members, groups);
 
-            // The bolted frame is fixed to the right door on the real machine, so it rides the
-            // door's Rigidbody as a child. Both nodes are world-baked at identity, so the
-            // world-preserving reparent gives the frame an identity local pose.
-            Transform rightDoor = members.FirstOrDefault(m => m.name == "RightMillDoor");
-            Transform boltedFrame = members.FirstOrDefault(m => m.name == "RightMillDoorBoltedFrame");
-            if (rightDoor != null && boltedFrame != null)
-                boltedFrame.SetParent(rightDoor, true);
-            else
-                Debug.LogWarning("Intellitek_Mill_Classifier: RightMillDoor/RightMillDoorBoltedFrame not found — frame left under Enclosure.");
+            Move_Door_Physics(members.FirstOrDefault(m => m.name == "LeftMillDoor"), groups["LeftDoor"]);
+            Move_Door_Physics(members.FirstOrDefault(m => m.name == "RightMillDoor"), groups["RightDoor"]);
 
             // Axis mapping in the drives' own frame: machine X = model X, machine Y = model Z,
             // machine Z = model Y. AxisMovement slides along its local axis (since 2026-09-17), so
@@ -380,7 +378,7 @@ public static class Intellitek_Mill_Classifier{
             var passCounts = assigned.Values.GroupBy(a => a.Pass).ToDictionary(g => g.Key, g => g.Count());
             int Count(string pass) => passCounts.TryGetValue(pass, out int n) ? n : 0;
             Debug.Log($"Intellitek_Mill_Classifier: {(save ? (saved ? "BAKED" : "SAVE FAILED") : "dry run")} — " +
-                      $"explicit {Count("explicit")}, springs {Count("springs")}, cjk {Count("cjk")}, " +
+                      $"kept {Count("kept")}, explicit {Count("explicit")}, springs {Count("springs")}, cjk {Count("cjk")}, " +
                       $"pm-join {Count("pm-join")}, spatial {Count("spatial")}, fasteners {Count("fastener")}, " +
                       $"unclassified {Count("unmatched")} / total {members.Count}. Report: {ReportPath}");
         }
@@ -636,6 +634,59 @@ public static class Intellitek_Mill_Classifier{
         Debug.Log($"Intellitek_Mill_Classifier: closed sliding panel — grouped and moved {movers.Count} parts by {deltaY:F3} in Y.");
     }
 
+    // IntellitekMill.prefab authors the door physics on the panel node (Rigidbody, slide joint,
+    // handle collider, Interactable_Handle, grab interactable). It moves up onto the door's
+    // assembly group so panel and hardware are one body — sliding or grabbing a door carries its
+    // hardware. The panel differs from its group by the FBX import's quarter-turn and x100 scale,
+    // so values authored in the panel's space (collider box, joint anchor and axes) are
+    // re-expressed in the group's; a quarter-turn keeps the box axis-aligned.
+    private static void Move_Door_Physics(Transform panel, Transform door){
+        if (panel == null){
+            Debug.LogWarning($"Intellitek_Mill_Classifier: no panel under {door.name} — its door physics was not moved.");
+            return;
+        }
+
+        Matrix4x4 toDoor = door.worldToLocalMatrix * panel.localToWorldMatrix;
+        Component[] sources = panel.GetComponents<Component>()
+            .Where(c => !(c is Transform || c is MeshFilter || c is Renderer))
+            .ToArray();
+        var copies = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
+
+        // Component order puts the Rigidbody first, ahead of everything that requires it.
+        foreach (Component source in sources){
+            UnityEditorInternal.ComponentUtility.CopyComponent(source);
+            UnityEditorInternal.ComponentUtility.PasteComponentAsNew(door.gameObject);
+            copies[source] = door.GetComponents(source.GetType()).Last();
+        }
+
+        // The copies still point at each other's originals (the grab interactable's collider
+        // list); re-point them at the moved components.
+        foreach (UnityEngine.Object copy in copies.Values){
+            var serialized = new SerializedObject(copy);
+            for (SerializedProperty p = serialized.GetIterator(); p.Next(true);)
+                if (p.propertyType == SerializedPropertyType.ObjectReference && p.objectReferenceValue != null
+                    && copies.TryGetValue(p.objectReferenceValue, out UnityEngine.Object moved))
+                    p.objectReferenceValue = moved;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        if (door.TryGetComponent(out BoxCollider box)){
+            box.center = toDoor.MultiplyPoint3x4(box.center);
+            Vector3 size = toDoor.MultiplyVector(box.size);
+            box.size = new Vector3(Mathf.Abs(size.x), Mathf.Abs(size.y), Mathf.Abs(size.z));
+        }
+
+        if (door.TryGetComponent(out ConfigurableJoint joint)){
+            joint.anchor = toDoor.MultiplyPoint3x4(joint.anchor);
+            joint.axis = toDoor.MultiplyVector(joint.axis).normalized;
+            joint.secondaryAxis = toDoor.MultiplyVector(joint.secondaryAxis).normalized;
+        }
+
+        // Dependents first, the Rigidbody they require last.
+        for (int i = sources.Length - 1; i >= 0; i--)
+            UnityEngine.Object.DestroyImmediate(sources[i]);
+    }
+
     // Always creates fresh groups — never adopts an FBX node that happens to share a name.
     private static Dictionary<string, Transform> Build_Scaffold(GameObject root){
         var groups = new Dictionary<string, Transform>();
@@ -670,6 +721,23 @@ public static class Intellitek_Mill_Classifier{
         }
 
         return snapshots;
+    }
+
+    // Where each part sits in the current asset, so hand regrouping survives a re-run: a part
+    // already filed under a group keeps it, and the passes only classify parts the asset doesn't
+    // have yet (new FBX nodes). A part filed under Unclassified goes back through the passes —
+    // move a part there to have the rules re-derive it. Keyed by node name, unique in the FBX.
+    private static Dictionary<string, string> Snapshot_Groups(GameObject asset){
+        var placements = new Dictionary<string, string>();
+        if (asset == null)
+            return placements;
+
+        var leaves = new HashSet<string>(ScaffoldPaths.Select(p => p.Split('/').Last()));
+        foreach (Transform t in asset.GetComponentsInChildren<Transform>(true))
+            if (t.parent != null && leaves.Contains(t.parent.name) && t.parent.name != Unclassified && !leaves.Contains(t.name))
+                placements[t.name] = t.parent.name;
+
+        return placements;
     }
 
     private static void Ensure_Axis(Transform group, MovementAxis axisGuess, Dictionary<string, Axis_Snapshot> tuned){
