@@ -1,13 +1,8 @@
 using System.Collections;
 using System.IO;
 using UnityEngine;
-using ProMill8000;
 
 public class Mill_Demo_Controller : Training_Demo_Controller{
-    [Header("Mill (machine-axis naming: X table, Y saddle, Z spindle)")]
-    [SerializeField] private AxisMovement WorktableX;
-    [SerializeField] private AxisMovement SaddleY;
-    [SerializeField] private AxisMovement SpindleZ;
     [SerializeField] private Mill_Doors_Physics Doors;
 
     // The milling demo runs a real NC program through the NC demo's runtime (see
@@ -19,18 +14,6 @@ public class Mill_Demo_Controller : Training_Demo_Controller{
     [SerializeField] private NC_Machine_Profile Machine;
     [SerializeField] private Mill_Stock Stock;
     [SerializeField] private string Program_File = "01_pocket.nc";   // under StreamingAssets/NC
-
-    [Header("Axis indicators")]
-    [SerializeField] private GameObject XIndicator;
-    [SerializeField] private GameObject YIndicator;
-    [SerializeField] private GameObject ZIndicator;
-
-    // Hand-authored on the Lesson_Manager in Module1_Overview.unity; the values
-    // below are only defaults for a newly added controller.
-    [Header("Travel (meters)")]
-    [SerializeField] private float XTravel = 0.14f;
-    [SerializeField] private float YTravel = 0.04f;
-    [SerializeField] private float ZTravel = 0.27f;
 
     private void Awake(){
         if (Doors == null || Runner == null || Link == null || Machine == null || Stock == null){
@@ -45,9 +28,7 @@ public class Mill_Demo_Controller : Training_Demo_Controller{
 
         Stop();   // a re-entered demo must not fight one still in progress
 
-        if (step.Kind == Lesson_Step_Kind.Axis_Demo)
-            Play_Axis_Demo();
-        else if (step.Kind == Lesson_Step_Kind.Milling_Demo)
+        if (step.Kind == Lesson_Step_Kind.Milling_Demo)
             Play_Milling_Demo();
         else
             Debug.LogWarning($"Mill_Demo_Controller: no demo for step kind {step.Kind}");
@@ -61,25 +42,10 @@ public class Mill_Demo_Controller : Training_Demo_Controller{
         StopAllCoroutines();
         Runner.Unload();
         Link.Reset_Home();
-
-        foreach (GameObject indicator in new[]{ XIndicator, YIndicator, ZIndicator })
-            if (indicator != null)
-                indicator.SetActive(false);
-    }
-
-    public void Play_Axis_Demo(){
-        StartCoroutine(AxisDemo());
     }
 
     public void Play_Milling_Demo(){
         StartCoroutine(MillingDemo());
-    }
-
-    private IEnumerator AxisDemo(){
-        yield return RunAxis(XIndicator, WorktableX, new[]{ XTravel, -XTravel, 0f });
-        yield return RunAxis(YIndicator, SaddleY, new[]{ YTravel, -YTravel, 0f });
-        yield return RunAxis(ZIndicator, SpindleZ, new[]{ -ZTravel, 0f });
-        Raise_Demo_Finished();
     }
 
     // Guard closed, cut, guard open so the trainee can see the pocket. The runner homes the
@@ -103,20 +69,5 @@ public class Mill_Demo_Controller : Training_Demo_Controller{
     private IEnumerator Set_Doors(bool open){
         Doors.Set_Open(open);
         yield return new WaitUntil(() => !Doors.IsSliding);
-    }
-
-    private IEnumerator RunAxis(GameObject indicator, AxisMovement axis, float[] offsets){
-        if (indicator != null)
-            indicator.SetActive(true);
-
-        foreach (float offset in offsets){
-            axis.MoveToOffset(offset);
-
-            while (axis.IsMoving)
-                yield return null;
-        }
-
-        if (indicator != null)
-            indicator.SetActive(false);
     }
 }

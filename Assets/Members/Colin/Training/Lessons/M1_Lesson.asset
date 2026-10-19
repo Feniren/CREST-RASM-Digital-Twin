@@ -119,28 +119,21 @@ MonoBehaviour:
     Target_Marker_Id: 
     Narration: {fileID: 0}
     Include_In_Quiz: 0
-  - Step_Id: axis_demo
-    Kind: 2
-    Prompt_Text: "Axis demo \u2014 watch the machine move:\nX: table travels 280
-      mm left\u2013right\nY: table travels 152 mm fore\u2013aft\nZ: spindle travels
-      270 mm up\u2013down"
-    Practice_Prompt_Text: 
-    Target_Marker_Id: 
-    Narration: {fileID: 0}
-    Include_In_Quiz: 0
   - Step_Id: milling_demo
     Kind: 3
     Prompt_Text: "Milling demo \u2014 the guard doors close and the machine runs an NC
       program: the spindle mounts a 10 mm end mill, plunges into the epoxy block and
-      cuts a 60 \u00d7 40 mm pocket 3 mm deep, then homes and the doors open."
+      cuts a 60 \u00d7 40 mm pocket 3 mm deep, then homes and the doors open.\n\nAxis
+      travel limits:\nX: table travels 280 mm left\u2013right\nY: table travels 152
+      mm fore\u2013aft\nZ: spindle travels 270 mm up\u2013down"
     Practice_Prompt_Text: 
     Target_Marker_Id: 
     Narration: {fileID: 0}
     Include_In_Quiz: 0
   - Step_Id: guided_done
     Kind: 0
-    Prompt_Text: "Guided tour complete!\n\nNext: the practice quiz. Labels and highlights
-      are now off \u2014 identify each component from its name.\n\nYou need at least
+    Prompt_Text: "Guided tour complete!\n\nNext: the practice quiz. Highlights are
+      now off \u2014 identify each component from its name.\n\nYou need at least
       4 of 6 to pass. Press Continue."
     Practice_Prompt_Text: 
     Target_Marker_Id: 
