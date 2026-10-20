@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
+  m_Name: StationType_Rack
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
+  displayName: Rack
+  summary: 'Passive storage: a fixed set of shelves or cells with no robot of its
+    own. Parts are placed and removed by an operator or by the robot of a neighbouring
+    station.'
+  details: "Simple and inexpensive, but nothing moves the stock automatically \u2014
+    whoever loads it must put the right part in the right cell. Its cells are still
+    tracked as storage locations, just like the ASRS cells."
+  image: {fileID: 0}
+  previewPrefab: {fileID: 0}
+  narration: {fileID: 0}

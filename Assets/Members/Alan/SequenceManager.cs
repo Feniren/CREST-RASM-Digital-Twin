@@ -12,6 +12,9 @@ public class SequenceManager : MonoBehaviour
     [System.Serializable]
     public class Step
     {
+        [Tooltip("Optional heading shown on panels with a title bar (Lesson Panel). Station-type steps use the station's name instead. Leave blank to use the panel's default title.")]
+        public string title;
+
         [Tooltip("The part GameObjects for this step. Each must have a Marker_Interactable on it. All become visible and clickable as soon as this step begins (alongside infoText) — the step advances once every one of them has been clicked.")]
         public GameObject[] targets;
 
@@ -26,6 +29,9 @@ public class SequenceManager : MonoBehaviour
         [Tooltip("Optional: this step also waits until this table has an item placed on it (Item != null) — e.g. the player manually places a held part via the table's own AlternateInteract.")]
         public Item_Plate RequiredOccupiedTable;
 
+        [Tooltip("Optional: like Required Occupied Table, but for a slotted table — the step also waits until this table is holding an item (Item != null), e.g. the trainee loading an epoxy block onto it.")]
+        public Item_Slotted_Table RequiredLoadedSlottedTable;
+
         [Tooltip("Optional: for steps with no Marker_Interactable targets (e.g. a software/UI action like a control-panel button) — leave targets empty and set this instead. The step completes when NotifyAction() is called with this exact string.")]
         public string requiredActionId;
 
@@ -34,6 +40,15 @@ public class SequenceManager : MonoBehaviour
 
         [Tooltip("Optional: the part to fly up and showcase in front of the trainee's face when the Hint button is pressed on this step. Leave blank if this step has no visual hint.")]
         public Transform hintTarget;
+
+        [Tooltip("Check this for a read-only info step (no targets, table, or action) — Next advances to the following step once any instructionsText has been shown. Quiz mode skips these steps automatically.")]
+        public bool advanceOnNext;
+
+        [Tooltip("Optional: teach one station type on this step. Its displayName/summary/details replace infoText/instructionsText, and its image/prefab show on the Station Type Card. Normally used together with Advance On Next.")]
+        public ASRS_Station_Type stationType;
+
+        [Tooltip("Optional: narration played when this step begins. Falls back to the Station Type's own narration if left empty.")]
+        public AudioClip narration;
     }
 
     [Header("Steps in order")]
@@ -45,6 +60,8 @@ public class SequenceManager : MonoBehaviour
     [SerializeField] private Hint_PartShowcase hintShowcase; // optional — wire the Hint button's OnClick() to OnHintPressed()
     [SerializeField] private GameObject hintButton; // optional — hidden once the sequence completes, since quiz mode has no per-step hints to show
     [SerializeField] private string completionText = "Great job — you've identified every part. Let's test what you've learned.";
+    [SerializeField] private Station_Type_Card stationCard; // optional — shows the current step's station type image/prefab
+    [SerializeField] private AudioSource narrationSource; // optional — plays each step's narration clip, if it has one
 
     [Header("Quiz (optional)")]
     [Tooltip("Optional — NotifyAction() calls are forwarded to it while it's active, and its own start-prompt panel is shown once the walkthrough completes. Leave empty if this module has no quiz yet.")]
@@ -63,6 +80,13 @@ public class SequenceManager : MonoBehaviour
     private bool waitingForTable;
     private bool shownInstructions;
     private bool interactionActive;
+
+    // The NextButton can be wired through both its Button.onClick and its
+    // Interactable_Select, so one physical press may arrive twice. Harmless
+    // when Next only reveals text, but on advanceOnNext steps it would skip
+    // a whole step — so presses this close together count as one.
+    private const float NextPressDebounce = 0.3f;
+    private float lastNextPressTime = float.NegativeInfinity;
 
     // Set just before reloading the scene from OnStartQuizPressed() — static
     // so it survives the reload (statics aren't reset by loading a new
@@ -94,7 +118,7 @@ public class SequenceManager : MonoBehaviour
         if (!waitingForTable)
             return;
 
-        if (steps[currentIndex].RequiredOccupiedTable.Item == null)
+        if (!AreTablesLoaded(steps[currentIndex]))
             return;
 
         waitingForTable = false;
@@ -133,9 +157,7 @@ public class SequenceManager : MonoBehaviour
 
         if (index >= steps.Length)
         {
-            if (infoPanel != null) infoPanel.UpdateText(completionText);
-            if (nextButton != null) nextButton.SetActive(false);
-            if (hintButton != null) hintButton.SetActive(false);
+            ShowCompletion();
 
             // Only offer to start the quiz once there's actually one to
             // start — a module with no Quiz_Manager assigned just ends here.
@@ -149,12 +171,32 @@ public class SequenceManager : MonoBehaviour
         Step step = steps[index];
 
         if (infoPanel != null)
-            infoPanel.UpdateText(step.infoText);
+        {
+            infoPanel.UpdateTitle(step.stationType != null ? step.stationType.displayName : step.title);
+            infoPanel.UpdateProgress(GetProgressText(index));
+            infoPanel.UpdateText(GetInfoText(index));
+        }
 
         // Next is only needed to reveal instructionsText, if this step has
-        // any — it no longer gates the targets themselves.
+        // any — it no longer gates the targets themselves — or to leave an
+        // advanceOnNext info step.
         if (nextButton != null)
-            nextButton.SetActive(!string.IsNullOrEmpty(step.instructionsText));
+            nextButton.SetActive(!string.IsNullOrEmpty(GetInstructionsText(index)) || step.advanceOnNext);
+
+        // The media box stays up for the whole lesson except part
+        // identification (steps with marker targets), where the trainee's
+        // attention belongs on the real object instead.
+        if (stationCard != null)
+        {
+            if (step.stationType != null)
+                stationCard.Show(step.stationType);
+            else if (HasMarkerTargets(step))
+                stationCard.Hide();
+            else
+                stationCard.ShowEmpty();
+        }
+
+        PlayNarration(step);
 
         // Targets go live immediately: the object infoText is describing
         // should already be visible (and clickable) while it's on screen,
@@ -213,21 +255,138 @@ public class SequenceManager : MonoBehaviour
 
     // Hook this to the instruction panel's Next button OnClick. Targets are
     // already live by the time this can be pressed (see ActivateStep) — this
-    // only reveals the optional instructionsText follow-up, then hides
-    // itself since there's nothing further for Next to do on this step.
+    // reveals the optional instructionsText follow-up, then hides itself
+    // since there's nothing further for Next to do on this step. On an
+    // advanceOnNext step it stays visible, and the following press moves on.
     public void OnNextPressed()
     {
         if (currentIndex < 0 || currentIndex >= steps.Length)
             return;
 
-        Step step = steps[currentIndex];
+        if (Time.unscaledTime - lastNextPressTime < NextPressDebounce)
+            return;
+        lastNextPressTime = Time.unscaledTime;
 
-        if (shownInstructions || string.IsNullOrEmpty(step.instructionsText))
+        Step step = steps[currentIndex];
+        string instructions = GetInstructionsText(currentIndex);
+
+        if (!shownInstructions && !string.IsNullOrEmpty(instructions))
+        {
+            shownInstructions = true;
+            if (infoPanel != null) infoPanel.UpdateText(instructions);
+            if (nextButton != null) nextButton.SetActive(step.advanceOnNext);
+            return;
+        }
+
+        // Every page of this step has been seen — an info step is done.
+        if (step.advanceOnNext && interactionActive && pendingMarkers.Count == 0 && !waitingForTable)
+            ActivateStep(currentIndex + 1);
+    }
+
+    private void ShowCompletion()
+    {
+        if (infoPanel != null)
+        {
+            infoPanel.UpdateTitle("Module Complete");
+            infoPanel.UpdateProgress("");
+            infoPanel.UpdateText(completionText);
+        }
+
+        if (nextButton != null) nextButton.SetActive(false);
+        if (hintButton != null) hintButton.SetActive(false);
+        if (stationCard != null) stationCard.ShowEmpty();
+    }
+
+    private static bool HasMarkerTargets(Step step)
+    {
+        if (step.targets == null)
+            return false;
+
+        foreach (GameObject target in step.targets)
+            if (target != null)
+                return true;
+
+        return false;
+    }
+
+    // For a panel that brings its own media box (Lesson_Panel) — fills the
+    // Station Card slot only if the scene left it empty, so an explicit
+    // Inspector assignment always wins.
+    public void UseStationCardIfUnset(Station_Type_Card card)
+    {
+        if (stationCard == null)
+            stationCard = card;
+    }
+
+    // A station-type step takes its text from the ASRS_Station_Type asset;
+    // any other step uses its own infoText/instructionsText as before. On a
+    // panel without a title bar the station's name and "n of N" are written
+    // into the body instead, so older panels still show them.
+    private string GetInfoText(int index)
+    {
+        Step step = steps[index];
+        return step.stationType != null ? StationHeader(index) + step.stationType.summary : step.infoText;
+    }
+
+    private string GetInstructionsText(int index)
+    {
+        Step step = steps[index];
+
+        if (step.stationType == null)
+            return step.instructionsText;
+
+        return string.IsNullOrEmpty(step.stationType.details) ? "" : StationHeader(index) + step.stationType.details;
+    }
+
+    private string StationHeader(int index)
+    {
+        if (infoPanel != null && infoPanel.HasTitle)
+            return "";
+
+        GetStationPosition(index, out int position, out int total);
+        return $"<b>{steps[index].stationType.displayName}</b>  <size=80%>(station type {position} of {total})</size>\n";
+    }
+
+    private string GetProgressText(int index)
+    {
+        string progress = $"Step {index + 1} of {steps.Length}";
+
+        if (steps[index].stationType == null)
+            return progress;
+
+        GetStationPosition(index, out int position, out int total);
+        return $"{progress}  ·  Station type {position} of {total}";
+    }
+
+    private void GetStationPosition(int index, out int position, out int total)
+    {
+        position = 0;
+        total = 0;
+
+        for (int i = 0; i < steps.Length; i++)
+        {
+            if (steps[i].stationType == null)
+                continue;
+
+            total++;
+            if (i <= index)
+                position = total;
+        }
+    }
+
+    private void PlayNarration(Step step)
+    {
+        if (narrationSource == null)
             return;
 
-        shownInstructions = true;
-        if (infoPanel != null) infoPanel.UpdateText(step.instructionsText);
-        if (nextButton != null) nextButton.SetActive(false);
+        narrationSource.Stop();
+
+        AudioClip clip = step.narration != null ? step.narration
+            : step.stationType != null ? step.stationType.narration
+            : null;
+
+        if (clip != null)
+            narrationSource.PlayOneShot(clip);
     }
 
     // Hook this to the Start Quiz button's OnClick() — only shown once the
@@ -250,9 +409,7 @@ public class SequenceManager : MonoBehaviour
         currentIndex = steps.Length;
         interactionActive = false;
 
-        if (infoPanel != null) infoPanel.UpdateText(completionText);
-        if (nextButton != null) nextButton.SetActive(false);
-        if (hintButton != null) hintButton.SetActive(false);
+        ShowCompletion();
 
         if (quizManager != null)
             quizManager.BeginQuiz();
@@ -291,6 +448,12 @@ public class SequenceManager : MonoBehaviour
             pendingMarkers.Add(marker);
         }
 
-        waitingForTable = step.RequiredOccupiedTable != null && step.RequiredOccupiedTable.Item == null;
+        waitingForTable = !AreTablesLoaded(step);
+    }
+
+    private static bool AreTablesLoaded(Step step)
+    {
+        return (step.RequiredOccupiedTable == null || step.RequiredOccupiedTable.Item != null)
+            && (step.RequiredLoadedSlottedTable == null || step.RequiredLoadedSlottedTable.Item != null);
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
+  m_Name: StationType_Carousel
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
+  displayName: Carousel
+  summary: A rotating storage station. Storage positions are arranged around a carousel
+    that turns to bring the requested position to one fixed load/unload point, so
+    the part comes to the robot instead of the robot travelling to the part.
+  details: 'Compact and mechanically simple: one rotary motion moves all of the stock.
+    In a CIM cell it serves as a small automated buffer of parts or templates next
+    to the robot that loads and unloads it.'
+  image: {fileID: 0}
+  video: {fileID: 32900000, guid: 24526c94f32fcba41965330783f3a7a3, type: 3}
+  playVideoAudio: 1
+  previewPrefab: {fileID: 0}
+  narration: {fileID: 0}
