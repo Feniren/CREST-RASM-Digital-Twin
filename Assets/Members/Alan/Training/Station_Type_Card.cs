@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -35,8 +36,36 @@ public class Station_Type_Card : MonoBehaviour
     [Tooltip("Optional: where ASRS_Station_Type.previewPrefab is spawned. Nothing is spawned when this or the prefab is empty.")]
     [SerializeField] private Transform previewAnchor;
 
+    [Header("Video controls (optional)")]
+    [Tooltip("Shown only while a video is on the card.")]
+    [SerializeField] private GameObject videoControls;
+    [SerializeField] private Button pauseButton;
+    [SerializeField] private TMP_Text pauseLabel;
+    [SerializeField] private Button replayButton;
+
     private GameObject spawnedPreview;
     private RenderTexture videoTexture;
+    private TMP_Text placeholderText;
+    private string placeholderDefault;
+    private string currentStationName;
+    private bool videoPaused;
+    private readonly ASRS_Module1_UI.Debouncer controlDebouncer = new ASRS_Module1_UI.Debouncer();
+
+    public bool IsVideoShowing => videoSurface != null && videoSurface.gameObject.activeSelf;
+
+    // The media box itself, for content that takes it over (the pallet
+    // circulation diagram).
+    public RectTransform MediaRoot => mediaRoot != null ? mediaRoot.GetComponent<RectTransform>() : null;
+
+    // Keeps the media box on screen but empty — no picture, video or
+    // placeholder — so other content can fill it.
+    public void ShowBoxOnly()
+    {
+        Hide();
+
+        if (mediaRoot != null)
+            mediaRoot.SetActive(true);
+    }
 
     private void Awake()
     {
@@ -45,14 +74,98 @@ public class Station_Type_Card : MonoBehaviour
             videoPlayer.playOnAwake = false;
             videoPlayer.isLooping = true;
             videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+            videoPlayer.errorReceived += OnVideoError;
         }
+
+        if (placeholder != null)
+        {
+            placeholderText = placeholder.GetComponentInChildren<TMP_Text>(true);
+            if (placeholderText != null)
+                placeholderDefault = placeholderText.text;
+        }
+
+        ASRS_Module1_UI.Bind(pauseButton, controlDebouncer, TogglePause);
+        ASRS_Module1_UI.Bind(replayButton, controlDebouncer, Replay);
 
         Hide();
     }
 
+    private void OnDisable()
+    {
+        // A hidden panel must never keep playing (or talking) unseen.
+        if (videoPlayer != null && videoPlayer.isPlaying)
+            videoPlayer.Stop();
+    }
+
     private void OnDestroy()
     {
+        if (videoPlayer != null)
+            videoPlayer.errorReceived -= OnVideoError;
+
         ReleaseVideoTexture();
+    }
+
+    // Pause / resume the station video — for the card's Pause button.
+    public void TogglePause()
+    {
+        if (videoPlayer == null || !IsVideoShowing)
+            return;
+
+        // Tracked here rather than read from isPlaying, which stays false
+        // while a just-started clip is still preparing.
+        videoPaused = !videoPaused;
+        if (videoPaused)
+            videoPlayer.Pause();
+        else
+            videoPlayer.Play();
+
+        RefreshPauseLabel();
+        ASRS_Module1_Log.Info(ASRS_Module1_Log.Video, $"{currentStationName} video {(videoPaused ? "paused" : "resumed")}.", this);
+    }
+
+    // Restart the station video from the beginning — for the Replay button.
+    public void Replay()
+    {
+        if (videoPlayer == null || !IsVideoShowing)
+            return;
+
+        videoPlayer.Stop();
+        videoPlayer.Play();
+        videoPaused = false;
+        RefreshPauseLabel();
+        ASRS_Module1_Log.Info(ASRS_Module1_Log.Video, $"{currentStationName} video replayed.", this);
+    }
+
+    private void RefreshPauseLabel()
+    {
+        if (pauseLabel != null)
+            pauseLabel.text = videoPaused ? "Play" : "Pause";
+    }
+
+    // Decode/format problems: drop back to the picture (or placeholder) and
+    // say so on the card instead of leaving a black box.
+    private void OnVideoError(VideoPlayer source, string message)
+    {
+        ASRS_Module1_Log.Error(ASRS_Module1_Log.Video, $"{currentStationName} video failed: {message}", this);
+
+        source.Stop();
+        if (videoSurface != null) videoSurface.gameObject.SetActive(false);
+        if (videoControls != null) videoControls.SetActive(false);
+
+        bool showingImage = image != null && image.gameObject.activeSelf;
+        if (!showingImage)
+            ShowPlaceholder($"The {currentStationName} video couldn't be played.\nSee the Console for details.");
+    }
+
+    private void ShowPlaceholder(string message)
+    {
+        if (placeholder == null)
+            return;
+
+        if (placeholderText != null)
+            placeholderText.text = string.IsNullOrEmpty(message) ? placeholderDefault : message;
+
+        placeholder.SetActive(true);
     }
 
     public void Show(ASRS_Station_Type stationType)
@@ -61,6 +174,8 @@ public class Station_Type_Card : MonoBehaviour
 
         if (stationType == null)
             return;
+
+        currentStationName = stationType.displayName;
 
         if (mediaRoot != null)
             mediaRoot.SetActive(true);
@@ -80,8 +195,8 @@ public class Station_Type_Card : MonoBehaviour
             showingMedia = true;
         }
 
-        if (placeholder != null)
-            placeholder.SetActive(!showingMedia);
+        if (!showingMedia)
+            ShowPlaceholder(null);
 
         if (previewAnchor != null && stationType.previewPrefab != null)
             spawnedPreview = Instantiate(stationType.previewPrefab, previewAnchor, false);
@@ -96,8 +211,7 @@ public class Station_Type_Card : MonoBehaviour
         if (mediaRoot != null)
             mediaRoot.SetActive(true);
 
-        if (placeholder != null)
-            placeholder.SetActive(true);
+        ShowPlaceholder(null);
     }
 
     public void Hide()
@@ -110,6 +224,9 @@ public class Station_Type_Card : MonoBehaviour
 
         if (videoSurface != null)
             videoSurface.gameObject.SetActive(false);
+
+        if (videoControls != null)
+            videoControls.SetActive(false);
 
         if (placeholder != null)
             placeholder.SetActive(false);
@@ -127,8 +244,14 @@ public class Station_Type_Card : MonoBehaviour
     private bool PlayVideo(ASRS_Station_Type stationType)
     {
         VideoClip clip = stationType.video;
-        if (clip == null || videoPlayer == null || videoSurface == null)
+        if (clip == null)
             return false;
+
+        if (videoPlayer == null || videoSurface == null)
+        {
+            ASRS_Module1_Log.Warn(ASRS_Module1_Log.Video, $"{stationType.displayName} has a video but this card has no Video Player / Video Surface — showing its image instead.", this);
+            return false;
+        }
 
         // One texture, resized only when a clip with different dimensions
         // comes along.
@@ -152,6 +275,13 @@ public class Station_Type_Card : MonoBehaviour
         videoSurface.texture = videoTexture;
         videoSurface.gameObject.SetActive(true);
         videoPlayer.Play();
+        videoPaused = false;
+
+        if (videoControls != null)
+            videoControls.SetActive(true);
+        RefreshPauseLabel();
+
+        ASRS_Module1_Log.Info(ASRS_Module1_Log.Video, $"Playing '{clip.name}' for {stationType.displayName} ({width}x{height}, audio {(stationType.playVideoAudio ? "on" : "off")}).", this);
         return true;
     }
 

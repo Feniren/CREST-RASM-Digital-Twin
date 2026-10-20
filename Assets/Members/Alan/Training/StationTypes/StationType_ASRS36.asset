@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
   m_Name: StationType_ASRS36
   m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
-  displayName: ASRS-36
-  summary: "An Automated Storage and Retrieval System built around a 6 \xD7 6 rack:
-    6 levels \xD7 6 cells = 36 addressable storage cells. A Cartesian robot moves
-    along its X, Y and Z axes to reach any cell and pick or place a template."
+  displayName: ASRS-36x2
+  summary: "An Automated Storage and Retrieval System built around two 6 \xD7 6 racks:
+    36 addressable storage cells each, 72 in total. A Cartesian robot moves along
+    its X, Y and Z axes to reach any cell and pick or place a template."
   details: It is the CIM cell's raw material source, its warehouse for work-in-process
     parts, and its finished goods store. Every cell has an address, so the cell manager
     can request exactly the part it needs.

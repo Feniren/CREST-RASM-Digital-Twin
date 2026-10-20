@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
+  m_Name: StationType_SmartCIM
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
+  displayName: SmartCIM 4.0 Cell
+  summary: In the SmartCIM 4.0 manufacturing cell, storage stations supply raw material,
+    hold work-in-process parts between operations and keep finished goods until they
+    are needed.
+  details: 
+  image: {fileID: 21300000, guid: 89a8c5bea7bf9a1409335315edfd035c, type: 3}
+  video: {fileID: 0}
+  playVideoAudio: 0
+  previewPrefab: {fileID: 0}
+  narration: {fileID: 0}

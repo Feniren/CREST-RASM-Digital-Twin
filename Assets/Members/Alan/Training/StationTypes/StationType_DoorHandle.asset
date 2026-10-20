@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
+  m_Name: StationType_DoorHandle
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
+  displayName: Rack Door
+  summary: The ASRS door closes off the storage area and the robot's working space. Open it
+    by its handle to reach the storage cells.
+  details: 
+  image: {fileID: 0}
+  video: {fileID: 0}
+  playVideoAudio: 0
+  previewPrefab: {fileID: 0}
+  narration: {fileID: 0}

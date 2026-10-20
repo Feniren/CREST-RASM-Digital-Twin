@@ -41,7 +41,7 @@ public class SequenceManager : MonoBehaviour
         [Tooltip("Optional: the part to fly up and showcase in front of the trainee's face when the Hint button is pressed on this step. Leave blank if this step has no visual hint.")]
         public Transform hintTarget;
 
-        [Tooltip("Check this for a read-only info step (no targets, table, or action) — Next advances to the following step once any instructionsText has been shown. Quiz mode skips these steps automatically.")]
+        [Tooltip("Check this for a read-only info step (no targets, table, or action) — Next advances to the following step once any instructionsText has been shown. Quiz mode skips these steps automatically. Required Action Id may still be set on such a step as a label for step-scoped features (e.g. Module 1's M1_Flow_ steps show the circulation diagram); Next still advances it.")]
         public bool advanceOnNext;
 
         [Tooltip("Optional: teach one station type on this step. Its displayName/summary/details replace infoText/instructionsText, and its image/prefab show on the Station Type Card. Normally used together with Advance On Next.")]
@@ -49,6 +49,12 @@ public class SequenceManager : MonoBehaviour
 
         [Tooltip("Optional: narration played when this step begins. Falls back to the Station Type's own narration if left empty.")]
         public AudioClip narration;
+
+        [Tooltip("Optional: show this asset's picture/video in the media box on this step — display only. Unlike Station Type, it doesn't replace the step's text or count as a station type, and it shows even on steps with marker targets (e.g. a picture of the template while the trainee finds the real one).")]
+        public ASRS_Station_Type media;
+
+        [Tooltip("Show this step's text in the panel's larger body size (set on InstructionDisplay).")]
+        public bool largeText;
     }
 
     [Header("Steps in order")]
@@ -74,6 +80,19 @@ public class SequenceManager : MonoBehaviour
 
     [Header("Events")]
     public UnityEvent onSequenceComplete; // hook the quiz start here in the Inspector
+
+    [Header("Debugging")]
+    [Tooltip("Prefix for this sequence's Console messages, e.g. [ASRS][Module1].")]
+    [SerializeField] private string logTag = "[ASRS][Sequence]";
+
+    // Raised whenever a step becomes current — index == Steps.Length and a
+    // null step once the walkthrough completes. Lets step-scoped features
+    // (diagram, cell inspector, quiz) show themselves on their own steps
+    // and clean up on every other one, without this class knowing them.
+    public event System.Action<int, Step> StepActivated;
+
+    public int CurrentStepIndex => currentIndex;
+    public Step CurrentStep => steps != null && currentIndex >= 0 && currentIndex < steps.Length ? steps[currentIndex] : null;
 
     private int currentIndex = -1;
     private readonly List<Marker_Interactable> pendingMarkers = new List<Marker_Interactable>();
@@ -157,6 +176,7 @@ public class SequenceManager : MonoBehaviour
 
         if (index >= steps.Length)
         {
+            Debug.Log($"{logTag} Walkthrough complete ({steps.Length} steps).", this);
             ShowCompletion();
 
             // Only offer to start the quiz once there's actually one to
@@ -164,16 +184,19 @@ public class SequenceManager : MonoBehaviour
             if (quizManager != null)
                 quizManager.ShowStartPrompt();
 
+            StepActivated?.Invoke(index, null);
             onSequenceComplete?.Invoke();
             return;
         }
 
         Step step = steps[index];
+        Debug.Log($"{logTag} Step {index + 1}/{steps.Length} '{DescribeStep(step)}' started.", this);
 
         if (infoPanel != null)
         {
             infoPanel.UpdateTitle(step.stationType != null ? step.stationType.displayName : step.title);
             infoPanel.UpdateProgress(GetProgressText(index));
+            infoPanel.SetLargeText(step.largeText);
             infoPanel.UpdateText(GetInfoText(index));
         }
 
@@ -190,6 +213,8 @@ public class SequenceManager : MonoBehaviour
         {
             if (step.stationType != null)
                 stationCard.Show(step.stationType);
+            else if (step.media != null)
+                stationCard.Show(step.media);
             else if (HasMarkerTargets(step))
                 stationCard.Hide();
             else
@@ -202,6 +227,16 @@ public class SequenceManager : MonoBehaviour
         // should already be visible (and clickable) while it's on screen,
         // not just once the trainee has clicked through to instructions.
         BeginStepInteraction(step);
+
+        StepActivated?.Invoke(index, step);
+    }
+
+    private static string DescribeStep(Step step)
+    {
+        if (step.stationType != null) return "station: " + step.stationType.displayName;
+        if (!string.IsNullOrEmpty(step.title)) return step.title;
+        if (!string.IsNullOrEmpty(step.requiredActionId)) return step.requiredActionId;
+        return "untitled";
     }
 
     // True if the current step is actively waiting on this exact action id —
@@ -245,12 +280,22 @@ public class SequenceManager : MonoBehaviour
         }
 
         if (!interactionActive || currentIndex < 0 || currentIndex >= steps.Length)
+        {
+            Debug.Log($"{logTag} Action '{actionId}' ignored — no step is waiting for an action right now.", this);
             return;
+        }
 
         Step step = steps[currentIndex];
 
         if (!string.IsNullOrEmpty(step.requiredActionId) && step.requiredActionId == actionId)
+        {
+            Debug.Log($"{logTag} Action '{actionId}' completes step {currentIndex + 1}.", this);
             TryCompleteStep();
+        }
+        else
+        {
+            Debug.Log($"{logTag} Action '{actionId}' ignored — step {currentIndex + 1} waits for '{step.requiredActionId}'.", this);
+        }
     }
 
     // Hook this to the instruction panel's Next button OnClick. Targets are
@@ -289,6 +334,7 @@ public class SequenceManager : MonoBehaviour
         {
             infoPanel.UpdateTitle("Module Complete");
             infoPanel.UpdateProgress("");
+            infoPanel.SetLargeText(false);
             infoPanel.UpdateText(completionText);
         }
 

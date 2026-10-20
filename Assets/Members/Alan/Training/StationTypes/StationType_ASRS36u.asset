@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45078131fdea9d94c80f2d7c14945122, type: 3}
   m_Name: StationType_ASRS36u
   m_EditorClassIdentifier: Assembly-CSharp::ASRS_Station_Type
-  displayName: ASRS-36u
-  summary: "The SmartCIM 4.0 model. Like the ASRS-36 it stores 6 levels \xD7 6 cells
-    = 36 locations per unit, but its Cartesian robot has an additional rotary axis,
+  displayName: ASRS-36x2u
+  summary: "The SmartCIM 4.0 model. Like the ASRS-36x2 it stores 6 levels \xD7 6 cells
+    = 36 locations per rack, but its Cartesian robot has an additional rotary axis,
     and it runs from a USB controller through the Scorbase software interface."
   details: Templates hold the parts and RFID tags verify each template's identity.
     Plexiglass door sensors halt the robot automatically if a door is opened. Larger

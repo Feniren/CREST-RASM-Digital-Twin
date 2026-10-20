@@ -16,9 +16,9 @@ MonoBehaviour:
   summary: A rotating storage station. Storage positions are arranged around a carousel
     that turns to bring the requested position to one fixed load/unload point, so
     the part comes to the robot instead of the robot travelling to the part.
-  details: 'Compact and mechanically simple: one rotary motion moves all of the stock.
-    In a CIM cell it serves as a small automated buffer of parts or templates next
-    to the robot that loads and unloads it.'
+  details: "One rotary motion moves all of the stock. Unlike a Cartesian ASRS, whose
+    robot travels in X, Y and Z to reach a cell, the carousel brings the cell to one
+    fixed point — a compact buffer of parts or templates beside its robot."
   image: {fileID: 0}
   video: {fileID: 32900000, guid: 24526c94f32fcba41965330783f3a7a3, type: 3}
   playVideoAudio: 1

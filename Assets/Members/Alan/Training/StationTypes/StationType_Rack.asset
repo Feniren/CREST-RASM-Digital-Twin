@@ -16,9 +16,11 @@ MonoBehaviour:
   summary: 'Passive storage: a fixed set of shelves or cells with no robot of its
     own. Parts are placed and removed by an operator or by the robot of a neighbouring
     station.'
-  details: "Simple and inexpensive, but nothing moves the stock automatically \u2014
-    whoever loads it must put the right part in the right cell. Its cells are still
-    tracked as storage locations, just like the ASRS cells."
-  image: {fileID: 0}
+  details: "Nothing moves the stock automatically \u2014 the rack is only the storage;
+    an operator or a neighbouring robot is the handling system. Parts sit in templates
+    in its cells, which are tracked by address just like ASRS cells."
+  image: {fileID: 21300000, guid: 118c7a707c1025f41a3049439a49563a, type: 3}
+  video: {fileID: 0}
+  playVideoAudio: 0
   previewPrefab: {fileID: 0}
   narration: {fileID: 0}

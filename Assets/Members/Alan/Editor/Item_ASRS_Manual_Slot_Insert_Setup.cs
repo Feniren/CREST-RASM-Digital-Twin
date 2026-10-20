@@ -27,6 +27,14 @@ public static class Item_ASRS_Manual_Slot_Insert_Setup
         // Item_ASRS_Manual_Slot_Insert already treats as "no lesson gating".
         SequenceManager sequenceManager = Object.FindFirstObjectByType<SequenceManager>();
 
+        WireVacantRow(rack, sequenceManager);
+    }
+
+    // Explicit-rack version, for scenes with more than one Item_ASRS (e.g.
+    // an old, deactivated rack kept alongside its replacement) where
+    // FindFirstObjectByType can't be trusted to pick the right one.
+    public static int WireVacantRow(Item_ASRS rack, SequenceManager sequenceManager)
+    {
         int wired = 0;
 
         foreach (Item_Slotted_Table table in rack.GetComponentsInChildren<Item_Slotted_Table>(true))
@@ -73,5 +81,7 @@ public static class Item_ASRS_Manual_Slot_Insert_Setup
             Debug.LogWarning($"Item_ASRS_Manual_Slot_Insert_Setup: found no row-{VacantRow} slot tables under '{rack.name}'.");
         else
             Debug.Log($"Item_ASRS_Manual_Slot_Insert_Setup: done — wired {wired} row-{VacantRow} slot(s). Save the scene.");
+
+        return wired;
     }
 }

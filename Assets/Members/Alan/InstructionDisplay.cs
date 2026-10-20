@@ -14,7 +14,40 @@ public class InstructionDisplay : MonoBehaviour
     [Tooltip("Heading used by steps that don't set their own title.")]
     [SerializeField] private string defaultTitle = "ASRS Overview";
 
+    [Tooltip("Body text size on steps marked Large Text (auto-size range when the body auto-sizes).")]
+    [SerializeField] private float largeFontSizeMax = 5.2f;
+    [SerializeField] private float largeFontSizeMin = 3.4f;
+
     public bool HasTitle => titleText != null;
+
+    private bool normalSizeCaptured;
+    private float normalFontSize, normalFontSizeMin, normalFontSizeMax;
+
+    // Bigger body text for steps that ask for it; false restores the size
+    // the panel was built with.
+    public void SetLargeText(bool large)
+    {
+        if (infoText == null)
+            return;
+
+        if (!normalSizeCaptured)
+        {
+            normalFontSize = infoText.fontSize;
+            normalFontSizeMin = infoText.fontSizeMin;
+            normalFontSizeMax = infoText.fontSizeMax;
+            normalSizeCaptured = true;
+        }
+
+        if (infoText.enableAutoSizing)
+        {
+            infoText.fontSizeMin = large ? largeFontSizeMin : normalFontSizeMin;
+            infoText.fontSizeMax = large ? largeFontSizeMax : normalFontSizeMax;
+        }
+        else
+        {
+            infoText.fontSize = large ? largeFontSizeMax : normalFontSize;
+        }
+    }
 
     public void UpdateText(string newText)
     {
