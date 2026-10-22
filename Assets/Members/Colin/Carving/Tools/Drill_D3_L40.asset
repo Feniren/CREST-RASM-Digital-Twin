@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd38e7d02ba05114eb84f809c0f85a73, type: 3}
+  m_Name: Drill_D3_L40
+  m_EditorClassIdentifier: Carving::Tool_Definition
+  Profile:
+    Diameter: 0.003
+    Length: 0.04
+    Tip_Shape: 2

@@ -112,8 +112,8 @@ All three modules reuse one foundation, built and proven in M1:
   `Assets/Meshes/reconstructedPM8000.fbx` / `Mill.fbx`; rigged robot arm (Yaskawa Motoman GP8); vice models;
   perspex materials
   (`Blue_Glass.mat`, `Epoxy.mat`).
-- **Interaction:** `Item_Parent.cs` + camera raycast (`Player_Controller.cs`); `Item_Station` + `Job_Queue`
-  FIFO pattern (`Assets/Scripts/Job_System/`).
+- **Interaction:** `Item_Parent.cs` + camera raycast (`Player_Controller.cs`); `Item_CNC_Machine` +
+  `Item_RFID_Sensor` job dispatch driven by the `Job_Manager` FIFO (`Assets/Scripts/Job System/`).
 - **XR (~70% scaffolded):** OpenXR 1.16.1 + XR Interaction Toolkit 3.3.1; XR Plugin Management enabled for
   Standalone; Quest Touch Plus + hand-pose profiles on; XRI **Starter Assets** in
   `Assets/Samples/XR Interaction Toolkit/3.3.1/` (rigs, ray/poke interactors, **Fresnel highlight
@@ -123,7 +123,7 @@ All three modules reuse one foundation, built and proven in M1:
 **Build once (the gap — no equivalent exists):**
 - A **persistent Bootstrap scene** holding the shared XR rig, menu hub, and managers (see §6).
 - A **guided-lesson system** (`Lesson_Step`, `Lesson_Sequencer`, `Lesson_Controller`) under
-  `Assets/Scripts/Training/`, modeled on the `Job_Queue` FIFO pattern. Detailed in `01_Module1_Plan.md`.
+  `Assets/Scripts/Training/`, modeled on the `Job_Manager` FIFO pattern. Detailed in `01_Module1_Plan.md`.
 - Completion of the **XR Origin rig** — built once in the Bootstrap scene (hand anchors, controller
   bindings), not duplicated per module.
 

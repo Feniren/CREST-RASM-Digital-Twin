@@ -5,6 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/Members/Colin/Scenes/Bootstrap.unity
+    guid: cf1bd6e12d2a0f848b5b5950e4312fc3
+  - enabled: 1
+    path: Assets/Members/Colin/Scenes/Module1_Overview.unity
+    guid: 674cee405a054d140874813bf15ac8a4
+  - enabled: 1
+    path: Assets/Members/Colin/Scenes/Module2_Startup.unity
+    guid: 57a54f558885130489b82f868a18fab8
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
@@ -17,15 +26,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Members/Ethan/Arm-Module.unity
     guid: 4165e5dd05783c740a5567e27e686760
-  - enabled: 1
-    path: Assets/Members/Colin/Scenes/Bootstrap.unity
-    guid: cf1bd6e12d2a0f848b5b5950e4312fc3
-  - enabled: 1
-    path: Assets/Members/Colin/Scenes/Module1_Overview.unity
-    guid: 674cee405a054d140874813bf15ac8a4
-  - enabled: 1
-    path: Assets/Members/Colin/Scenes/Module2_Startup.unity
-    guid: 57a54f558885130489b82f868a18fab8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 716874782a15f004b8ba33b1db74f011, type: 2}

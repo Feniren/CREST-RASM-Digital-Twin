@@ -1,0 +1,24 @@
+# Unity YAML assets: use Unity's Smart Merge (UnityYAMLMerge) rather than the
+# default line-based merge, which silently drops prefab overrides and inspector
+# wiring on conflicting hunks.
+#
+# This file is inert until each developer registers the driver locally, because the
+# tool path is machine-specific. Run once per machine (adjust the Unity version):
+#
+#   git config merge.unityyamlmerge.name "Unity SmartMerge"
+#   git config merge.unityyamlmerge.driver "'C:/Program Files/Unity/Hub/Editor/6000.3.8f1/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p %O %B %A %A"
+#
+# Do NOT add --force to that driver line. With --force, UnityYAMLMerge resolves
+# conflicts it does not understand and can emit structurally corrupt YAML that opens
+# without complaint. Without it, an unresolvable conflict stays a conflict.
+#
+# After any merge touching these files, verify semantically — open the scene and
+# check inspector references — never by reading the line diff.
+
+*.unity     merge=unityyamlmerge
+*.prefab    merge=unityyamlmerge
+*.asset     merge=unityyamlmerge
+*.mat       merge=unityyamlmerge
+*.controller merge=unityyamlmerge
+*.anim      merge=unityyamlmerge
+*.physicMaterial merge=unityyamlmerge

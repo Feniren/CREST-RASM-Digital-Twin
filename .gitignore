@@ -110,3 +110,12 @@ CLAUDE.md
 /.claude
 /.gitignore
 ProMill8000.md
+
+# Player build / Burst output — regenerated on every build, never committed
+/*_BurstDebugInformation_DoNotShip/
+/*_BackUpThisFolder_ButDontShipItWithYourGame/
+
+# Stray Roslyn assemblies — no RoslynAnalyzer label, no asmdef reference, unused by any script
+/[Aa]ssets/Plugins/Roslyn/
+/[Aa]ssets/Plugins/Roslyn.meta
+/[Aa]ssets/Plugins.meta

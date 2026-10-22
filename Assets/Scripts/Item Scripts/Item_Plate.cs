@@ -28,11 +28,13 @@ public class Item_Plate : Item_Parent{
     }
 
 	public void OnTriggerEnter(Collider OverlappedCollider){
-		if (OverlappedCollider.gameObject.GetComponent<Item_Parent>()){
-			if (OverlappedCollider.gameObject.GetComponent<Item_Parent>().Pickup){
-				if (Item == null){
-					if (OverlappedCollider.gameObject.transform.parent == null){
-						Item = OverlappedCollider.gameObject;
+		if (Item == null){
+			if (OverlappedCollider.gameObject.GetComponentInParent<Item_Parent>()){
+				Item_Parent OverlappedItem = OverlappedCollider.gameObject.GetComponentInParent<Item_Parent>();
+
+				if (OverlappedItem.Pickup){
+					if (OverlappedItem.gameObject.transform.parent == null){
+						Item = OverlappedItem.gameObject;
 
 						SetItem();
 					}

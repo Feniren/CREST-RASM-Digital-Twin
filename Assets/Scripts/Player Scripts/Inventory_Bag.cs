@@ -18,7 +18,7 @@ public class Inventory_Bag : MonoBehaviour, Interact_Interface{
 
 	public void AlternateInteract(Entity_Player PlayerReference){
 		if (PlayerReference.InventoryReference.StaticInventory.Count > 0){
-			ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.Find(PlayerReference.InventoryReference.StaticInventory[^1].Key), (PlayerReference.ActiveHand.gameObject.transform.position + (PlayerReference.ActiveHand.gameObject.transform.forward * 0.1f)), Quaternion.identity);
+			ItemInstance = Instantiate(PlayerReference.ItemLibraryReference.GetItemFromName(PlayerReference.InventoryReference.StaticInventory[^1].Key), (PlayerReference.ActiveHand.gameObject.transform.position + (PlayerReference.ActiveHand.gameObject.transform.forward * 0.1f)), Quaternion.identity);
 
 			PlayerReference.InventoryReference.RemoveFromInventory(PlayerReference.InventoryReference.StaticInventory[^1].Key, 1);
 

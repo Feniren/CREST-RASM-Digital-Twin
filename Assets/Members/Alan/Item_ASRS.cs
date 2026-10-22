@@ -4,8 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class Item_ASRS : Item_Parent{
-	// public List<Machine_Job> Jobs = new List<Machine_Job>();
+public class Item_ASRS : Item_CNC_Machine{
 	public RACK_TASK task;
 	public Item_Slotted_Table item = null;
 	public Item_Epoxy_Block material = null;

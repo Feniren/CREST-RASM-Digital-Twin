@@ -297,6 +297,9 @@ MonoBehaviour:
   Pickup: 0
   Quantity: 1
   Name: Mill Doors
+  OnGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
   ID: 
   leftDoor: {fileID: 6105752362218674449}
   rightDoor: {fileID: 2574794414440038}
