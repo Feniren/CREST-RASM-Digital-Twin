@@ -88,7 +88,18 @@ public class Player_Controller : Controller{
     }
 
     private void FixedUpdate(){
-		Vector3 Movement = ((transform.right * MovementVelocity.x) + (transform.forward * MovementVelocity.y));
+		Vector3 Forward = Vector3.ProjectOnPlane(PlayerReference.CameraReference.transform.forward, Vector3.up);
+		Vector3 Movement;
+		float Pitch;
+		Vector3 Right = PlayerReference.CameraReference.transform.right;
+		Vector3 Up = Vector3.ProjectOnPlane(PlayerReference.CameraReference.transform.up, Vector3.up);
+
+		Pitch = Mathf.Abs(PlayerReference.CameraReference.transform.forward.y);
+
+		Forward = (Forward.normalized * (1.0f - Pitch));
+		Forward += (Up.normalized * (Pitch * -Mathf.Sign(PlayerReference.CameraReference.transform.forward.y)));
+
+		Movement = ((Right * MovementVelocity.x) + (Forward * MovementVelocity.y));
 
         Movement.y = RigidBodyReference.linearVelocity.y;
 
@@ -100,7 +111,7 @@ public class Player_Controller : Controller{
 
 	private void LateUpdate(){
 		if (PlayerReference.PlayerSettings.XREnabled){
-			gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
+			//gameObject.transform.Rotate(new Vector3(0.0f, (ControlRotation.x * 2.0f), 0.0f));
 		}
 	}
 
@@ -263,26 +274,35 @@ public class Player_Controller : Controller{
 		if (Context.performed){
 			Vector2 Look = Context.ReadValue<Vector2>();
 
-			ControlRotation.x = (Look.x * PlayerReference.PlayerSettings.LookSpeedX);
+			ControlRotation.x += (Look.x * PlayerReference.PlayerSettings.LookSpeedX);
 			ControlRotation.y -= (Look.y * PlayerReference.PlayerSettings.LookSpeedY);
 			ControlRotation.y = Mathf.Clamp(ControlRotation.y, -90.0f, 90.0f);
 
-			Quaternion XQuaternion = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
+			Quaternion Pitch = Quaternion.Euler(ControlRotation.y, 0.0f, 0.0f);
 
 			if (IsFirstPerson){
-				gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+				transform.rotation = Quaternion.Euler(0.0f, ControlRotation.x, 0.0f);
 			}
 			else{
 				if (PlayerReference.PlayerSettings.ThirdPersonControlRotation){
-					gameObject.transform.Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+					transform.rotation = Quaternion.Euler(0.0f, ControlRotation.x, 0.0f);
 				}
 				else{
-					SpringArm.GetOrigin().Rotate(new Vector3(0.0f, ControlRotation.x, 0.0f));
+					Quaternion CameraRotation = Quaternion.Euler(ControlRotation.y, ControlRotation.x, 0.0f);
+
+					SpringArm.GetOrigin().Rotation = CameraRotation;
+
+					PlayerReference.CameraReference.transform.rotation = Quaternion.Euler(ControlRotation.y, ControlRotation.x, 0.0f);
 				}
 			}
 
 			if (!PlayerReference.PlayerSettings.XREnabled){
-				PlayerReference.CameraReference.transform.localRotation = XQuaternion;
+				if (IsFirstPerson){
+					PlayerReference.CameraReference.transform.localRotation = Pitch;
+				}
+				else if (PlayerReference.PlayerSettings.ThirdPersonControlRotation){
+					PlayerReference.CameraReference.transform.localRotation = Pitch;
+				}
 			}
 		}
 		else if (Context.canceled){

@@ -48,7 +48,7 @@ public class Spring_Arm : MonoBehaviour{
 				Origin.Rotation = transform.rotation;
 			}
 
-			Origin.Location += PlayerSettings.ThirdPersonCameraOffset;
+			Origin.Location += (Entity_Player.GetLocalPlayer().gameObject.transform.rotation * PlayerSettings.ThirdPersonCameraOffset);
 
 			Direction = -Origin.GetForwardVector();
 
@@ -66,10 +66,6 @@ public class Spring_Arm : MonoBehaviour{
 			}
 
 			transform.position = (Origin.Location + (Direction * CurrentLength));
-
-			if (!PlayerSettings.ThirdPersonControlRotation){
-				transform.LookAt(Origin.Location);
-			}
 
 			yield return null;
 		}
