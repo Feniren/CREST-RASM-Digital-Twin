@@ -5,12 +5,19 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
+    // One menu panel per machine (Mill, Lathe): its modules, where their buttons
+    // go, and its own progress text.
+    [System.Serializable]
+    private class Menu_Panel{
+        public List<Lesson_Definition> Modules;
+        public Transform ButtonContainer;
+        public TMP_Text StatusText;
+    }
+
     [SerializeField] private Data_Loader DataLoader;
     [SerializeField] private Module_Loader ModuleLoader;
-    [SerializeField] private List<Lesson_Definition> AvailableModules;
-    [SerializeField] private TMP_Text MenuStatusText;
+    [SerializeField] private List<Menu_Panel> Panels;
     [SerializeField] private Button ModuleButtonPrefab;
-    [SerializeField] private Transform ModuleButtonContainer;
 
     public bool Module_Active { get; private set; }
     public int Step_Index { get; private set; }
@@ -20,11 +27,16 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
 
     private Serialized_Dictionary<string, int> moduleProgress = new Serialized_Dictionary<string, int>();
     private Serialized_Dictionary<string, int> quizScores = new Serialized_Dictionary<string, int>();
+    // Every panel's modules in panel order — the index space of Start_Module.
+    private readonly List<Lesson_Definition> availableModules = new List<Lesson_Definition>();
     private Lesson_Definition activeDefinition;
     private Lesson_Sequencer activeSequencer;
     private float moduleStartTime;
 
     private void Awake(){
+        foreach (Menu_Panel panel in Panels)
+            availableModules.AddRange(panel.Modules);
+
         ModuleLoader.Module_Loaded += OnModuleLoaded;
         ModuleLoader.Module_Unloaded += OnModuleUnloaded;
     }
@@ -35,17 +47,17 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
     }
 
     public void Start_Module(int index){
-        if (Module_Active || index < 0 || index >= AvailableModules.Count)
+        if (Module_Active || index < 0 || index >= availableModules.Count)
             return;
 
-        activeDefinition = AvailableModules[index];
+        activeDefinition = availableModules[index];
         ModuleLoader.Load_Module(activeDefinition.Scene_Name);
     }
 
     // Called by Training_Play_Redirect after a module-scene Play redirect.
     public bool Start_Module_By_Scene(string sceneName){
-        for (int i = 0; i < AvailableModules.Count; i++)
-            if (AvailableModules[i] != null && AvailableModules[i].Scene_Name == sceneName){
+        for (int i = 0; i < availableModules.Count; i++)
+            if (availableModules[i] != null && availableModules[i].Scene_Name == sceneName){
                 Start_Module(i);
                 return true;
             }
@@ -154,54 +166,62 @@ public class Lesson_Controller : MonoBehaviour, Save_Data_Interface{
         return quizScores.TryGetValue(moduleId, out int value) ? value : 0;
     }
 
-    // Menu buttons are generated from AvailableModules — adding a module to that
-    // list is the only step needed to put it on the menu.
+    // Menu buttons are generated from each panel's Modules — adding a module to
+    // the right panel's list is the only step needed to put it on the menu.
     private void BuildModuleButtons(){
-        if (ModuleButtonPrefab == null || ModuleButtonContainer == null){
-            Debug.LogError("Lesson_Controller: ModuleButtonPrefab/ModuleButtonContainer not assigned — menu will be empty.");
+        if (ModuleButtonPrefab == null){
+            Debug.LogError("Lesson_Controller: ModuleButtonPrefab not assigned — menu will be empty.");
             return;
         }
 
-        for (int i = 0; i < AvailableModules.Count; i++){
-            Lesson_Definition def = AvailableModules[i];
+        int index = 0;
 
-            if (def == null)
-                continue;
+        foreach (Menu_Panel panel in Panels){
+            if (panel.ButtonContainer == null)
+                Debug.LogError("Lesson_Controller: a menu panel has no ButtonContainer — its modules won't appear.");
 
-            Button button = Instantiate(ModuleButtonPrefab, ModuleButtonContainer);
-            button.gameObject.name = def.Module_Id + "_Button";
-            TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+            foreach (Lesson_Definition def in panel.Modules){
+                int moduleIndex = index++;
 
-            if (label != null)
-                label.text = def.Display_Name;
+                if (def == null || panel.ButtonContainer == null)
+                    continue;
 
-            int index = i;
-            button.onClick.AddListener(() => Start_Module(index));
+                Button button = Instantiate(ModuleButtonPrefab, panel.ButtonContainer);
+                button.gameObject.name = def.Module_Id + "_Button";
+                TMP_Text label = button.GetComponentInChildren<TMP_Text>();
+
+                if (label != null)
+                    label.text = def.Display_Name;
+
+                button.onClick.AddListener(() => Start_Module(moduleIndex));
+            }
         }
     }
 
     private void UpdateMenuStatus(){
-        if (MenuStatusText == null || AvailableModules.Count == 0)
-            return;
+        foreach (Menu_Panel panel in Panels){
+            if (panel.StatusText == null || panel.Modules.Count == 0)
+                continue;
 
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-        foreach (Lesson_Definition def in AvailableModules){
-            string moduleId = def.Module_Id;
-            int progress = GetProgress(moduleId);
-            int total = def.Steps.FindAll(s => s.Include_In_Quiz).Count;
+            foreach (Lesson_Definition def in panel.Modules){
+                string moduleId = def.Module_Id;
+                int progress = GetProgress(moduleId);
+                int total = def.Steps.FindAll(s => s.Include_In_Quiz).Count;
 
-            if (sb.Length > 0)
-                sb.Append('\n');
+                if (sb.Length > 0)
+                    sb.Append('\n');
 
-            if (progress == 2)
-                sb.Append($"{moduleId} complete — best score {GetScore(moduleId)} / {total}");
-            else if (progress == 1)
-                sb.Append($"{moduleId} started — best score {GetScore(moduleId)} / {total}");
-            else
-                sb.Append($"{moduleId} not started");
+                if (progress == 2)
+                    sb.Append($"{moduleId} complete — best score {GetScore(moduleId)} / {total}");
+                else if (progress == 1)
+                    sb.Append($"{moduleId} started — best score {GetScore(moduleId)} / {total}");
+                else
+                    sb.Append($"{moduleId} not started");
+            }
+
+            panel.StatusText.text = sb.ToString();
         }
-
-        MenuStatusText.text = sb.ToString();
     }
 }

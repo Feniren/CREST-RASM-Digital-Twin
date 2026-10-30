@@ -4,8 +4,9 @@ How to build your own training module on the shared framework. The lesson
 engine, editor tooling and prefabs are shared; your module is **one
 hand-authored scene + one Inspector-authored lesson asset**, all inside
 `Assets/Members/<You>/`. There is no builder script and no registration step:
-the Bootstrap menu is generated at runtime from
-`Lesson_Controller.AvailableModules`, and your scene points at its lesson via
+the Bootstrap menu is generated at runtime from the `Modules` lists in
+`Lesson_Controller.Panels` (one panel per machine: Mill, Lathe), and your scene
+points at its lesson via
 `Lesson_Sequencer.Lesson`.
 
 **Everything is an authored artifact** (2026-07-27/28 decisions,
@@ -32,13 +33,13 @@ flowchart LR
         You["You"] -->|author| Les["Lesson asset\n(Lesson_Definition)"]
         You -->|"hand-author + commit"| Scene["Module scene\n(content only)"]
         Scene -->|"sequencer.Lesson"| Les
-        You -->|"drag into AvailableModules"| Boot["Bootstrap scene\n(Lesson_Controller)"]
+        You -->|"drag into a panel's Modules"| Boot["Bootstrap scene\n(Lesson_Controller)"]
         Boot -.->|references| Les
         You -->|"File > Build Settings"| BS["Build Settings"]
         Les -.->|"Training/7: ids must agree"| Scene
     end
     subgraph Runtime["Play time (Bootstrap)"]
-        LC["Lesson_Controller"] -->|"generates menu buttons\nfrom AvailableModules"| Menu["Menu"]
+        LC["Lesson_Controller"] -->|"generates menu buttons\nper panel's Modules"| Menu["Mill / Lathe\nmenu panels"]
         LC -->|additive load| Scene
         LC --> Seq["Lesson_Sequencer\n(in your scene)"]
         Seq -->|"id matching"| Int["Component_Marker /\nStartup_Action_Button /\nAction_Interactable"]
@@ -47,8 +48,9 @@ flowchart LR
 ```
 
 Runtime flow: `Lesson_Controller` (Bootstrap, persistent) generates one menu
-button per `AvailableModules` entry (label = the lesson's `Display_Name`, list
-order = menu order), additively loads your scene on click, finds its
+button per entry in each panel's `Modules` list, on that panel (label = the
+lesson's `Display_Name`, list order = menu order), additively loads your scene
+on click, finds its
 `Lesson_Sequencer`, and runs your `Lesson_Definition` steps — Guided first
 (highlights on), then Practice (the `Include_In_Quiz` steps, scored against
 `Quiz_Pass_Threshold`), then results + save. Steps connect to scene objects
@@ -100,8 +102,11 @@ automatically (`Desktop_Click_Select` raycasts when no headset is active).
    never land. (The `Component_Marker` prefab already carries this; hand-built
    `Action_Interactable`s need it done manually.)
 3. **Register by reference.** Open Bootstrap → `Managers` → `Lesson_Controller`
-   → add your lesson asset to **`AvailableModules`** (list order = menu order —
-   the button is generated at runtime, nothing to author). Then **File → Build
+   → `Panels` → add your lesson asset to the **`Modules`** list of your
+   machine's panel (element 0 = Mill_Panel, element 1 = Lathe_Panel; list order
+   = button order — the button is generated at runtime, nothing to author).
+   Append rather than insert: the flattened panel order is the index that the
+   Training/8 `Start Module` items use. Then **File → Build
    Settings** → add your scene (touch nothing else — the list is shared with
    other members' scenes). Commit your scene, your lesson asset, Bootstrap and
    `ProjectSettings/EditorBuildSettings.asset` — teammates get the module by
@@ -150,16 +155,16 @@ automatically (`Desktop_Click_Select` raycasts when no headset is active).
 - **Build Settings are hand-maintained.** Add your own scene; never remove or
   reorder other members' entries. `Training/7` errors when your scene is
   missing or disabled.
-- **Menu buttons are runtime-generated** from `AvailableModules` — order in
-  that list is menu order. If a module someone just pushed is missing from
-  your Bootstrap menu, they forgot to commit Bootstrap (the `AvailableModules`
-  entry) — `Training/7` warns about exactly this.
+- **Menu buttons are runtime-generated** from each panel's `Modules` — order
+  in that list is the order on that panel. If a module someone just pushed is
+  missing from your Bootstrap menu, they forgot to commit Bootstrap (the
+  `Modules` entry) — `Training/7` warns about exactly this.
 - **One scene per module, in your own `Members/<You>/` folder** — that's the
   merge-safety model (see `00_Program_Overview.md` §6); `.gitattributes` routes
   residual scene conflicts through Unity Smart Merge. Module scenes are
   content-only: no XR rig, camera, EventSystem or managers (Bootstrap has them).
 - **Don't edit shared files** (`Assets/Scripts/Training/`) for module content.
-  The only shared things you touch are appending to `Lesson_Step_Kind`, the
-  `AvailableModules` list, and the Build Settings entry for your scene.
+  The only shared things you touch are appending to `Lesson_Step_Kind`, your
+  panel's `Modules` list, and the Build Settings entry for your scene.
 - **Everything compiles into one Assembly-CSharp** — class names are global, so
   prefix module-specific scripts distinctively (`Lathe_...`, `ASRS_...`).
