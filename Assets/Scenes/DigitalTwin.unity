@@ -656,7 +656,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8835626485681206399, guid: 877b2d4c58144d077945b635e28f3ac9, type: 3}
       propertyPath: topicName
-      value: /qa_arm/joint_states
+      value: /acl50/joint_states
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1224,7 +1224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8835626485681206399, guid: 877b2d4c58144d077945b635e28f3ac9, type: 3}
       propertyPath: topicName
-      value: /lathe_arm/joint_states
+      value: /acl30/joint_states
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1356,7 +1356,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8835626485681206399, guid: 877b2d4c58144d077945b635e28f3ac9, type: 3}
       propertyPath: topicName
-      value: /mill_arm/joint_states
+      value: /acl20/joint_states
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1632,7 +1632,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8835626485681206399, guid: 877b2d4c58144d077945b635e28f3ac9, type: 3}
       propertyPath: topicName
-      value: /laser_arm/joint_states
+      value: /acl40/joint_states
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
