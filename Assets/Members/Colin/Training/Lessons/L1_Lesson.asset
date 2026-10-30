@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063fb387ddf28614c8a9b8ce321bfef0, type: 3}
+  m_Name: L1_Lesson
+  m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
+  Module_Id: L1
+  Scene_Name: Lathe_Module1_Overview
+  Display_Name: "L1 — CNC Turning: What & Why"
+  Steps:
+  - Step_Id: intro_role
+    Kind: 0
+    Prompt_Text: "Welcome to the ProTurn 9000 — a 2-axis CNC turning center
+      (lathe), and the turning station of the Intelitek SmartCIM 4.0 cell. Conveyor
+      pallets deliver raw stock and the robot arm loads it into the lathe for turning.\n\nPress
+      Continue."
+    Practice_Prompt_Text:
+    Target_Marker_Id:
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: intro_operations
+    Kind: 0
+    Prompt_Text: "A lathe cuts by spinning the workpiece against a stationary tool.
+      The five core operations are:\n\nFACE — square off the end\nTURN —
+      reduce the outside diameter\nGROOVE — cut a narrow channel\nDRILL —
+      bore a hole down the centre\nPART — cut the finished piece off\n\nPress
+      Continue."
+    Practice_Prompt_Text:
+    Target_Marker_Id:
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: intro_axes
+    Kind: 0
+    Prompt_Text: "The lathe moves in two axes: Z runs along the spindle centreline
+      (toward and away from the chuck), and X runs across it — moving the tool
+      in X sets the diameter being cut.\n\nAxis travel limits:\nX: 90 mm across the
+      spindle\nZ: 305 mm along the spindle\n\nPress Continue."
+    Practice_Prompt_Text:
+    Target_Marker_Id:
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: headstock
+    Kind: 1
+    Prompt_Text: "This is the HEADSTOCK — the housing on the left that holds
+      the spindle — a 1000 W brushless motor spins it, and the workpiece, at 100–3000
+      RPM.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Headstock'
+    Target_Marker_Id: headstock
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: chuck
+    Kind: 1
+    Prompt_Text: "This is the CHUCK — a 4-inch 3-jaw chuck on the spindle —
+      its jaws grip the workpiece and spin it with the spindle.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Chuck'
+    Target_Marker_Id: chuck
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: tool_turret
+    Kind: 1
+    Prompt_Text: "This is the TOOL TURRET — a 4-station automatic turret —
+      it holds up to four cutting tools and indexes the one the program calls into
+      position.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Tool Turret'
+    Target_Marker_Id: tool_turret
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: tailstock
+    Kind: 1
+    Prompt_Text: "This is the TAILSTOCK — opposite the chuck — its quill
+      holds a centre that supports the free end of long workpieces, or a drill chuck
+      for drilling on centre.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Tailstock'
+    Target_Marker_Id: tailstock
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: guard_door
+    Kind: 1
+    Prompt_Text: "These are the GUARD DOORS — the sliding shields of the full
+      enclosure — they must be closed while the spindle is turning, and an automatic
+      safety door lock enforces it.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Guard Doors'
+    Target_Marker_Id: guard_door
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: emergency_stop
+    Kind: 1
+    Prompt_Text: "This is the EMERGENCY STOP BUTTON — press it to immediately
+      stop the machine in an emergency.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Emergency Stop Button'
+    Target_Marker_Id: emergency_stop
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: power_on
+    Kind: 1
+    Prompt_Text: "This is the POWER SWITCH — on the right side of the base —
+      energizes the machine before any operation — always the first control you
+      use at start-up.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Power Switch'
+    Target_Marker_Id: power_on
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  - Step_Id: electronics_cabinet
+    Kind: 1
+    Prompt_Text: "This is the ELECTRONICS CABINET — the lower cabinet housing
+      the machine's drive and control electronics.\n\nPress Continue."
+    Practice_Prompt_Text: 'Select the: Electronics Cabinet'
+    Target_Marker_Id: electronics_cabinet
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: guided_done
+    Kind: 0
+    Prompt_Text: "Guided tour complete!\n\nNext: the practice quiz. Highlights are
+      now off — identify each component from its name.\n\nYou need at least
+      4 of 6 to pass. Press Continue."
+    Practice_Prompt_Text:
+    Target_Marker_Id:
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
+  Quiz_Pass_Threshold: 4
+  Practice_Shuffles_Quiz: 1

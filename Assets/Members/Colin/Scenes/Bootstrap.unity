@@ -2322,6 +2322,7 @@ MonoBehaviour:
   AvailableModules:
   - {fileID: 11400000, guid: 347ae1e0a6ecfd145a9045e5f0ba5116, type: 2}
   - {fileID: 11400000, guid: 1ec24b0c82d24a4498db78242452c450, type: 2}
+  - {fileID: 11400000, guid: bb4c85e85b408924382212b840b9f0b3, type: 2}
   MenuStatusText: {fileID: 427882336}
   ModuleButtonPrefab: {fileID: 7714051765398674250, guid: 97061bac64fcf9e4c9ec5a589bf70a3d, type: 3}
   ModuleButtonContainer: {fileID: 755676040}

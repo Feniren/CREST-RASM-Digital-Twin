@@ -8,6 +8,10 @@ public class Component_Marker : MonoBehaviour{
     public string Display_Name;
 
     [SerializeField] private Renderer GlowShell;
+    // For a component made of separate pieces, e.g. a pair of guard doors slid apart:
+    // one shell spanning both would also cover the gap and swallow clicks on the parts
+    // behind it, so each piece gets its own shell (and its own trigger collider).
+    [SerializeField] private Renderer[] ExtraGlowShells;
 
     public event Action<Component_Marker> Selected;
     public event Action<Component_Marker, bool> Hover_Changed;
@@ -87,17 +91,25 @@ public class Component_Marker : MonoBehaviour{
     }
 
     private void Refresh(){
-        if (GlowShell == null)
+        Refresh(GlowShell);
+
+        if (ExtraGlowShells != null)
+            foreach (Renderer shell in ExtraGlowShells)
+                Refresh(shell);
+    }
+
+    private void Refresh(Renderer shell){
+        if (shell == null)
             return;
 
         bool visible = persistentOn || hoverOn;
-        GlowShell.enabled = visible;
+        shell.enabled = visible;
 
         if (!visible)
             return;
 
-        GlowShell.GetPropertyBlock(block);
+        shell.GetPropertyBlock(block);
         block.SetColor(BaseColorId, hoverOn ? hoverColor : persistentColor);
-        GlowShell.SetPropertyBlock(block);
+        shell.SetPropertyBlock(block);
     }
 }

@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Members/Ethan/Arm-Module.unity
     guid: 4165e5dd05783c740a5567e27e686760
+  - enabled: 1
+    path: Assets/Members/Colin/Scenes/Lathe_Module1_Overview.unity
+    guid: f54cca29e3ab4f03b532d846557a4094
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 716874782a15f004b8ba33b1db74f011, type: 2}
