@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85475cb8fec7a1343b54c1a78cd1593a, type: 3}
+  m_Name: Quest_Step_Input_Move
+  m_EditorClassIdentifier: Assembly-CSharp::Quest_Step_Input
+  QuestStepListener: {fileID: 7428845710901214933, guid: 8d0c8ee662edd674c893215079e192e9, type: 3}
+  InputAction: {fileID: -7332866708254697702, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
+  RequiredInputHoldTime: 0

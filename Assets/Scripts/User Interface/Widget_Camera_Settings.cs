@@ -17,9 +17,9 @@ public class Widget_Camera_Settings : Widget_Parent{
 	}
 
 	public void Awake(){
-		ThirdPersonControlRotationToggle.ToggleNameText.text = "Control Rotation";
-		ThirdPersonCameraDistanceSlider.SliderNameText.text = "Camera Distance";
-		ThirdPersonCameraSpringArmForceSlider.SliderNameText.text = "Spring Arm Force";
+		ThirdPersonControlRotationToggle.ToggleName.text = "Control Rotation";
+		ThirdPersonCameraDistanceSlider.SliderName.text = "Camera Distance";
+		ThirdPersonCameraSpringArmForceSlider.SliderName.text = "Spring Arm Force";
 		ThirdPersonCameraOffsetXIncrementor.IncrementorName.text = "X";
 		ThirdPersonCameraOffsetYIncrementor.IncrementorName.text = "Y";
 		ThirdPersonCameraOffsetZIncrementor.IncrementorName.text = "Z";
@@ -28,9 +28,9 @@ public class Widget_Camera_Settings : Widget_Parent{
 	public override void OnDisable(){
 		base.OnDisable();
 
-		ThirdPersonControlRotationToggle.ToggleReference.onValueChanged.RemoveListener(OnThirdPersonControlRotationChanged);
-		ThirdPersonCameraDistanceSlider.SliderReference.onValueChanged.RemoveListener(OnThirdPersonCameraDistanceChanged);
-		ThirdPersonCameraSpringArmForceSlider.SliderReference.onValueChanged.RemoveListener(OnThirdPersonCameraSpringArmForceChanged);
+		ThirdPersonControlRotationToggle.Toggle.onValueChanged.RemoveListener(OnThirdPersonControlRotationChanged);
+		ThirdPersonCameraDistanceSlider.Slider.onValueChanged.RemoveListener(OnThirdPersonCameraDistanceChanged);
+		ThirdPersonCameraSpringArmForceSlider.Slider.onValueChanged.RemoveListener(OnThirdPersonCameraSpringArmForceChanged);
 		ThirdPersonCameraOffsetXIncrementor.ValueChanged.RemoveListener(OnThirdPersonCameraOffsetXChanged);
 		ThirdPersonCameraOffsetYIncrementor.ValueChanged.RemoveListener(OnThirdPersonCameraOffsetYChanged);
 		ThirdPersonCameraOffsetZIncrementor.ValueChanged.RemoveListener(OnThirdPersonCameraOffsetZChanged);
@@ -39,9 +39,9 @@ public class Widget_Camera_Settings : Widget_Parent{
 	public override void OnEnable(){
 		base.OnEnable();
 
-		ThirdPersonControlRotationToggle.ToggleReference.onValueChanged.AddListener(OnThirdPersonControlRotationChanged);
-		ThirdPersonCameraDistanceSlider.SliderReference.onValueChanged.AddListener(OnThirdPersonCameraDistanceChanged);
-		ThirdPersonCameraSpringArmForceSlider.SliderReference.onValueChanged.AddListener(OnThirdPersonCameraSpringArmForceChanged);
+		ThirdPersonControlRotationToggle.Toggle.onValueChanged.AddListener(OnThirdPersonControlRotationChanged);
+		ThirdPersonCameraDistanceSlider.Slider.onValueChanged.AddListener(OnThirdPersonCameraDistanceChanged);
+		ThirdPersonCameraSpringArmForceSlider.Slider.onValueChanged.AddListener(OnThirdPersonCameraSpringArmForceChanged);
 		ThirdPersonCameraOffsetXIncrementor.ValueChanged.AddListener(OnThirdPersonCameraOffsetXChanged);
 		ThirdPersonCameraOffsetYIncrementor.ValueChanged.AddListener(OnThirdPersonCameraOffsetYChanged);
 		ThirdPersonCameraOffsetZIncrementor.ValueChanged.AddListener(OnThirdPersonCameraOffsetZChanged);
@@ -52,15 +52,15 @@ public class Widget_Camera_Settings : Widget_Parent{
 
 		PlayerSettings = Entity_Player.GetLocalPlayer().PlayerSettings;
 
-		ThirdPersonControlRotationToggle.ToggleReference.isOn = PlayerSettings.ThirdPersonControlRotation;
+		ThirdPersonControlRotationToggle.Toggle.isOn = PlayerSettings.ThirdPersonControlRotation;
 
-		ThirdPersonCameraDistanceSlider.SliderReference.value = PlayerSettings.ThirdPersonCameraDistance;
-		ThirdPersonCameraDistanceSlider.SliderReference.minValue = 1.0f;
-		ThirdPersonCameraDistanceSlider.SliderReference.maxValue = 4.0f;
+		ThirdPersonCameraDistanceSlider.Slider.value = PlayerSettings.ThirdPersonCameraDistance;
+		ThirdPersonCameraDistanceSlider.Slider.minValue = 1.0f;
+		ThirdPersonCameraDistanceSlider.Slider.maxValue = 4.0f;
 
-		ThirdPersonCameraSpringArmForceSlider.SliderReference.value = PlayerSettings.ThirdPersonCameraSpringArmForce;
-		ThirdPersonCameraSpringArmForceSlider.SliderReference.minValue = 1.0f;
-		ThirdPersonCameraSpringArmForceSlider.SliderReference.maxValue = 20.0f;
+		ThirdPersonCameraSpringArmForceSlider.Slider.value = PlayerSettings.ThirdPersonCameraSpringArmForce;
+		ThirdPersonCameraSpringArmForceSlider.Slider.minValue = 1.0f;
+		ThirdPersonCameraSpringArmForceSlider.Slider.maxValue = 20.0f;
 
 		ThirdPersonCameraOffsetXIncrementor.SetMinimumValue(-2.0f);
 		ThirdPersonCameraOffsetXIncrementor.SetMaximumValue(2.0f);

@@ -6,9 +6,9 @@ using System;
 using TMPro;
 
 public class Widget_Labeled_Slider : Widget_Parent{
-	public Slider SliderReference;
-	public TextMeshProUGUI SliderNameText;
-	public TextMeshProUGUI SliderValueText;
+	public Slider Slider;
+	public TextMeshProUGUI SliderName;
+	public TextMeshProUGUI SliderValue;
 
 	public Widget_Labeled_Slider(){
 		Name = "Labaled Slider";
@@ -17,21 +17,21 @@ public class Widget_Labeled_Slider : Widget_Parent{
 	public override void OnDisable(){
 		base.OnDisable();
 
-		SliderReference.onValueChanged.RemoveListener(OnValueChanged);
+		Slider.onValueChanged.RemoveListener(OnValueChanged);
 	}
 
 	public override void OnEnable(){
 		base.OnEnable();
 
-		SliderReference.onValueChanged.AddListener(OnValueChanged);
+		Slider.onValueChanged.AddListener(OnValueChanged);
 	}
 
 	public void OnValueChanged(float Value){
 		Value = (float)Math.Round(Value, 2);
 
-		SliderReference.SetValueWithoutNotify(Value);
+		Slider.SetValueWithoutNotify(Value);
 
-		SliderValueText.text = Value.ToString();
+		SliderValue.text = Value.ToString();
 	}
     
 }

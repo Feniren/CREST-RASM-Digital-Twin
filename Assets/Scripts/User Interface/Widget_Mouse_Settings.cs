@@ -14,22 +14,22 @@ public class Widget_Mouse_Settings : Widget_Parent{
 	}
 
 	public void Awake(){
-		MouseXSlider.SliderNameText.text = "Mouse Sensitivity X";
-		MouseYSlider.SliderNameText.text = "Mouse Sensitivity Y";
+		MouseXSlider.SliderName.text = "Mouse Sensitivity X";
+		MouseYSlider.SliderName.text = "Mouse Sensitivity Y";
 	}
 
 	public override void OnDisable(){
 		base.OnDisable();
 
-		MouseXSlider.SliderReference.onValueChanged.RemoveListener(OnMouseXValueChanged);
-		MouseYSlider.SliderReference.onValueChanged.RemoveListener(OnMouseYValueChanged);
+		MouseXSlider.Slider.onValueChanged.RemoveListener(OnMouseXValueChanged);
+		MouseYSlider.Slider.onValueChanged.RemoveListener(OnMouseYValueChanged);
 	}
 
 	public override void OnEnable(){
 		base.OnEnable();
 
-		MouseXSlider.SliderReference.onValueChanged.AddListener(OnMouseXValueChanged);
-		MouseYSlider.SliderReference.onValueChanged.AddListener(OnMouseYValueChanged);
+		MouseXSlider.Slider.onValueChanged.AddListener(OnMouseXValueChanged);
+		MouseYSlider.Slider.onValueChanged.AddListener(OnMouseYValueChanged);
 	}
 
 	public override void Start(){
@@ -37,13 +37,13 @@ public class Widget_Mouse_Settings : Widget_Parent{
 
 		PlayerSettings = Entity_Player.GetLocalPlayer().PlayerSettings;
 
-		MouseXSlider.SliderReference.value = PlayerSettings.LookSpeedX;
-		MouseXSlider.SliderReference.minValue = 0.1f;
-		MouseXSlider.SliderReference.maxValue = 1.0f;
+		MouseXSlider.Slider.value = PlayerSettings.LookSpeedX;
+		MouseXSlider.Slider.minValue = 0.1f;
+		MouseXSlider.Slider.maxValue = 1.0f;
 
-		MouseYSlider.SliderReference.value = PlayerSettings.LookSpeedY;
-		MouseYSlider.SliderReference.minValue = 0.1f;
-		MouseYSlider.SliderReference.maxValue = 1.0f;
+		MouseYSlider.Slider.value = PlayerSettings.LookSpeedY;
+		MouseYSlider.Slider.minValue = 0.1f;
+		MouseYSlider.Slider.maxValue = 1.0f;
 	}
 
 	public void OnMouseXValueChanged(float Value){
