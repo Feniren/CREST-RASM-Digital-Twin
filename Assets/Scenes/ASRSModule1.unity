@@ -755,6 +755,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.3
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -2001,7 +2003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5848687157432659005, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6512597964779288199, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -2084,7 +2086,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456656642}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3752cdf6c41efef4797c4f8589757a25, type: 3}
   m_Name: 
@@ -2093,6 +2095,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.3
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls:
@@ -2106,18 +2110,6 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: LeftDoorOpen
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 510069700}
-        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: EpoxyToTable
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &510069656 stripped
@@ -2454,6 +2446,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.6
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls:
@@ -5127,6 +5121,7 @@ GameObject:
   - component: {fileID: 1628413927}
   - component: {fileID: 1628413926}
   - component: {fileID: 1628413928}
+  - component: {fileID: 1628413929}
   m_Layer: 0
   m_Name: SequenceManager
   m_TagString: Untagged
@@ -5389,7 +5384,7 @@ MonoBehaviour:
     largeText: 1
   - title: 
     targets:
-    - {fileID: 456656642}
+    - {fileID: 2089806239}
     infoText: 'Please walk over to the rack, and interact with the door handle. '
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
@@ -5597,6 +5592,48 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1628413929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628413925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7f78a6fee92824bae2d58023dbd59a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ASRS_Module1_Debug_Shortcuts
+  sequenceManager: {fileID: 1628413926}
+  enableInReleaseBuilds: 0
+  nextKey: 12
+  previousKey: 11
+  restartKey: 68
+  toggleHelpKey: 10
+  showHelp: 1
+  thumbstickChordSkips: 1
+  jumps:
+  - label: Material flow
+    key: 41
+    actionId: M1_Flow_1
+  - label: Part identification
+    key: 42
+    actionId: '#parts'
+  - label: Inspect cells
+    key: 43
+    actionId: M1_InspectCells
+  - label: Find the material
+    key: 44
+    actionId: M1_IdentifyMaterial
+  - label: Load the ASRS
+    key: 45
+    actionId: LoadASRS
+  - label: Quiz
+    key: 46
+    actionId: M1_QuizPassed
+  - label: Module complete
+    key: 47
+    actionId: '#end'
 --- !u!1001 &1643142828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5775,6 +5812,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.3
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -5952,6 +5991,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.3
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls:
@@ -6403,6 +6444,8 @@ MonoBehaviour:
   FadeDuration: 0.25
   PulseSpeed: 2
   PulseAmount: 0.3
+  VisibleAlpha: 0.3
+  SortingOrder: 10
   OnSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -7496,6 +7539,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 108, y: 6.5, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2089806239 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7601785752919524621, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+  m_PrefabInstance: {fileID: 387784165}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2102905025 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5324659092735817849, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
@@ -8388,6 +8436,10 @@ PrefabInstance:
     - target: {fileID: 788710960788934295, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8756301897996794924, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
+      propertyPath: VisibleAlpha
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -246,6 +246,7 @@ public static class Lesson_Panel_Builder
         SetRef(card, "videoSurface", videoGO.GetComponent<RawImage>());
         SetRef(card, "videoPlayer", player);
         SetRef(card, "videoAspect", videoAspect);
+        ASRS_Module1_Builder.AddVideoControls(card, mediaBox.rectTransform, listItemButton);
 
         Lesson_Panel lessonPanel = root.AddComponent<Lesson_Panel>();
         lessonPanel.Display = display;

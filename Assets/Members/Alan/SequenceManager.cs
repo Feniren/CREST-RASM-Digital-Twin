@@ -261,6 +261,42 @@ public class SequenceManager : MonoBehaviour
         return targetIndex < 0 || currentIndex >= targetIndex;
     }
 
+    // Index of the first step with this Required Action Id, or -1.
+    public int FindStepIndex(string actionId)
+    {
+        return steps == null || string.IsNullOrEmpty(actionId)
+            ? -1
+            : System.Array.FindIndex(steps, s => s.requiredActionId == actionId);
+    }
+
+    // DEBUG ONLY (used by ASRS_Module1_Debug_Shortcuts): abandons the
+    // current step — unhooks and hides its markers, stops waiting on its
+    // table — and starts step `index` as if the lesson had just reached it.
+    // index == Steps.Length jumps to the completion screen. Nothing the
+    // skipped steps would have done in the world (e.g. loading the rack) is
+    // faked; step-scoped features clean up through StepActivated as usual.
+    public void DebugJumpToStep(int index)
+    {
+        if (steps == null || steps.Length == 0)
+            return;
+
+        index = Mathf.Clamp(index, 0, steps.Length);
+
+        foreach (Marker_Interactable marker in pendingMarkers)
+            if (marker != null)
+                marker.Selected -= OnMarkerSelected;
+        pendingMarkers.Clear();
+        waitingForTable = false;
+
+        if (currentIndex >= 0 && currentIndex < steps.Length && currentIndex != index)
+            foreach (GameObject target in steps[currentIndex].targets)
+                if (target != null)
+                    target.SetActive(false);
+
+        Debug.Log($"{logTag} [Debug] Jump from step {currentIndex + 1} to step {index + 1}.", this);
+        ActivateStep(index);
+    }
+
     public bool IsOnStep(string actionId)
     {
         return interactionActive && currentIndex >= 0 && currentIndex < steps.Length
@@ -489,6 +525,10 @@ public class SequenceManager : MonoBehaviour
                 Debug.LogError($"[SequenceManager] Step {currentIndex} target '{target.name}' has no Marker_Interactable attached.");
                 continue;
             }
+
+            // A marker clicked earlier hid itself; this step needs it shown
+            // again (e.g. the same part on a later step, or a debug jump back).
+            marker.SetVisible(true);
 
             marker.Selected += OnMarkerSelected;
             pendingMarkers.Add(marker);
