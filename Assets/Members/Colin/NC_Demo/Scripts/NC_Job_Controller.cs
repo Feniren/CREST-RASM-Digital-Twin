@@ -5,25 +5,32 @@ using System.Text;
 using UnityEngine;
 
 /// <summary>
-/// The job loop the Digital Twin's mill station will reuse: for every program in the library
-/// folder (file-name order) — open the doors, load a fresh stock into the vise, close, run,
-/// home, open, and set the carved block down on the output table under its category.
+/// The job loop the Digital Twin's mill and lathe stations will reuse: for every program in
+/// the library folder (file-name order) — open the doors, load a fresh stock into the vise or
+/// chuck, close, run, home, open, and set the finished part down on the output table under its
+/// category. Machines without door physics (the lathe) leave Doors empty.
 /// </summary>
 public class NC_Job_Controller : MonoBehaviour
 {
     public enum Phase { Idle, Loading_Stock, Running, Unloading, Done, No_Programs }
+    public enum Planner_Kind { Mill, Lathe }
 
     [Header("Machine")]
     [SerializeField] private NC_Runner Runner;
-    [SerializeField] private NC_Mill_Link Link;
-    [SerializeField] private NC_Tool_Rack Rack;
+    [Tooltip("An I_NC_Link: NC_Mill_Link or NC_Lathe_Link")]
+    [SerializeField] private MonoBehaviour Link;
+    [Tooltip("An I_NC_Tool_Changer: NC_Tool_Rack or NC_Lathe_Turret")]
+    [SerializeField] private MonoBehaviour Rack;
     [SerializeField] private NC_Output_Table Table;
+    [Tooltip("Optional: empty = no door step")]
     [SerializeField] private Mill_Doors_Physics Doors;
     [SerializeField] private NC_Machine_Profile Machine;
+    [SerializeField] private Planner_Kind Planner = Planner_Kind.Mill;
 
     [Header("Stock")]
-    [SerializeField] private Mill_Stock Stock_Prefab;
-    [Tooltip("Rides the stock drives; the Work_Origin the link uses is authored under it")]
+    [Tooltip("A Mill_Stock or Lathe_Stock prefab matching the machine")]
+    [SerializeField] private Behaviour Stock_Prefab;
+    [Tooltip("Mill: rides the stock drives and holds the Work_Origin. Lathe: the chuck face on the spinning spindle")]
     [SerializeField] private Transform Stock_Mount;
 
     [Header("Programs")]
@@ -34,7 +41,8 @@ public class NC_Job_Controller : MonoBehaviour
     public int Job_Index { get; private set; } = -1;
     public NC_Job Current => Job_Index >= 0 && Job_Index < jobs.Count ? jobs[Job_Index] : null;
     public Phase Current_Phase { get; private set; }
-    public Mill_Stock Stock { get; private set; }
+    public Behaviour Stock { get; private set; }
+    public I_NC_Tool_Changer Tool_Changer => Rack as I_NC_Tool_Changer;
     public string Library_Path => Path.Combine(Application.streamingAssetsPath, Folder);
 
     List<NC_Job> jobs = new List<NC_Job>();
@@ -42,9 +50,9 @@ public class NC_Job_Controller : MonoBehaviour
 
     void Awake()
     {
-        if (Runner == null || Link == null || Rack == null || Table == null || Doors == null || Machine == null || Stock_Prefab == null || Stock_Mount == null)
+        if (Runner == null || !(Link is I_NC_Link) || !(Rack is I_NC_Tool_Changer) || Table == null || Machine == null || Stock_Prefab == null || Stock_Mount == null)
         {
-            Debug.LogWarning("NC_Job_Controller: every reference in the Machine and Stock groups must be assigned.");
+            Debug.LogWarning("NC_Job_Controller: every reference in the Machine and Stock groups except Doors must be assigned (Link an I_NC_Link, Rack an I_NC_Tool_Changer).");
             enabled = false;
         }
     }
@@ -60,11 +68,13 @@ public class NC_Job_Controller : MonoBehaviour
         if (run != null) StopCoroutine(run);
         Runner.Unload();
         Table.Clear();
-        foreach (var old in Stock_Mount.GetComponentsInChildren<Mill_Stock>()) Destroy(old.gameObject);   // never the authored Work_Origin
+        foreach (var old in Stock_Mount.GetComponentsInChildren(Stock_Prefab.GetType())) Destroy(old.gameObject);   // never the authored Work_Origin
         Stock = null;
-        Link.Reset_Home();
+        ((I_NC_Link)Link).Reset_Home();
         Job_Index = -1;
-        jobs = NC_Program_Library.Load_All(Library_Path, Machine.Settings);
+        jobs = Planner == Planner_Kind.Lathe
+            ? NC_Program_Library.Load_All(Library_Path, Machine.Settings, NC_Lathe_Planner.Plan)
+            : NC_Program_Library.Load_All(Library_Path, Machine.Settings, NC_Planner.Plan);
         run = StartCoroutine(Run_All());
     }
 
@@ -92,7 +102,7 @@ public class NC_Job_Controller : MonoBehaviour
 
             Current_Phase = Phase.Loading_Stock;
             yield return Set_Doors(true);
-            Stock = Instantiate(Stock_Prefab, Stock_Mount);            // the prefab's local pose is identity: block in the vise
+            Stock = Instantiate(Stock_Prefab, Stock_Mount);            // the prefab's local pose is identity: block in the vise, bar in the chuck
             Stock.name = "Stock_" + Path.GetFileNameWithoutExtension(job.Name);
             yield return Set_Doors(false);
 
@@ -116,6 +126,7 @@ public class NC_Job_Controller : MonoBehaviour
     // Toggles the doors if needed and waits for the slide to finish, however long it is tuned to take.
     IEnumerator Set_Doors(bool open)
     {
+        if (Doors == null) yield break;
         if (Doors.IsOpen != open) Doors.AlternateInteract(null);   // the door script does not use the player argument
         yield return new WaitUntil(() => !Doors.IsSliding);
     }
@@ -127,7 +138,7 @@ public class NC_Job_Controller : MonoBehaviour
         foreach (int t in job.Plan.Tools_Used)
         {
             if (!first) sb.Append("  ");
-            sb.Append(Rack.Describe(t));
+            sb.Append(Tool_Changer.Describe(t));
             first = false;
         }
         sb.Append('\n');

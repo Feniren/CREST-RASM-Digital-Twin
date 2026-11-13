@@ -110,3 +110,32 @@ Tests: Test Runner → EditMode → `NC.Tests`.
 - Tool changes and stock loading are teleports by design; animation is a separate step.
 - `NC_Epoxy_Stock.prefab` is a plain prefab, not a variant of `Assets/Game_Objects/Item/Item_Epoxy_Block.prefab`: that prefab is rooted on `EpoxyBlock.fbx`, whose root node is scaled 100 with the pivot at the block centre, while `Mill_Stock` expects unit scale with its origin at the min corner. Promoting carving to the shared item means a unit-scale child at -Size/2 carrying `Mill_Stock`, and the job controller and output table would then have to handle a `Mill_Stock` that is not the prefab root.
 - `Mill_Stock` is disabled once a part is finished so its mesh stops being checked for remesh.
+
+## Lathe (NC_Lathe_Demo)
+
+`Scenes/NC_Lathe_Demo.unity` runs the same job loop on the ProTurn 9000. The four programs live in `StreamingAssets/NC_Lathe/`. The scene shares `NC_Runner`, `NC_Job_Controller` (`Planner = Lathe`, `Doors` empty), `NC_Demo_Readout`, `NC_Demo_Controls`, `NC_Output_Table` and `NC Demo/7 Validate Scene` with the mill. The runner, job and readout talk to the machine only through `I_NC_Link` and `I_NC_Tool_Changer` (`Scripts/I_NC_Machine.cs`).
+
+### Dialect (`NC/NC_Lathe_Planner.cs`)
+Fanuc group-A style:
+- **Coordinates:** X is a diameter and U/W are incremental. There is no G90/G91.
+- **Motion:** G00–G03 in XZ, with arcs given by I/K or R and broken into chords of ≤ 0.01 mm sagitta. Viewed with Z to the right and X up, G02 is clockwise.
+- **Other G codes:** G04 (X/U seconds, P milliseconds), G18, G20/G21, G28, G40.
+- **Spindle and feed:** G50 S clamps the rpm. G96/G97 select constant surface speed (m/min) or direct rpm. G98/G99 select feed per minute or per rev (per rev is the default). `NC_Machine_Settings.Max_Rpm` caps everything.
+- **Turret and M codes:** T0101 indexes the turret directly (no M06). M00/M01, M02/M30 and M03/M04/M05 are supported.
+- **Unsupported:** canned cycles (G70–G76, G90/G92/G94) and nose-radius compensation raise warnings.
+
+Plans carry the radius in `x`. `Work_Position_Mm` is in the same frame, and the readout doubles it for display.
+
+### Frames (`Lathe_NC` in the scene)
+- `Lathe_NC`: local +Z is the spindle axis (toward the tailstock) and local +X is radial toward the turret (the operator side).
+- `Spindle` spins about local Z and carries `Stock_Mount`, where `NC_Lathe_Stock` (Ø32 × 70 mm) is instantiated. Spinning doesn't change the carve, because `Lathe_Stock` carves in (z, r).
+- `Work_Origin` is static, on the axis at the stock's free face. Program Z0 is the face and the chuck is at Z−70.
+- `Carriage_Z → Cross_X → Turret` both carry the tool and position it in closed loop, as on the mill.
+- The programmed point is the imaginary tool tip. For a round-nose insert, the tool transform sits R further along +Z. Grooving tools are programmed at the centre of their width.
+- The validator checks the frames, and it checks that every station, once presented, puts its tip on centre height with the tool radial.
+
+### Placeholders
+- The CAD `Lathe Variant` is a static shell. Its `ToolTurret` and the CAD workpiece in the chuck are disabled as scene overrides.
+- The turret, the four tools (`Carving/Tools/Turn_*`, `Groove_*`), the slide block and the three chuck jaws are primitives until real models exist.
+- Indexing is an instant turn of `Turret`.
+- The `ProTurn_9000` profile's rapid and feed figures are unverified, like the mill's.

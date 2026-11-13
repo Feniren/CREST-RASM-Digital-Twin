@@ -48,6 +48,15 @@ public class Carving_Tool : MonoBehaviour
     public void Bind(Mill_Stock mill)
     {
         Mill = mill;
+        if (mill != null) Lathe = null;
+        Seed();
+    }
+
+    /// <summary>Binds to a lathe stock (or null) and re-seeds, like Bind(Mill_Stock).</summary>
+    public void Bind(Lathe_Stock lathe)
+    {
+        Lathe = lathe;
+        if (lathe != null) Mill = null;
         Seed();
     }
 

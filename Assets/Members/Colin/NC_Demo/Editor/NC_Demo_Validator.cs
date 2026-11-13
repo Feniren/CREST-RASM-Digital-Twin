@@ -6,10 +6,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Checks the open NC demo scene's wiring. Replaces the correctness-by-construction the deleted
-/// scene builder provided: every reference below is dereferenced at Play, the axis mapping only
-/// works if the three drives cover three different world axes, and a program that names a tool
-/// the rack lacks alarms at run time. Findings are logged one per line.
+/// Checks the open NC demo scene's wiring (NC_Mill_Demo or NC_Lathe_Demo; the machine is picked
+/// by which link the scene has). Replaces the correctness-by-construction the deleted scene
+/// builder provided: every reference below is dereferenced at Play, the axis mapping only works
+/// if the drives cover different world axes, and a program that names a tool the rack or turret
+/// lacks alarms at run time. Findings are logged one per line.
 /// </summary>
 public static class NC_Demo_Validator
 {
@@ -20,18 +21,32 @@ public static class NC_Demo_Validator
         var errors = new List<string>();
         var warnings = new List<string>();
 
-        var link = One<NC_Mill_Link>(errors);
+        bool lathe = Object.FindObjectsByType<NC_Lathe_Link>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length > 0;
         var runner = One<NC_Runner>(errors);
-        var rack = One<NC_Tool_Rack>(errors);
         var table = One<NC_Output_Table>(errors);
         var job = One<NC_Job_Controller>(errors);
         var controls = One<NC_Demo_Controls>(errors);
         var readout = One<NC_Demo_Readout>(errors);
 
-        if (job != null) Check_Job(job, rack, errors, warnings);
-        if (link != null) Check_Link(link, job, errors);
+        I_NC_Tool_Changer changer;
+        if (lathe)
+        {
+            var link = One<NC_Lathe_Link>(errors);
+            var turret = One<NC_Lathe_Turret>(errors);
+            changer = turret;
+            if (link != null) Check_Lathe_Link(link, job, errors);
+            if (turret != null && link != null) Check_Turret(turret, link, errors);
+        }
+        else
+        {
+            var link = One<NC_Mill_Link>(errors);
+            var rack = One<NC_Tool_Rack>(errors);
+            changer = rack;
+            if (link != null) Check_Link(link, job, errors);
+            if (rack != null) Check_Rack(rack, errors);
+        }
+        if (job != null) Check_Job(job, changer, lathe, errors, warnings);
         if (runner != null) Check_Refs(runner, new[] { "Link", "Rack" }, errors);
-        if (rack != null) Check_Rack(rack, errors);
         if (table != null) Check_Table(table, errors);
         if (controls != null)
         {
@@ -96,6 +111,61 @@ public static class NC_Demo_Validator
         }
     }
 
+    static void Check_Lathe_Link(NC_Lathe_Link link, NC_Job_Controller job, List<string> errors)
+    {
+        Check_Refs(link, new[] { "Cross_X", "Carriage_Z", "Spindle", "Work_Origin" }, errors);
+        var x = Ref(link, "Cross_X") as AxisMovement;
+        var z = Ref(link, "Carriage_Z") as AxisMovement;
+        var spindle = Ref(link, "Spindle") as Transform;
+        var origin = Ref(link, "Work_Origin") as Transform;
+        if (x == null || z == null || spindle == null || origin == null) return;
+
+        if (Mathf.Abs(Vector3.Dot(x.WorldDirection, z.WorldDirection)) > 1e-3f) errors.Add("NC_Lathe_Link: Cross_X and Carriage_Z must move along perpendicular directions (check AxisMovement.Axis).");
+        if (Vector3.Angle(z.WorldDirection, spindle.forward) > 0.1f && Vector3.Angle(-z.WorldDirection, spindle.forward) > 0.1f) errors.Add("NC_Lathe_Link: Carriage_Z must move parallel to the spindle axis (Spindle local Z).");
+        if (Vector3.Angle(origin.forward, spindle.forward) > 0.1f) errors.Add("NC_Lathe_Link.Work_Origin local +Z must point along the spindle axis (Spindle local +Z, toward the tailstock).");
+        if (Mathf.Abs(Vector3.Dot(origin.right, x.WorldDirection)) < 0.9999f) errors.Add("NC_Lathe_Link.Work_Origin local +X must lie along the Cross_X direction (program X is radial along the cross slide).");
+        if (origin.IsChildOf(spindle)) errors.Add("NC_Lathe_Link.Work_Origin must not ride the Spindle — it would spin with it.");
+        Vector3 off_axis = Vector3.ProjectOnPlane(origin.position - spindle.position, spindle.forward);
+        if (off_axis.magnitude > 1e-4f) errors.Add("NC_Lathe_Link.Work_Origin is " + (off_axis.magnitude * 1000f).ToString("0.###") + " mm off the spindle axis.");
+
+        if (job == null) return;
+        var mount = Ref(job, "Stock_Mount") as Transform;
+        if (mount != null && !mount.IsChildOf(spindle)) errors.Add("NC_Job_Controller.Stock_Mount must ride NC_Lathe_Link.Spindle so the bar spins with the chuck.");
+        if (mount != null && Vector3.Angle(mount.forward, spindle.forward) > 0.1f) errors.Add("NC_Job_Controller.Stock_Mount local Z must be the spindle axis (the Lathe_Stock axis is its local +Z).");
+        if (mount != null && Ref(job, "Stock_Prefab") is Lathe_Stock stock)
+        {
+            float length = new SerializedObject(stock).FindProperty("Length").floatValue;
+            Vector3 face = mount.TransformPoint(new Vector3(0f, 0f, length));
+            if (Vector3.Distance(face, origin.position) > 1e-4f)
+                errors.Add("NC_Lathe_Link.Work_Origin should sit at the stock's free face " + face.ToString("F4") + " but is at " + origin.position.ToString("F4") + ".");
+        }
+    }
+
+    // Every station, once presented, must put its tip in the Work_Origin's XZ plane with the tool pointing radially out (+X).
+    static void Check_Turret(NC_Lathe_Turret turret, NC_Lathe_Link link, List<string> errors)
+    {
+        Check_Refs(turret, new[] { "Turret" }, errors);
+        var head = Ref(turret, "Turret") as Transform;
+        var origin = Ref(link, "Work_Origin") as Transform;
+        var tools = new SerializedObject(turret).FindProperty("Tools");
+        if (tools.arraySize == 0) errors.Add("NC_Lathe_Turret.Tools is empty.");
+        if (head == null || origin == null) return;
+        Quaternion saved = head.localRotation;
+        for (int i = 0; i < tools.arraySize; i++)
+        {
+            var tool = tools.GetArrayElementAtIndex(i).objectReferenceValue as Carving_Tool;
+            if (tool == null) { errors.Add("NC_Lathe_Turret.Tools[" + i + "] (T" + (i + 1) + ") is empty."); continue; }
+            if (Ref(tool, "Definition") == null) errors.Add(tool.name + ": Definition is empty.");
+            if (Ref(tool, "Visual") == null) errors.Add(tool.name + ": Visual is empty.");
+            if (!tool.transform.IsChildOf(head)) errors.Add(tool.name + " must sit under the turret so it indexes with it.");
+            turret.Index(i + 1);
+            Vector3 local = origin.InverseTransformPoint(tool.transform.position);
+            if (Mathf.Abs(local.y) > 1e-4f) errors.Add(tool.name + ": presented tip is " + (local.y * 1000f).ToString("0.###") + " mm off the Work_Origin XZ plane (centre height) — it could never reach its targets.");
+            if (Vector3.Angle(tool.transform.up, origin.right) > 0.5f) errors.Add(tool.name + ": presented tool axis is " + Vector3.Angle(tool.transform.up, origin.right).ToString("0.#") + "° from radial (+X); the carve assumes a radial tool.");
+        }
+        head.localRotation = saved;
+    }
+
     static void Check_Rack(NC_Tool_Rack rack, List<string> errors)
     {
         var so = new SerializedObject(rack);
@@ -134,11 +204,17 @@ public static class NC_Demo_Validator
         else if (!PrefabUtility.IsPartOfPrefabAsset(label)) errors.Add("NC_Output_Table.Part_Label_Prefab must be a prefab asset, not a scene object.");
     }
 
-    static void Check_Job(NC_Job_Controller job, NC_Tool_Rack rack, List<string> errors, List<string> warnings)
+    static void Check_Job(NC_Job_Controller job, I_NC_Tool_Changer rack, bool lathe, List<string> errors, List<string> warnings)
     {
-        Check_Refs(job, new[] { "Runner", "Link", "Rack", "Table", "Doors", "Machine", "Stock_Prefab", "Stock_Mount" }, errors);
+        Check_Refs(job, lathe ? new[] { "Runner", "Link", "Rack", "Table", "Machine", "Stock_Prefab", "Stock_Mount" }
+                              : new[] { "Runner", "Link", "Rack", "Table", "Doors", "Machine", "Stock_Prefab", "Stock_Mount" }, errors);
+        var job_so = new SerializedObject(job);
+        bool lathe_planner = job_so.FindProperty("Planner").enumValueIndex == (int)NC_Job_Controller.Planner_Kind.Lathe;
+        if (lathe_planner != lathe) errors.Add("NC_Job_Controller.Planner must be " + (lathe ? "Lathe" : "Mill") + " for this machine.");
+        var prefab = Ref(job, "Stock_Prefab");
+        if (prefab != null && (lathe ? !(prefab is Lathe_Stock) : !(prefab is Mill_Stock))) errors.Add("NC_Job_Controller.Stock_Prefab must be a " + (lathe ? "Lathe_Stock" : "Mill_Stock") + ".");
 
-        if (Ref(job, "Stock_Prefab") is Mill_Stock stock)
+        if (prefab is Behaviour stock)
         {
             if (stock.GetComponent<MeshFilter>() == null) errors.Add("Stock_Prefab has no MeshFilter.");
             var renderer = stock.GetComponent<MeshRenderer>();
@@ -153,14 +229,14 @@ public static class NC_Demo_Validator
             return;
         }
         var settings = Ref(job, "Machine") is NC_Machine_Profile machine ? machine.Settings : new NC_Machine_Settings();
-        var jobs = NC_Program_Library.Load_All(dir, settings);
+        var jobs = lathe ? NC_Program_Library.Load_All(dir, settings, NC_Lathe_Planner.Plan) : NC_Program_Library.Load_All(dir, settings, NC_Planner.Plan);
         if (jobs.Count == 0) warnings.Add("no " + NC_Program_Library.Pattern + " files in '" + dir + "'.");
         foreach (var item in jobs)
         {
             if (item.Warning_Count > 0) warnings.Add(item.Name + " plans with " + item.Warning_Count + " warning(s)/alarm(s).");
             if (rack == null) continue;
             foreach (int t in item.Plan.Tools_Used)
-                if (!rack.Has(t)) errors.Add(item.Name + " uses T" + t + ", which the rack does not have — the run would alarm.");
+                if (!rack.Has(t)) errors.Add(item.Name + " uses T" + t + ", which the " + (lathe ? "turret" : "rack") + " does not have — the run would alarm.");
         }
     }
 }

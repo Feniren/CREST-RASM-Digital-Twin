@@ -1,0 +1,44 @@
+; NAME: Profile with radii and taper
+; CATEGORY: Profiling
+; TOOLS: T1 = R0.8 roughing insert, T3 = R0.4 finishing insert
+; STOCK: D32 x 70 mm bar, Z0 at the free face (chuck at Z-70), X is a diameter
+; Rough with T1 leaving 0.5 mm on diameter, then one finish pass with T3:
+; R3 front round (G03), Ø20 x 10, taper to Ø26 at Z-20, Ø26 to Z-26, R2 fillet (G02) up to the Ø30 shoulder.
+%
+N10 G21 G18 G40 G99
+N20 T0101
+N30 G50 S2500
+N40 G96 S150 M03
+N50 G00 X34 Z1
+N60 X29
+N70 G01 Z-27.5 F0.25
+N80 X33
+N90 G00 Z1
+N100 X27
+N110 G01 Z-27.5
+N120 X30
+N130 G00 Z1
+N140 X24
+N150 G01 Z-16
+N160 X28
+N170 G00 Z1
+N180 X21
+N190 G01 Z-10
+N200 X25
+N210 G00 Z1
+N220 X60 Z30
+N230 T0303
+N240 G96 S200
+N250 G00 X14 Z1
+N260 G01 Z0 F0.08
+N270 G03 X20 Z-3 R3
+N280 G01 Z-10
+N290 X26 Z-20
+N300 Z-26
+N310 G02 X30 Z-28 R2
+N320 G01 X34
+N330 G00 Z1
+N340 X60 Z30
+N350 G28 U0 W0
+N360 M05
+N370 M30

@@ -46,7 +46,7 @@ public static class NC_Demo_Debug_Menu
     {
         if (!Application.isPlaying)
         {
-            Debug.LogError("NC Demo: enter Play mode in NC_Mill_Demo first.");
+            Debug.LogError("NC Demo: enter Play mode in NC_Mill_Demo or NC_Lathe_Demo first.");
             return null;
         }
         var found = Object.FindFirstObjectByType<T>();

@@ -21,6 +21,16 @@ public class NC_Kinematics_Tests
     }
 
     [Test]
+    public void Lathe_Work_Maps_Without_Swizzle_And_Round_Trips()
+    {
+        Near(NC_Kinematics.Lathe_Work_To_World(new Vector3(10, 0, 0), Origin, Work), new Vector3(1f, 2f, 2.99f));
+        Near(NC_Kinematics.Lathe_Work_To_World(new Vector3(0, 0, -5), Origin, Work), new Vector3(0.995f, 2f, 3f));
+        var p = new Vector3(16f, 0f, -40f);
+        var back = NC_Kinematics.World_To_Lathe_Work(NC_Kinematics.Lathe_Work_To_World(p, Origin, Work), Origin, Work);
+        Assert.That(Vector3.Distance(back, p), Is.LessThan(1e-3f));
+    }
+
+    [Test]
     public void World_To_Work_Round_Trips()
     {
         var p = new Vector3(12.5f, -3f, 7f);

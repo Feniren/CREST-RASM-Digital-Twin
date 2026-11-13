@@ -32,19 +32,24 @@ public static class NC_Program_Library
     public const string Pattern = "*.nc";
 
     /// <summary>Every program in the folder, sorted by file name; empty when the folder is missing.</summary>
-    public static List<NC_Job> Load_All(string directory, NC_Machine_Settings settings)
+    public static List<NC_Job> Load_All(string directory, NC_Machine_Settings settings) => Load_All(directory, settings, NC_Planner.Plan);
+
+    /// <summary>As Load_All, planned by the given planner (NC_Lathe_Planner.Plan for a lathe).</summary>
+    public static List<NC_Job> Load_All(string directory, NC_Machine_Settings settings, Func<NC_Program, NC_Machine_Settings, NC_Plan> planner)
     {
         var jobs = new List<NC_Job>();
         if (!Directory.Exists(directory)) return jobs;
         string[] files = Directory.GetFiles(directory, Pattern);
         Array.Sort(files, StringComparer.Ordinal);
-        foreach (string file in files) jobs.Add(Load(file, settings));
+        foreach (string file in files) jobs.Add(Load(file, settings, planner));
         return jobs;
     }
 
-    public static NC_Job Load(string path, NC_Machine_Settings settings)
+    public static NC_Job Load(string path, NC_Machine_Settings settings) => Load(path, settings, NC_Planner.Plan);
+
+    public static NC_Job Load(string path, NC_Machine_Settings settings, Func<NC_Program, NC_Machine_Settings, NC_Plan> planner)
     {
         var program = NC_Parser.Parse(Path.GetFileName(path), File.ReadAllText(path));
-        return new NC_Job { Name = program.Name, File_Path = path, Program = program, Plan = NC_Planner.Plan(program, settings) };
+        return new NC_Job { Name = program.Name, File_Path = path, Program = program, Plan = planner(program, settings) };
     }
 }

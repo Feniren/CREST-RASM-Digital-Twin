@@ -14,4 +14,5 @@ public sealed class NC_Machine_Settings
     public float Arc_Tolerance_Mm = 0.01f;      // an I/J arc whose end radius differs by more raises an alarm
     public float Peck_Clearance_Mm = 1f;        // G83 retract above the last depth before the next peck
     public float Stop_Seconds = 1f;             // how long M00/M01 pause an unattended run
+    public float Max_Rpm = 3000f;               // lathe spindle limit (ProTurn 9000 spec); G96 and S are clamped to it. The mill planner ignores it
 }

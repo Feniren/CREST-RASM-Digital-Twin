@@ -30,6 +30,22 @@ public static class NC_Kinematics
         return Work_To_World(program_mm, origin, rotation) - tip_world;
     }
 
+    /// <summary>Lathe: program (x radius, y, z) mm ↔ work-origin local (x, y, z) metres, no swizzle. Local +Z = spindle axis toward the tailstock, local +X = radial toward the turret.</summary>
+    public static Vector3 Lathe_Work_To_World(Vector3 program_mm, Vector3 origin, Quaternion rotation)
+    {
+        return origin + rotation * (program_mm * Mm_To_M);
+    }
+
+    public static Vector3 World_To_Lathe_Work(Vector3 world, Vector3 origin, Quaternion rotation)
+    {
+        return Quaternion.Inverse(rotation) * (world - origin) * M_To_Mm;
+    }
+
+    public static Vector3 Lathe_Tip_Error_World(Vector3 program_mm, Vector3 tip_world, Vector3 origin, Quaternion rotation)
+    {
+        return Lathe_Work_To_World(program_mm, origin, rotation) - tip_world;
+    }
+
     /// <summary>MoveBy delta for a drive whose axis is the unit vector drive_direction_world and that carries either the tool or the stock. Flipping the direction flips the delta: the same physical motion.</summary>
     public static float Drive_Delta(Vector3 err_world, Vector3 drive_direction_world, bool carries_tool)
     {

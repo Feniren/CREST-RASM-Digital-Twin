@@ -5,7 +5,7 @@ using UnityEngine;
 /// is a teleport — the previous tool goes back to its slot, the next hangs from the holder with
 /// its shank at the spindle nose. Binding happens after the move so the jump is never carved.
 /// </summary>
-public class NC_Tool_Rack : MonoBehaviour
+public class NC_Tool_Rack : MonoBehaviour, I_NC_Tool_Changer
 {
     [Tooltip("Index = T - 1")]
     [SerializeField] private Carving_Tool[] Tools;
@@ -55,7 +55,7 @@ public class NC_Tool_Rack : MonoBehaviour
         var tool = Active_Tool;
         if (tool != null)
         {
-            tool.Bind(null);
+            tool.Bind((Mill_Stock)null);
             tool.transform.SetParent(Slots[Active - 1], false);
             tool.transform.localPosition = Vector3.zero;
             tool.transform.localRotation = Quaternion.identity;
@@ -63,10 +63,10 @@ public class NC_Tool_Rack : MonoBehaviour
         Active = 0;
     }
 
-    public void Bind_Stock(Mill_Stock stock)
+    public void Bind_Stock(Component stock)
     {
         var tool = Active_Tool;
-        if (tool != null) tool.Bind(stock);
+        if (tool != null) tool.Bind(stock as Mill_Stock);
     }
 
     /// <summary>"T1 Ø10 Flat" for labels; "no tool" when nothing is mounted.</summary>

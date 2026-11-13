@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 /// stock and move by minus the error; a MoveBy that AxisMovement clamped shows up as a residual
 /// and becomes a soft-limit alarm.
 /// </summary>
-public class NC_Mill_Link : MonoBehaviour
+public class NC_Mill_Link : MonoBehaviour, I_NC_Link
 {
     [Header("Drives (machine-axis naming: X table, Y saddle, Z spindle)")]
     [FormerlySerializedAs("Drive_World_Z")] [SerializeField] private AxisMovement Table_X;     // carries the stock
@@ -71,9 +71,9 @@ public class NC_Mill_Link : MonoBehaviour
     }
 
     /// <summary>Hangs tool T from the holder (a teleport) and makes it the tip; null if the rack has no such tool.</summary>
-    public Carving_Tool Mount(NC_Tool_Rack rack, int t, Mill_Stock stock)
+    public Carving_Tool Mount(I_NC_Tool_Changer changer, int t, Component stock)
     {
-        var tool = rack.Mount(t, Tool_Holder, stock);
+        var tool = changer is NC_Tool_Rack rack ? rack.Mount(t, Tool_Holder, stock as Mill_Stock) : null;
         Tool_Tip = tool != null ? tool.transform : null;
         return tool;
     }
@@ -93,14 +93,26 @@ public class NC_Mill_Link : MonoBehaviour
     }
 
     /// <summary>Drives every offset toward 0 at the rapid rate, spindle first; true once home.</summary>
-    public bool Home_Step(float rapid_mm_min, float dt, bool z_only = false)
+    public bool Home_Step(float rapid_mm_min, float dt, bool tool_change = false)
     {
         float step = rapid_mm_min / 60f * NC_Kinematics.Mm_To_M * dt;
         if (!Step_Home(drives[0].Movement, step)) return false;
-        if (z_only) return true;
+        if (tool_change) return true;                      // a tool change only needs the spindle retracted
         bool home = true;
         for (int i = 1; i < drives.Length; i++) home &= Step_Home(drives[i].Movement, step);   // every drive steps each frame
         return home;
+    }
+
+    /// <summary>Spinning the tool about its own axis leaves its tip and axis unchanged, so carving is unaffected.</summary>
+    public void Spin_Visual(float degrees)
+    {
+        if (Tool_Tip != null) Tool_Tip.Rotate(0f, degrees, 0f, Space.Self);
+    }
+
+    public string Describe_Position()
+    {
+        Vector3 w = Work_Position_Mm;
+        return "X " + w.x.ToString("0.000").PadLeft(8) + "   Y " + w.y.ToString("0.000").PadLeft(8) + "   Z " + w.z.ToString("0.000").PadLeft(8);
     }
 
     Vector3 Tip_Error(Vector3 p) => NC_Kinematics.Tip_Error_World(p, Tool_Tip.position, Work_Origin.position, Work_Origin.rotation);

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 /// <summary>
-/// Executes one NC_Plan on the mill: every frame the cursor yields sample points along the
+/// Executes one NC_Plan on a machine (I_NC_Link + I_NC_Tool_Changer: the mill or the lathe): every frame the cursor yields sample points along the
 /// current move (≤ Max_Step_Mm apart), each is applied to the axes and carved. Event moves
 /// (dwell, stop, tool change, home, end) are handled here. Any alarm retracts and homes, then
 /// reports Done with Alarm_Text set.
@@ -13,8 +13,10 @@ public class NC_Runner : MonoBehaviour
     public enum State { Idle, Running, Paused, Dwell, Tool_Change, Homing, Done }
 
     [Header("Machine")]
-    [SerializeField] private NC_Mill_Link Link;
-    [SerializeField] private NC_Tool_Rack Rack;
+    [Tooltip("An I_NC_Link: NC_Mill_Link or NC_Lathe_Link")]
+    [SerializeField] private MonoBehaviour Link;
+    [Tooltip("An I_NC_Tool_Changer: NC_Tool_Rack or NC_Lathe_Turret")]
+    [SerializeField] private MonoBehaviour Rack;
 
     [Header("Simulation")]
     [Tooltip("Longest gap between carve samples along a move")]
@@ -41,7 +43,9 @@ public class NC_Runner : MonoBehaviour
     public bool Spindle_On => Cursor != null && Cursor.Current != null && Cursor.Current.Spindle_On
                               && Current_State != State.Done && Current_State != State.Idle;
 
-    Mill_Stock stock;
+    I_NC_Link link;
+    I_NC_Tool_Changer rack;
+    Component stock;
     float wait;
     bool tool_change_pending, finishing;
     State paused_from;
@@ -49,14 +53,17 @@ public class NC_Runner : MonoBehaviour
 
     void Awake()
     {
-        if (Link == null || Rack == null)
+        link = Link as I_NC_Link;
+        rack = Rack as I_NC_Tool_Changer;
+        if (link == null || rack == null)
         {
-            Debug.LogWarning("NC_Runner: Link and Rack must be assigned.");
+            Debug.LogWarning("NC_Runner: Link must be an I_NC_Link and Rack an I_NC_Tool_Changer.");
             enabled = false;
         }
     }
 
-    public void Load(NC_Plan plan, Mill_Stock target)
+    /// <summary>target is the stock the tools carve: a Mill_Stock or a Lathe_Stock matching the machine.</summary>
+    public void Load(NC_Plan plan, Component target)
     {
         Plan = plan;
         stock = target;
@@ -66,16 +73,16 @@ public class NC_Runner : MonoBehaviour
         wait = 0f;
         tool_change_pending = false;
         finishing = false;
-        Link.Claim();
-        Rack.Bind_Stock(stock);
-        if (Rack.Active == 0)
+        link.Claim();
+        rack.Bind_Stock(stock);
+        if (rack.Active == 0)
         {
             int first = 1;                                   // nothing in the spindle: mount the first tool the program cuts with
             foreach (var m in plan.Moves)
                 if (m.Is_Motion && m.Tool > 0) { first = m.Tool; break; }
             Mount(first);
         }
-        else Mount(Rack.Active);
+        else Mount(rack.Active);
         Current_State = State.Idle;
     }
 
@@ -134,7 +141,7 @@ public class NC_Runner : MonoBehaviour
                 }
                 break;
             case State.Homing:
-                if (!Link.Home_Step(Plan.Settings.Rapid_Mm_Min, dt, tool_change_pending)) break;
+                if (!link.Home_Step(Plan.Settings.Rapid_Mm_Min, dt, tool_change_pending)) break;
                 if (finishing) Current_State = State.Done;
                 else if (tool_change_pending)
                 {
@@ -150,8 +157,7 @@ public class NC_Runner : MonoBehaviour
                 }
                 break;
         }
-        // Spinning the tool about its own axis leaves its tip and axis unchanged, so carving is unaffected.
-        if (Spindle_On && Link.Tool_Tip != null) Link.Tool_Tip.Rotate(0f, Spindle_Visual_Deg_Per_S * dt, 0f, Space.Self);
+        if (Spindle_On) link.Spin_Visual(Spindle_Visual_Deg_Per_S * dt);
     }
 
     void Step_Motion(float dt)
@@ -171,12 +177,12 @@ public class NC_Runner : MonoBehaviour
 
         samples.Clear();
         Cursor.Advance(dt, Feed_Override, Max_Step_Mm, samples);
-        var tool = Rack.Active_Tool;
+        var tool = rack.Active_Tool;
         for (int i = 0; i < samples.Count; i++)
         {
-            if (!Link.Set_Work_Position_Mm(samples[i]))
+            if (!link.Set_Work_Position_Mm(samples[i]))
             {
-                Raise_Alarm(Link.Alarm_Text);
+                Raise_Alarm(link.Alarm_Text);
                 return;
             }
             if (tool != null) tool.Carve_Step();
@@ -188,7 +194,7 @@ public class NC_Runner : MonoBehaviour
     // a rapid simply restarts from the actual position, a feed move gets an approach rapid first.
     void Anchor(NC_Move m)
     {
-        Vector3 actual = Link.Work_Position_Mm;
+        Vector3 actual = link.Work_Position_Mm;
         if ((actual - m.From).sqrMagnitude < 1e-4f) return;
         if (m.Kind == NC_Move_Kind.Rapid) m.Rebase(actual);
         else Cursor.Insert_Before_Current(NC_Move.Rapid_Between(actual, m.From, m));
@@ -204,9 +210,9 @@ public class NC_Runner : MonoBehaviour
                 Current_State = State.Dwell;
                 break;
             case NC_Move_Kind.Tool_Change:
-                if (!Rack.Has(m.Tool)) { Raise_Alarm("no tool T" + m.Tool + " in the rack"); return; }
-                if (Rack.Active == m.Tool) { Cursor.Acknowledge(); return; }
-                tool_change_pending = true;      // retract to Z home, swap, pause
+                if (!rack.Has(m.Tool)) { Raise_Alarm("no tool T" + m.Tool + " in the " + (rack is NC_Tool_Rack ? "rack" : "turret")); return; }
+                if (rack.Active == m.Tool) { Cursor.Acknowledge(); return; }
+                tool_change_pending = true;      // retract, swap, pause
                 Current_State = State.Homing;
                 break;
             case NC_Move_Kind.Home:
@@ -235,6 +241,6 @@ public class NC_Runner : MonoBehaviour
 
     void Mount(int t)
     {
-        Link.Mount(Rack, t, stock);
+        link.Mount(rack, t, stock);
     }
 }
