@@ -7,16 +7,19 @@ using UnityEngine.UI;
 //   Display    -> SequenceManager.infoPanel   (title, progress, body text)
 //   MediaCard  -> SequenceManager.stationCard (image/video media box)
 //   NextButton -> SequenceManager.nextButton  (onClick -> OnNextPressed)
+//   HintButton -> SequenceManager.hintButton  (onClick -> OnHintPressed)
 //
 // A prefab can't keep a reference to a scene's SequenceManager, so a panel
-// dragged into a scene by hand arrives with Next wired to nothing. If Next
-// has no persistent listeners at startup, this hooks it to the scene's
-// SequenceManager itself.
+// dragged into a scene by hand arrives with Next/Hint wired to nothing. If a
+// button has no persistent listeners at startup, this hooks it to the
+// scene's SequenceManager itself.
 public class Lesson_Panel : MonoBehaviour
 {
     public InstructionDisplay Display;
     public Station_Type_Card MediaCard;
     public Button NextButton;
+    [Tooltip("Optional — shown only on steps with a Hint Target; flies that part up in front of the trainee (Hint_PartShowcase).")]
+    public Button HintButton;
 
     [Tooltip("Optional — found in the scene automatically when left empty.")]
     [SerializeField] private SequenceManager sequenceManager;
@@ -30,20 +33,29 @@ public class Lesson_Panel : MonoBehaviour
 
         if (sequenceManager == null)
         {
-            Debug.LogWarning("[Lesson_Panel] No SequenceManager found in the scene — Next and the media box aren't connected.", this);
+            Debug.LogWarning("[Lesson_Panel] No SequenceManager found in the scene — Next, Hint and the media box aren't connected.", this);
             return;
         }
 
         if (MediaCard != null)
             sequenceManager.UseStationCardIfUnset(MediaCard);
 
-        if (NextButton == null || NextButton.onClick.GetPersistentEventCount() > 0)
+        if (HintButton != null)
+            sequenceManager.UseHintButtonIfUnset(HintButton.gameObject);
+
+        WireIfUnwired(NextButton, sequenceManager.OnNextPressed);
+        WireIfUnwired(HintButton, sequenceManager.OnHintPressed);
+    }
+
+    private static void WireIfUnwired(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null || button.onClick.GetPersistentEventCount() > 0)
             return;
 
-        NextButton.onClick.AddListener(sequenceManager.OnNextPressed);
+        button.onClick.AddListener(action);
 
-        Interactable_Select select = NextButton.GetComponent<Interactable_Select>();
+        Interactable_Select select = button.GetComponent<Interactable_Select>();
         if (select != null && select.OnInteractBegin.GetPersistentEventCount() == 0)
-            select.OnInteractBegin.AddListener(sequenceManager.OnNextPressed);
+            select.OnInteractBegin.AddListener(action);
     }
 }

@@ -23,11 +23,12 @@ using UnityEngine.XR.Interaction.Toolkit.UI;
 //   │ │ ├ StationVideo           RawImage + AspectRatioFitter + VideoPlayer
 //   │ │ └ Placeholder            "Image / video coming soon"
 //   │ └ Body                     step text (auto-size)
+//   ├ HintButton                 ListItemButton, bottom-left: flies the step's part up (Hint_PartShowcase)
 //   └ NextButton                 ListItemButton: UI ray click + Interactable_Select
 //
 // "Build Lesson Panel In Current Scene" creates the prefab if it doesn't
 // exist yet, places it where the current info panel is, rewires
-// SequenceManager (infoPanel, nextButton, stationCard), and DEACTIVATES —
+// SequenceManager (infoPanel, nextButton, hintButton, stationCard), and DEACTIVATES —
 // never deletes — the old panel. Re-running only rewires. "Rebuild Lesson
 // Panel Prefab" overwrites the prefab asset with a fresh build.
 public static class Lesson_Panel_Builder
@@ -85,7 +86,12 @@ public static class Lesson_Panel_Builder
         SetRef(sequenceManager, "infoPanel", panel.Display);
         SetRef(sequenceManager, "nextButton", panel.NextButton.gameObject);
         SetRef(sequenceManager, "stationCard", panel.MediaCard);
-        WireNextButton(panel.NextButton, sequenceManager);
+        WireButton(panel.NextButton, sequenceManager.OnNextPressed);
+        if (panel.HintButton != null)
+        {
+            SetRef(sequenceManager, "hintButton", panel.HintButton.gameObject);
+            WireButton(panel.HintButton, sequenceManager.OnHintPressed);
+        }
         int titled = FillMissingStepTitles(sequenceManager);
 
         EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
@@ -202,35 +208,9 @@ public static class Lesson_Panel_Builder
 
         // Next: the widget ListItemButton, plus the same Interactable_Select
         // + collider the old NextButton used, so trigger-interact still
-        // works alongside the UI ray. Default layer, which the player's
-        // interact raycast is masked to.
-        GameObject nextGO = (GameObject)PrefabUtility.InstantiatePrefab(listItemButton, rootRect);
-        nextGO.name = "NextButton";
-        nextGO.layer = 0;
-        RectTransform nextRect = nextGO.GetComponent<RectTransform>();
-        nextRect.anchorMin = nextRect.anchorMax = nextRect.pivot = new Vector2(1f, 0f);
-        nextRect.sizeDelta = new Vector2(28f, 8f);
-        nextRect.anchoredPosition = new Vector2(-Inset, 4f);
-
-        TextMeshProUGUI nextLabel = nextGO.GetComponentInChildren<TextMeshProUGUI>(true);
-        if (nextLabel != null)
-        {
-            nextLabel.text = "Next  ›";
-            nextLabel.fontSize = 3.6f;
-        }
-
-        Image nextBackground = nextGO.GetComponent<Image>();
-        if (nextBackground != null)
-            nextBackground.color = new Color(1f, 1f, 1f, 0.12f);
-
-        SetColor(nextGO.GetComponent<Image_Rounded_Corners>(), "BorderColor", new Color(Cyan.r, Cyan.g, Cyan.b, 0.6f));
-        SetColor(nextGO.GetComponent<Widget_Button>(), "HighlightedBorderColor", Cyan);
-        SetFloat(nextGO.GetComponent<Widget_Button>(), "HighlightedBackgroundOpacity", 0.3f);
-
-        BoxCollider nextCollider = nextGO.AddComponent<BoxCollider>();
-        nextCollider.size = new Vector3(28f, 8f, 0.5f);
-        nextCollider.center = new Vector3(-14f, 4f, 0f);
-        nextGO.AddComponent<Interactable_Select>();
+        // works alongside the UI ray.
+        GameObject nextGO = CreatePanelButton(listItemButton, rootRect, "NextButton", "Next  ›",
+            new Vector2(1f, 0f), new Vector2(28f, 8f), new Vector2(-Inset, 4f));
 
         // Components on the root, wired to their parts.
         InstructionDisplay display = root.AddComponent<InstructionDisplay>();
@@ -252,6 +232,7 @@ public static class Lesson_Panel_Builder
         lessonPanel.Display = display;
         lessonPanel.MediaCard = card;
         lessonPanel.NextButton = nextGO.GetComponent<Button>();
+        AddHintButton(lessonPanel, rootRect, listItemButton);
 
         GameObject saved = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
         Object.DestroyImmediate(root);
@@ -270,18 +251,70 @@ public static class Lesson_Panel_Builder
         panel.SetPositionAndRotation(reference.position, reference.rotation);
     }
 
-    private static void WireNextButton(Button button, SequenceManager sequenceManager)
+    // Bottom-left, opposite Next, so it never shifts when Next hides.
+    // Returns false if the panel already has one.
+    public static bool AddHintButton(Lesson_Panel panel, RectTransform root, GameObject listItemButton)
+    {
+        if (panel == null || root == null || listItemButton == null || root.Find("HintButton") != null)
+            return false;
+
+        GameObject hintGO = CreatePanelButton(listItemButton, root, "HintButton", "Hint  ?",
+            new Vector2(0f, 0f), new Vector2(22f, 8f), new Vector2(Inset, 4f));
+        panel.HintButton = hintGO.GetComponent<Button>();
+        EditorUtility.SetDirty(panel);
+        return true;
+    }
+
+    // A widget ListItemButton styled like the panel, with an
+    // Interactable_Select + collider so trigger-interact works alongside the
+    // UI ray. Default layer, which the player's interact raycast is masked to.
+    // corner is the bottom corner it hugs: (0,0) left, (1,0) right.
+    private static GameObject CreatePanelButton(GameObject listItemButton, RectTransform parent, string name, string label,
+        Vector2 corner, Vector2 size, Vector2 position)
+    {
+        GameObject go = (GameObject)PrefabUtility.InstantiatePrefab(listItemButton, parent);
+        go.name = name;
+        go.layer = 0;
+        RectTransform rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = rect.pivot = corner;
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+
+        TextMeshProUGUI text = go.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (text != null)
+        {
+            text.text = label;
+            text.fontSize = 3.6f;
+        }
+
+        Image background = go.GetComponent<Image>();
+        if (background != null)
+            background.color = new Color(1f, 1f, 1f, 0.12f);
+
+        SetColor(go.GetComponent<Image_Rounded_Corners>(), "BorderColor", new Color(Cyan.r, Cyan.g, Cyan.b, 0.6f));
+        SetColor(go.GetComponent<Widget_Button>(), "HighlightedBorderColor", Cyan);
+        SetFloat(go.GetComponent<Widget_Button>(), "HighlightedBackgroundOpacity", 0.3f);
+
+        // Collider centred on the button whichever corner it's pivoted on.
+        BoxCollider collider = go.AddComponent<BoxCollider>();
+        collider.size = new Vector3(size.x, size.y, 0.5f);
+        collider.center = new Vector3((0.5f - corner.x) * size.x, (0.5f - corner.y) * size.y, 0f);
+        go.AddComponent<Interactable_Select>();
+        return go;
+    }
+
+    public static void WireButton(Button button, UnityEngine.Events.UnityAction action)
     {
         for (int i = button.onClick.GetPersistentEventCount() - 1; i >= 0; i--)
             UnityEventTools.RemovePersistentListener(button.onClick, i);
-        UnityEventTools.AddVoidPersistentListener(button.onClick, sequenceManager.OnNextPressed);
+        UnityEventTools.AddVoidPersistentListener(button.onClick, action);
 
         Interactable_Select select = button.GetComponent<Interactable_Select>();
         if (select != null)
         {
             for (int i = select.OnInteractBegin.GetPersistentEventCount() - 1; i >= 0; i--)
                 UnityEventTools.RemovePersistentListener(select.OnInteractBegin, i);
-            UnityEventTools.AddVoidPersistentListener(select.OnInteractBegin, sequenceManager.OnNextPressed);
+            UnityEventTools.AddVoidPersistentListener(select.OnInteractBegin, action);
         }
 
         EditorUtility.SetDirty(button);

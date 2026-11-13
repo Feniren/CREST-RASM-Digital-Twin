@@ -96,6 +96,11 @@ public class SequenceManager : MonoBehaviour
 
     private int currentIndex = -1;
     private readonly List<Marker_Interactable> pendingMarkers = new List<Marker_Interactable>();
+
+    // Targets that are real scene objects clicked through their own
+    // Interactable_Select (e.g. the rack's door handle, which also swings
+    // the door via Door_Handle_Toggle) rather than a green marker box.
+    private readonly Dictionary<Interactable_Select, UnityAction> pendingSelects = new Dictionary<Interactable_Select, UnityAction>();
     private bool waitingForTable;
     private bool shownInstructions;
     private bool interactionActive;
@@ -123,10 +128,12 @@ public class SequenceManager : MonoBehaviour
             return;
         }
 
-        // Hide every part to start clean
+        // Hide every marker to start clean. Real scene objects used as
+        // targets (no Marker_Interactable, e.g. the door handle) stay put —
+        // hiding them would pull a piece off the machine until its step.
         foreach (Step step in steps)
             foreach (GameObject target in step.targets)
-                if (target != null)
+                if (IsMarker(target))
                     target.SetActive(false);
 
         ActivateStep(0);
@@ -149,6 +156,31 @@ public class SequenceManager : MonoBehaviour
         foreach (Marker_Interactable marker in pendingMarkers)
             if (marker != null)
                 marker.Selected -= OnMarkerSelected;
+        ClearPendingSelects();
+    }
+
+    private static bool IsMarker(GameObject target)
+    {
+        return target != null && target.GetComponent<Marker_Interactable>() != null;
+    }
+
+    private void OnTargetSelected(Interactable_Select select)
+    {
+        if (!pendingSelects.TryGetValue(select, out UnityAction handler))
+            return;
+
+        select.OnInteractBegin.RemoveListener(handler);
+        pendingSelects.Remove(select);
+
+        TryCompleteStep();
+    }
+
+    private void ClearPendingSelects()
+    {
+        foreach (KeyValuePair<Interactable_Select, UnityAction> pending in pendingSelects)
+            if (pending.Key != null)
+                pending.Key.OnInteractBegin.RemoveListener(pending.Value);
+        pendingSelects.Clear();
     }
 
     private void OnMarkerSelected(Marker_Interactable marker, InteractionType interactionType)
@@ -164,7 +196,7 @@ public class SequenceManager : MonoBehaviour
 
     private void TryCompleteStep()
     {
-        if (pendingMarkers.Count == 0 && !waitingForTable)
+        if (pendingMarkers.Count == 0 && pendingSelects.Count == 0 && !waitingForTable)
             ActivateStep(currentIndex + 1);
     }
 
@@ -220,6 +252,10 @@ public class SequenceManager : MonoBehaviour
             else
                 stationCard.ShowEmpty();
         }
+
+        // Only offer Hint on steps that have something to showcase.
+        if (hintButton != null)
+            hintButton.SetActive(step.hintTarget != null);
 
         PlayNarration(step);
 
@@ -286,11 +322,12 @@ public class SequenceManager : MonoBehaviour
             if (marker != null)
                 marker.Selected -= OnMarkerSelected;
         pendingMarkers.Clear();
+        ClearPendingSelects();
         waitingForTable = false;
 
         if (currentIndex >= 0 && currentIndex < steps.Length && currentIndex != index)
             foreach (GameObject target in steps[currentIndex].targets)
-                if (target != null)
+                if (IsMarker(target))
                     target.SetActive(false);
 
         Debug.Log($"{logTag} [Debug] Jump from step {currentIndex + 1} to step {index + 1}.", this);
@@ -360,7 +397,7 @@ public class SequenceManager : MonoBehaviour
         }
 
         // Every page of this step has been seen — an info step is done.
-        if (step.advanceOnNext && interactionActive && pendingMarkers.Count == 0 && !waitingForTable)
+        if (step.advanceOnNext && interactionActive && pendingMarkers.Count == 0 && pendingSelects.Count == 0 && !waitingForTable)
             ActivateStep(currentIndex + 1);
     }
 
@@ -499,14 +536,28 @@ public class SequenceManager : MonoBehaviour
 
     // Hook this to the Hint button's OnClick(). Shows the current step's
     // hintTarget (if any) flying up in front of the trainee's face.
+    // Uses the shared hintShowcase (Module 2 style); if none is assigned,
+    // falls back to the Hint_PartShowcase on the hint target itself.
     public void OnHintPressed()
     {
-        if (currentIndex < 0 || currentIndex >= steps.Length || hintShowcase == null)
+        if (currentIndex < 0 || currentIndex >= steps.Length)
             return;
 
         Transform hintTarget = steps[currentIndex].hintTarget;
-        if (hintTarget != null)
-            hintShowcase.PlayHint(hintTarget);
+        if (hintTarget == null)
+            return;
+
+        Hint_PartShowcase showcase = hintShowcase != null ? hintShowcase : hintTarget.GetComponent<Hint_PartShowcase>();
+        if (showcase != null)
+            showcase.PlayHint(hintTarget);
+    }
+
+    // For a panel that brings its own Hint button (Lesson_Panel) — fills the
+    // slot only if the scene left it empty, like UseStationCardIfUnset.
+    public void UseHintButtonIfUnset(GameObject button)
+    {
+        if (hintButton == null)
+            hintButton = button;
     }
 
     private void BeginStepInteraction(Step step)
@@ -522,7 +573,21 @@ public class SequenceManager : MonoBehaviour
             Marker_Interactable marker = target.GetComponent<Marker_Interactable>();
             if (marker == null)
             {
-                Debug.LogError($"[SequenceManager] Step {currentIndex} target '{target.name}' has no Marker_Interactable attached.");
+                // A real object clicked directly — counts once its own
+                // Interactable_Select fires (alongside whatever else it does).
+                Interactable_Select select = target.GetComponent<Interactable_Select>();
+                if (select == null)
+                {
+                    Debug.LogError($"[SequenceManager] Step {currentIndex} target '{target.name}' has neither a Marker_Interactable nor an Interactable_Select, so clicking it can't complete the step.", target);
+                    continue;
+                }
+
+                if (!pendingSelects.ContainsKey(select))
+                {
+                    UnityAction handler = () => OnTargetSelected(select);
+                    select.OnInteractBegin.AddListener(handler);
+                    pendingSelects.Add(select, handler);
+                }
                 continue;
             }
 

@@ -97,12 +97,18 @@ public class Hint_PartShowcase : MonoBehaviour
             }
         }
 
-        Rigidbody rb = part.GetComponent<Rigidbody>();
-        bool wasKinematic = false;
-        if (rb != null)
+        // Every body in the part, not just its root: a composite part (the
+        // ASRS cabinet, a table holding an item) can carry dynamic child
+        // Rigidbodies, and with all colliders off above they would drop
+        // through the floor instead of riding along with the flight.
+        List<Rigidbody> frozenBodies = new List<Rigidbody>();
+        foreach (Rigidbody body in part.GetComponentsInChildren<Rigidbody>(true))
         {
-            wasKinematic = rb.isKinematic;
-            rb.isKinematic = true;
+            if (!body.isKinematic)
+            {
+                body.isKinematic = true;
+                frozenBodies.Add(body);
+            }
         }
 
         // Detach so the flight math stays in plain world space, unaffected
@@ -151,8 +157,9 @@ public class Hint_PartShowcase : MonoBehaviour
             if (col != null)
                 col.enabled = true;
 
-        if (rb != null)
-            rb.isKinematic = wasKinematic;
+        foreach (Rigidbody body in frozenBodies)
+            if (body != null)
+                body.isKinematic = false;
 
         IsShowcasing = false;
         activeRoutine = null;

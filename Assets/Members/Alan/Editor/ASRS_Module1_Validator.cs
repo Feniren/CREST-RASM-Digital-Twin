@@ -106,8 +106,8 @@ public static class ASRS_Module1_Validator
 
             if (s.targets != null)
                 foreach (GameObject t in s.targets)
-                    if (t != null && t.GetComponent<Marker_Interactable>() == null)
-                        r.Error($"{label} target '{t.name}' has no Marker_Interactable.", t);
+                    if (t != null && t.GetComponent<Marker_Interactable>() == null && t.GetComponent<Interactable_Select>() == null)
+                        r.Error($"{label} target '{t.name}' has neither a Marker_Interactable nor an Interactable_Select.", t);
 
             if (hasAction)
             {

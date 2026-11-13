@@ -210,6 +210,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2798700}
   m_CullTransparentMesh: 1
+--- !u!1 &13218355 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7068855656912371902, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+  m_PrefabInstance: {fileID: 387784165}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &25369883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1259,6 +1264,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7068855656912371902, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1982544878}
     - targetCorrespondingSourceObject: {fileID: 2224846988369759429, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
@@ -1504,7 +1512,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1128974877098888665, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
   m_PrefabInstance: {fileID: 387784165}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 13218355}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25e475db19debbf4fa69cd62b3f9f69c, type: 3}
@@ -2715,6 +2723,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: LessonPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1628413926}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnHintPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 186106215354106698, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: OnInteractBegin.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SequenceManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 496150067071752507, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
       propertyPath: m_AspectMode
       value: 3
@@ -2726,6 +2758,30 @@ PrefabInstance:
     - target: {fileID: 1559318655124506857, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1628413926}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnHintPressed
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767629306609803996, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SequenceManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1802834131650948467, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2766,6 +2822,10 @@ PrefabInstance:
     - target: {fileID: 5313565055776949244, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.88000107
+      objectReference: {fileID: 0}
+    - target: {fileID: 5895228936474941639, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+      propertyPath: m_IgnoreReversedGraphics
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5963802052882500679, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
       propertyPath: m_TextStyleHashCode
@@ -2928,6 +2988,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+--- !u!1 &833931201 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433810272045087073, guid: 4d2bcbd3531a4d8409599b756946f381, type: 3}
+  m_PrefabInstance: {fileID: 833931200}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &852883623
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4546,10 +4611,37 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4368086432513296165, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1204986785}
+    - targetCorrespondingSourceObject: {fileID: 4368086432513296165, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1361207017}
     - targetCorrespondingSourceObject: {fileID: 7641843955062889096, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+--- !u!4 &1361207016 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
+  m_PrefabInstance: {fileID: 1361207015}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1361207017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204986777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee006c36cf67334f829b5a802ef6112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hint_PartShowcase
+  partToShowcase: {fileID: 1361207016}
+  distanceFromFace: 0.6
+  targetViewSize: 0.35
+  fallbackScaleMultiplier: 10
+  flightDuration: 1
+  holdDuration: 5
+  spinSpeed: 60
 --- !u!1 &1457996423
 GameObject:
   m_ObjectHideFlags: 0
@@ -5324,7 +5416,7 @@ MonoBehaviour:
     RequiredLoadedSlottedTable: {fileID: 0}
     requiredActionId: 
     passiveAction: 0
-    hintTarget: {fileID: 0}
+    hintTarget: {fileID: 1361207016}
     advanceOnNext: 0
     stationType: {fileID: 0}
     narration: {fileID: 0}
@@ -5359,7 +5451,7 @@ MonoBehaviour:
     RequiredLoadedSlottedTable: {fileID: 0}
     requiredActionId: 
     passiveAction: 0
-    hintTarget: {fileID: 0}
+    hintTarget: {fileID: 6989629287903022996}
     advanceOnNext: 0
     stationType: {fileID: 0}
     narration: {fileID: 0}
@@ -5376,7 +5468,7 @@ MonoBehaviour:
     RequiredLoadedSlottedTable: {fileID: 0}
     requiredActionId: 
     passiveAction: 0
-    hintTarget: {fileID: 0}
+    hintTarget: {fileID: 387784166}
     advanceOnNext: 0
     stationType: {fileID: 0}
     narration: {fileID: 0}
@@ -5468,8 +5560,8 @@ MonoBehaviour:
     largeText: 0
   infoPanel: {fileID: 204570909}
   nextButton: {fileID: 28556158}
-  hintShowcase: {fileID: 0}
-  hintButton: {fileID: 0}
+  hintShowcase: {fileID: 1361207017}
+  hintButton: {fileID: 833931201}
   completionText: "Module 1 complete \u2014 you passed the check. You can now describe
     what an ASRS does, name the three storage station types, follow a pallet around
     the SmartCIM cell and find parts by their cell address."
@@ -6907,6 +6999,25 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 666719882}
   m_SourcePrefab: {fileID: 100100000, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
+--- !u!114 &1982544878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13218355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee006c36cf67334f829b5a802ef6112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hint_PartShowcase
+  partToShowcase: {fileID: 387784166}
+  distanceFromFace: 0.6
+  targetViewSize: 0.35
+  fallbackScaleMultiplier: 10
+  flightDuration: 1
+  holdDuration: 5
+  spinSpeed: 60
 --- !u!1 &1996102243
 GameObject:
   m_ObjectHideFlags: 0
@@ -8322,12 +8433,39 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7414330689078457334, guid: 9bd2056bf6c5a314ba130fea8f26bb82, type: 3}
       insertIndex: -1
       addedObject: {fileID: 510069700}
+    - targetCorrespondingSourceObject: {fileID: 7414330689078457334, guid: 9bd2056bf6c5a314ba130fea8f26bb82, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6989629287903022997}
   m_SourcePrefab: {fileID: 100100000, guid: 9bd2056bf6c5a314ba130fea8f26bb82, type: 3}
 --- !u!4 &6989629287903022995 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5426036079080946996, guid: 9bd2056bf6c5a314ba130fea8f26bb82, type: 3}
   m_PrefabInstance: {fileID: 6989629287903022994}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &6989629287903022996 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7903587367774857548, guid: 9bd2056bf6c5a314ba130fea8f26bb82, type: 3}
+  m_PrefabInstance: {fileID: 6989629287903022994}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6989629287903022997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510069656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee006c36cf67334f829b5a802ef6112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hint_PartShowcase
+  partToShowcase: {fileID: 6989629287903022996}
+  distanceFromFace: 0.6
+  targetViewSize: 0.35
+  fallbackScaleMultiplier: 10
+  flightDuration: 1
+  holdDuration: 5
+  spinSpeed: 60
 --- !u!1001 &7602277230935062441
 PrefabInstance:
   m_ObjectHideFlags: 0
