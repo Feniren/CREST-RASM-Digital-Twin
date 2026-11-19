@@ -18,12 +18,45 @@ MonoBehaviour:
   Steps:
   - Step_Id: intro_startup
     Kind: 0
-    Prompt_Text: 'Test
-
-'
+    Prompt_Text: "Laser Startup & Engrave \u2014 take the laser engraver from idle to a finished engraving.\n\nYou will: (1) put the laser in Manual mode, (2) download the engraving file to the laser, (3) place the focus gauge and set the zero point, then (4) run the job. Follow the highlighted control at each step.\n\nPress Continue."
     Practice_Prompt_Text: 
     Target_Marker_Id: 
     Narration: {fileID: 0}
     Include_In_Quiz: 0
-  Quiz_Pass_Threshold: 0
+  - Step_Id: laser_set_manual
+    Kind: 4
+    Prompt_Text: "Start by putting the laser in Manual mode so that you can jog and focus it.\n\n<b>Do:</b> Operation Mode button on the driver panel (the highlighted control)."
+    Practice_Prompt_Text: "Practice: start up the laser and engrave the part."
+    Target_Marker_Id: laser_set_manual
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: laser_download_file
+    Kind: 4
+    Prompt_Text: "Choose the image you want to engrave from the image list, then send it to the laser.\n\n<b>Do:</b> press Select File, choose an image, then press Download (the highlighted control)."
+    Practice_Prompt_Text: "Practice: start up the laser and engrave the part."
+    Target_Marker_Id: laser_download_file
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: laser_place_gauge
+    Kind: 0
+    Prompt_Text: "Before you can set the zero point, the focus gauge has to sit on the bed under the laser carriage. The groove at the top of the gauge should line up with the edge of the carriage.\n\n<b>Do:</b> place the focus gauge in the marked zone under the carriage, then press Continue."
+    Practice_Prompt_Text: "Practice: Press continue once you've positioned the focus gauge."
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: laser_set_zero
+    Kind: 0
+    Prompt_Text: "Now set the focal height. Lower the bed until the laser head starts to tilt the focus gauge.\n\n<b>Do:</b> use the Z controls to bring the gauge up to the head, then press Continue."
+    Practice_Prompt_Text: "Practice: Press continue once you've set the zero point."
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  - Step_Id: laser_run
+    Kind: 4
+    Prompt_Text: "The file is loaded and the laser is focused. Start the engraving.\n\n<b>Do:</b> Run button on the driver panel (the highlighted control)."
+    Practice_Prompt_Text: "Practice: start up the laser and engrave the part."
+    Target_Marker_Id: laser_run
+    Narration: {fileID: 0}
+    Include_In_Quiz: 1
+  Quiz_Pass_Threshold: 3
   Practice_Shuffles_Quiz: 0
