@@ -2,7 +2,7 @@ using UnityEngine;
 
 // Serialized as an int in Lesson_Definition assets — only ever APPEND new kinds at
 // the end. Reordering shifts existing assets' Kind values (e.g. M1_Lesson.asset).
-public enum Lesson_Step_Kind { Info, Select_Component, Axis_Demo, Milling_Demo, Panel_Action }
+public enum Lesson_Step_Kind { Info, Select_Component, Axis_Demo, Milling_Demo, Panel_Action, Turning_Demo }
 
 public enum Lesson_Mode { Guided, Practice }
 

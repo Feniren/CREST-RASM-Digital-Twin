@@ -116,6 +116,17 @@ MonoBehaviour:
     Target_Marker_Id: electronics_cabinet
     Narration: {fileID: 0}
     Include_In_Quiz: 1
+  - Step_Id: turning_demo
+    Kind: 5
+    Prompt_Text: "Turning demo — the guard doors close and the lathe runs an NC
+      program: the turret indexes between a roughing tool, a finishing tool and a
+      parting tool while the chuck spins the bar. It turns the diameter, chamfers
+      the end and cuts a parting neck, then homes and the doors open so you can see
+      the finished part."
+    Practice_Prompt_Text: 
+    Target_Marker_Id: 
+    Narration: {fileID: 0}
+    Include_In_Quiz: 0
   - Step_Id: guided_done
     Kind: 0
     Prompt_Text: "Guided tour complete!\n\nNext: the practice quiz. Highlights are
