@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LM2_Lesson
   m_EditorClassIdentifier: Assembly-CSharp::Lesson_Definition
   Module_Id: LM2
-  Scene_Name: Module2_Startup
+  Scene_Name: LaserModule2_Startup
   Display_Name: "M2 \u2014 System Startup & Program Execution"
   Steps:
   - Step_Id: intro_startup
