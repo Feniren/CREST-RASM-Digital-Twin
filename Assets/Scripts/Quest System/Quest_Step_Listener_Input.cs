@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class Quest_Step_Listener_Input : Quest_Step_Listener_Parent{
@@ -9,6 +10,8 @@ public class Quest_Step_Listener_Input : Quest_Step_Listener_Parent{
 	Coroutine InputHoldOperation;
 	float ElapsedInputHoldTime;
 	float RequiredInputHoldTime;
+
+	public UnityEvent<float> ElapsedInputHoldTimeChanged;
 
 	public Quest_Step_Listener_Input(){
 		ElapsedInputHoldTime = 0.0f;
@@ -24,10 +27,14 @@ public class Quest_Step_Listener_Input : Quest_Step_Listener_Parent{
 			InputActionInstance.started -= OnInputActionStarted;
 			InputActionInstance.canceled -= OnInputActionCanceled;
 		}
+
+		QuestStepComplete.RemoveListener(OnQuestStepComplete);
 	}
 
 	protected override void OnEnable(){
 		base.OnEnable();
+
+		QuestStepComplete.AddListener(OnQuestStepComplete);
 	}
 
 	void OnInputActionStarted(InputAction.CallbackContext Context){
@@ -36,6 +43,13 @@ public class Quest_Step_Listener_Input : Quest_Step_Listener_Parent{
 
 	void OnInputActionCanceled(InputAction.CallbackContext Context){
 		EndInputHold();
+	}
+
+	void OnQuestStepComplete(){
+		if (InputActionInstance != null){
+			InputActionInstance.started -= OnInputActionStarted;
+			InputActionInstance.canceled -= OnInputActionCanceled;
+		}
 	}
 
 	void EndInputHold(){
@@ -50,14 +64,21 @@ public class Quest_Step_Listener_Input : Quest_Step_Listener_Parent{
 		return ElapsedInputHoldTime;
 	}
 
+	public float GetRequiredInputHoldTime(){
+		return RequiredInputHoldTime;
+	}
+
 	IEnumerator InputHold(){
 		while (true){
 			yield return new WaitForSeconds(0.1f);
 
 			ElapsedInputHoldTime += 0.1f;
 
+			ElapsedInputHoldTimeChanged.Invoke(ElapsedInputHoldTime);
+
 			if (ElapsedInputHoldTime >= RequiredInputHoldTime){
 				QuestStepComplete.Invoke();
+				QuestStepCompleted = true;
 
 				yield break;
 			}

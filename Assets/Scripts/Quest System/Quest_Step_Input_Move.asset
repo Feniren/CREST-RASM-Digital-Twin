@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Quest_Step_Input_Move
   m_EditorClassIdentifier: Assembly-CSharp::Quest_Step_Input
   QuestStepListener: {fileID: 7428845710901214933, guid: 8d0c8ee662edd674c893215079e192e9, type: 3}
+  QuestStepText: {fileID: 0}
   InputAction: {fileID: -7332866708254697702, guid: abfe1f1ae9ca54b4792025fe9f90fc39, type: 3}
-  RequiredInputHoldTime: 0
+  RequiredInputHoldTime: 2

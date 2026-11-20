@@ -7,6 +7,7 @@ using TMPro;
 
 public class Widget_Labeled_Slider : Widget_Parent{
 	public Slider Slider;
+	public GameObject SliderHandle;
 	public TextMeshProUGUI SliderName;
 	public TextMeshProUGUI SliderValue;
 
@@ -33,5 +34,16 @@ public class Widget_Labeled_Slider : Widget_Parent{
 
 		SliderValue.text = Value.ToString();
 	}
-    
+
+	public void SetActive(bool Active){
+		gameObject.SetActive(Active);
+	}
+
+	public void SetInteractable(bool Interactable){
+		SliderHandle.SetActive(Interactable);
+
+		Slider.interactable = Interactable;
+
+		GetComponent<Slider_Drag_Handler>().enabled = Interactable;
+	}
 }

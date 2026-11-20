@@ -1,8 +1,11 @@
 using UnityEngine;
 
+using TMPro;
+
 public class Widget_Text : Widget_Parent{
-	public Widget_List_Item NextButton;
-	public Widget_List_Item PreviousButton;
+	public Widget_Switcher WidgetSwitcher;
+
+	public string QuestName;
 
 	public Widget_Text(){
 		Name = "Text";
@@ -10,21 +13,19 @@ public class Widget_Text : Widget_Parent{
 
 	public override void OnDisable(){
 		base.OnDisable();
-
-		NextButton.Button.onClick.RemoveListener(OnNextPressed);
-		PreviousButton.Button.onClick.RemoveListener(OnPreviousPressed);
 	}
 
 	public override void OnEnable(){
 		base.OnEnable();
 
-		NextButton.Button.onClick.AddListener(OnNextPressed);
-		PreviousButton.Button.onClick.AddListener(OnPreviousPressed);
+		Debug.Log("Widget Switcher original size " + WidgetSwitcher.GetComponent<RectTransform>().rect.size);
 	}
 
-	void OnNextPressed(){
-	}
+	public override void Start(){
+		base.Start();
 
-	void OnPreviousPressed(){
+		WidgetSwitcher.AddChild(CreateWidget(QuestName, WidgetSwitcher.transform));
+
+		Debug.Log("Widget Switcher size: " + WidgetSwitcher.GetComponent<RectTransform>().rect.size);
 	}
 }
