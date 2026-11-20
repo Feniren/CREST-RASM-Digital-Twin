@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5dbe0edd9519d4d9965971555fd51f, type: 3}
+  m_Name: Quest_Input_Tutorial_Text
+  m_EditorClassIdentifier: Assembly-CSharp::Text_Line
+  TextLineManager: {fileID: 1501940450910600734, guid: addfcd6b9ca8b934e82ce819728ab0a7, type: 3}
+  TextLines:
+  - LockProgress: 0
+    QuestStepIndex: -1
+    Speaker: 
+    Text: Welcome to the Input Tutorial for the Virtual Reality simulation
+  - LockProgress: 1
+    QuestStepIndex: 0
+    Speaker: 
+    Text: 'Movement is initiated using WASD in Desktop Mode, or Left Joystick in
+      VR Mode
+
+
+      Move around with WASD or Left Joystick to progress to the next
+      step'
+  - LockProgress: 1
+    QuestStepIndex: 1
+    Speaker: 
+    Text: 'Look direction can be modified by moving the Mouse in Desktop Mode, or
+      Right Joystick in VR Mode
+
+
+      In VR Mode, Right Joystick rotates the character
+      while rotating the Head Mounted Display only rotates the view
+
+
+      Look
+      around using Mouse or Right Joystick to progress to the next step'
+  - LockProgress: 1
+    QuestStepIndex: 2
+    Speaker: 
+    Text: 'Jump is performed using Spacebar in Desktop Mode, or A in VR Mode
+
+
+      Jump
+      using Spacebar or A to progress to the next step'
