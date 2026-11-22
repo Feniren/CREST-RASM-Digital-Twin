@@ -7,18 +7,18 @@ using UnityEngine.UI;
 //   Display    -> SequenceManager.infoPanel   (title, progress, body text)
 //   MediaCard  -> SequenceManager.stationCard (image/video media box)
 //   NextButton -> SequenceManager.nextButton  (onClick -> OnNextPressed)
-//   HintButton -> SequenceManager.hintButton  (onClick -> OnHintPressed)
 //
 // A prefab can't keep a reference to a scene's SequenceManager, so a panel
-// dragged into a scene by hand arrives with Next/Hint wired to nothing. If a
-// button has no persistent listeners at startup, this hooks it to the
-// scene's SequenceManager itself.
+// dragged into a scene by hand arrives with Next wired to nothing. If Next
+// has no persistent listeners at startup, this hooks it to the scene's
+// SequenceManager itself.
 public class Lesson_Panel : MonoBehaviour
 {
     public InstructionDisplay Display;
     public Station_Type_Card MediaCard;
     public Button NextButton;
-    [Tooltip("Optional — shown only on steps with a Hint Target; flies that part up in front of the trainee (Hint_PartShowcase).")]
+
+    [Tooltip("Optional. Flies the current step's part up in front of the trainee (Hint_PartShowcase). Shown only on steps that have something to showcase.")]
     public Button HintButton;
 
     [Tooltip("Optional — found in the scene automatically when left empty.")]
@@ -33,7 +33,7 @@ public class Lesson_Panel : MonoBehaviour
 
         if (sequenceManager == null)
         {
-            Debug.LogWarning("[Lesson_Panel] No SequenceManager found in the scene — Next, Hint and the media box aren't connected.", this);
+            Debug.LogWarning("[Lesson_Panel] No SequenceManager found in the scene — Next and the media box aren't connected.", this);
             return;
         }
 
@@ -41,13 +41,22 @@ public class Lesson_Panel : MonoBehaviour
             sequenceManager.UseStationCardIfUnset(MediaCard);
 
         if (HintButton != null)
-            sequenceManager.UseHintButtonIfUnset(HintButton.gameObject);
+        {
+            // Reuse a showcase already in the scene, else bring our own.
+            Hint_PartShowcase showcase = FindFirstObjectByType<Hint_PartShowcase>();
+            if (showcase == null)
+                showcase = gameObject.AddComponent<Hint_PartShowcase>();
 
-        WireIfUnwired(NextButton, sequenceManager.OnNextPressed);
-        WireIfUnwired(HintButton, sequenceManager.OnHintPressed);
+            sequenceManager.UseHintIfUnset(showcase, HintButton.gameObject);
+            HookUp(HintButton, sequenceManager.OnHintPressed);
+        }
+
+        HookUp(NextButton, sequenceManager.OnNextPressed);
     }
 
-    private static void WireIfUnwired(Button button, UnityEngine.Events.UnityAction action)
+    // Wires a button (UI ray click and trigger-interact) to an action, unless
+    // it was already wired in the Inspector.
+    private static void HookUp(Button button, UnityEngine.Events.UnityAction action)
     {
         if (button == null || button.onClick.GetPersistentEventCount() > 0)
             return;

@@ -4506,11 +4506,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 108, y: 6.5, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &1343739601 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 124342516709872685, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
-  m_PrefabInstance: {fileID: 7727159593811074622}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1343739607 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 788710960788934295, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
@@ -4854,16 +4849,67 @@ MonoBehaviour:
       and finished goods."
     rackCellQuestion: 0
     cellTableId: 
-  - prompt: A job needs a {material}. Using the rack's inventory, select a storage
-      cell that holds one.
+  - prompt: Once a template rides a pallet onto the conveyor, what sends it to the
+      station that needs it?
+    options:
+    - PLC-controlled logic routes the pallet
+    - The ASRS robot carries it along the conveyor
+    - An operator pushes it there by hand
+    - The carousel rotates it to the station
+    correctOption: 0
+    explanation: 'The conveyor is run by a PLC: its logic routes each pallet to whichever
+      station needs it.'
+    rackCellQuestion: 0
+    cellTableId: 
+  - prompt: What is the slotted table buffer for?
+    options:
+    - It holds pallets for a while when the next station isn't ready, so the line
+      doesn't back up
+    - It machines raw material into finished parts
+    - It permanently stores finished goods
+    - It rotates to bring parts to a fixed point
+    correctOption: 0
+    explanation: 'The buffer is a short-term holding spot: a pallet waits there until
+      the next station can take it, instead of blocking the conveyor.'
+    rackCellQuestion: 0
+    cellTableId: 
+  - prompt: What reads the RFID tag on the slotted table, and why?
+    options:
+    - "The RFID sensor \u2014 to identify the pallet as it passes and track where
+      it's stored"
+    - "The CNC machine \u2014 to choose which program to cut"
+    - "The operator \u2014 by scanning it with a handheld reader before every move"
+    - Nothing reads it; it's only a label for people
+    correctOption: 0
+    explanation: "The RFID sensor reads the tag to identify each pallet as it passes
+      \u2014 that's also how the ASRS keeps track of what's stored in which cell."
+    rackCellQuestion: 0
+    cellTableId: 
+  - prompt: Why is each template shaped the way it is?
+    options:
+    - It's made to hold one specific part, such as the epoxy block, and no other
+    - So that any part fits in any template
+    - To make it lighter for the ASRS robot to lift
+    - So the conveyor can sort templates by their shape
+    correctOption: 0
+    explanation: "A template is shaped specifically for its part \u2014 the epoxy
+      block's template holds the epoxy block and nothing else."
+    rackCellQuestion: 0
+    cellTableId: 
+  - prompt: 'Rack check: a job needs a {material}. Using what you learned with the
+      cell inspector, point at the rack and select a storage cell that holds one.'
     options: []
     correctOption: 0
     explanation: "Every cell has an address and the rack's inventory records what
       each one holds \u2014 that's how the ASRS finds a part without searching."
     rackCellQuestion: 1
     cellTableId: 020001
-  passMark: 2
+  passMark: 3
   cellInspector: {fileID: 1607586618}
+  multipleChoicePerAttempt: 3
+  cellQuestionsPerAttempt: 1
+  shuffleOptions: 1
+  randomCellMaterial: 1
   counterText: {fileID: 306609737}
   questionText: {fileID: 266395557}
   feedbackText: {fileID: 717525503}
@@ -5242,7 +5288,7 @@ MonoBehaviour:
       exactly where every part is."
     instructionsText: In this module you'll meet the three storage station types,
       follow a pallet around the SmartCIM cell, inspect the rack's storage cells,
-      load a template into the ASRS and finish with a three-question check. Press
+      load a template into the ASRS and finish with a four-question check. Press
       Next to begin.
     RequiredOccupiedTable: {fileID: 0}
     RequiredLoadedSlottedTable: {fileID: 0}
@@ -5407,7 +5453,7 @@ MonoBehaviour:
     largeText: 1
   - title: 
     targets:
-    - {fileID: 1343739601}
+    - {fileID: 1204986777}
     infoText: This is the slotted table buffer. It holds pallets temporarily when
       a station isn't ready to receive them yet, preventing a backup in the line.
     instructionsText: 'Please interact with the slotted table shown in front of you
@@ -5442,7 +5488,7 @@ MonoBehaviour:
     largeText: 1
   - title: 
     targets:
-    - {fileID: 1643142830}
+    - {fileID: 510069656}
     infoText: "This is the epoxy block \u2014 one of the standard parts used in this
       CIM cell. Its template is shaped specifically to hold this part and no other."
     instructionsText: 'Please interact with the Epoxy Block shown in front of you
@@ -5459,7 +5505,7 @@ MonoBehaviour:
     largeText: 1
   - title: 
     targets:
-    - {fileID: 1704333287}
+    - {fileID: 13218355}
     infoText: "This is the ASRS-36 \u2014 the Automated Storage and Retrieval System.
       It stores loaded templates in a grid of numbered cells and retrieves them again
       on demand, using the RFID tag to track what's stored where.\"\r\n "
@@ -5545,8 +5591,9 @@ MonoBehaviour:
     largeText: 1
   - title: Module 1 Check
     targets: []
-    infoText: Answer the three questions on the quiz panel. You need at least two
-      correct to pass, and you can retry as often as you like.
+    infoText: 'Answer the four questions on the quiz panel: three picked at random,
+      then one on the real rack using what you learned with the cell inspector. You
+      need at least three correct to pass, and Retry asks a new set of questions.'
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
     RequiredLoadedSlottedTable: {fileID: 0}
@@ -5572,6 +5619,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   logTag: '[ASRS][Module1]'
+  autoHintMaxSize: 1
 --- !u!4 &1628413927
 Transform:
   m_ObjectHideFlags: 0
@@ -5812,7 +5860,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5848687157432659005, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6512597964779288199, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -5991,7 +6039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5848687157432659005, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6512597964779288199, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
       propertyPath: m_LocalScale.x
@@ -8534,6 +8582,10 @@ PrefabInstance:
     - target: {fileID: 124342516709872685, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: m_Name
       value: Marker_slotted_table
+      objectReference: {fileID: 0}
+    - target: {fileID: 124342516709872685, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 788710960788934295, guid: d8c8fb789268ebd468690f318e4d4745, type: 3}
       propertyPath: m_LocalPosition.x

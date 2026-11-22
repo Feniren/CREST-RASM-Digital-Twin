@@ -62,10 +62,24 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     [SerializeField] private Item_Slotted_Table lessonTable;
     [SerializeField] private string loadTableStepActionId = "LoadSlottedTable";
 
+    [Header("Load the ASRS (by hand, VR)")]
+    [Tooltip("The trainee can grab the lesson table with the grip, carry it to its home cell and let go inside the cell to load it.")]
+    [SerializeField] private bool allowHandInsert = true;
+    [Tooltip("How close to its home cell the table has to be let go: its centre must be inside the cell box grown by this much (1.6 = 60% bigger each way). The nearest empty cell wins, so neighbours aren't confused.")]
+    [SerializeField, Min(1f)] private float handDropTolerance = 1.6f;
+    [Tooltip("When the step starts, rewind any Animator on the lesson table to its first frame and stop it. A playing animation (e.g. TableToRack) rewrites the table's position every frame, so neither a hand nor the pointer could move it.")]
+    [SerializeField] private bool stopTableAnimatorOnLoad = true;
+    [Tooltip("Player_Controller releases the right grip through ThrowItem, so a table held in the right hand is never let go. On = add XR_Right_Grip_Release, which lets go through the hand's own GrabEnd (shared scripts untouched).")]
+    [SerializeField] private bool fixRightGripRelease = true;
+
     [Header("Materials")]
     [SerializeField] private MaterialNote[] materialNotes = new MaterialNote[0];
 
     [Header("Cell targets")]
+    [Tooltip("Size each cell's selection box to the slotted table that sits in that slot (its visible mesh), so a box never spills into the neighbouring cells. Off = the older, larger box: the table's collider × Target Padding, grown to the row height.")]
+    [SerializeField] private bool fitToSlottedTable = true;
+    [Tooltip("With Fit To Slotted Table: how much bigger than the table the box is (1.03 = 3%) — just enough that the outline doesn't flicker against the table's own surface.")]
+    [SerializeField, Min(1f)] private float tableFitPadding = 1.03f;
     [Tooltip("Used only if no rack slotted table has a BoxCollider to copy the cell size from.")]
     [SerializeField] private Vector3 fallbackCellSize = new Vector3(0.2f, 0.06f, 0.2f);
     [Tooltip("Targets are this much larger than a template, so the interact ray hits the cell before the template inside it.")]
@@ -135,6 +149,9 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
         ASRS_Module1_UI.Bind(closeButton, debouncer, ClearSelection);
 
+        if (fixRightGripRelease)
+            XR_Right_Grip_Release.Ensure(this);
+
         Player_Controller player = FindFirstObjectByType<Player_Controller>();
         if (player != null)
         {
@@ -165,6 +182,9 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     // Only while cells are selectable: show which cell each hand points at.
     private void Update()
     {
+        if (mode == Mode.Load)
+            UpdateHandCarry();
+
         if (targetContainer == null || !targetContainer.activeSelf)
             return;
 
@@ -185,8 +205,11 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
             ASRS_Rack_Cell_Target hovered = hoveredByLeft != null ? hoveredByLeft : hoveredByRight;
             string text;
             if (mode == Mode.Load)
-                text = hovered == null ? "Aim at the slotted table or an outlined empty cell — what you point at lights up blue."
-                     : hovered == tableTarget ? "Pointing at the loaded <b>slotted table</b> — pull the trigger to put it in your inventory."
+                text = tableHeld ? $"Carrying the slotted table — let go of the grip inside cell <b>{(lessonTable != null ? lessonTable.TableID : "?")}</b>."
+                     : hovered == null ? "Aim at the slotted table or an outlined empty cell — what you point at lights up blue."
+                     : hovered == tableTarget ? (XRActive
+                         ? "Pointing at the loaded <b>slotted table</b> — pull the trigger to put it in your inventory, or reach out and grab it with the grip."
+                         : "Pointing at the loaded <b>slotted table</b> — pull the trigger to put it in your inventory.")
                      : $"Pointing at empty cell <b>{hovered.TableId}</b> — pull the trigger to load the template here.";
             else
                 text = hovered != null
@@ -324,10 +347,13 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
     private const string InventoryHint = "Point at the loaded slotted table and pull the trigger to put it in your inventory.";
 
+    private bool tableHeld;                      // the lesson table is in a VR hand right now
+
     private void BeginLoad()
     {
         mode = Mode.Load;
         stowedTable = null;
+        tableHeld = false;
 
         if (lessonTable == null)
             lessonTable = FindLessonTable();
@@ -344,6 +370,9 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         foreach (ASRS_Rack_Cell_Target cell in targets)
             cell.gameObject.SetActive(!GetCellInfo(cell.TableId).Occupied);
 
+        if (stopTableAnimatorOnLoad)
+            StopTableAnimator();
+
         TakeSnapshot();
         ShowTableTarget(lessonTable.gameObject.activeInHierarchy && !IsInRack(lessonTable));
         RefreshLoadPrompt();
@@ -353,6 +382,7 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
     private void EndLoad()
     {
+        tableHeld = false;
         foreach (ASRS_Rack_Cell_Target cell in targets)
             cell.gameObject.SetActive(true);
 
@@ -378,7 +408,6 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
             return;
         }
 
-        string tableName = lessonTable != null ? lessonTable.Name : "Slotted Table";
         if (InventoryCount() < 1)
         {
             ASRS_Module1_UI.SetText(feedbackText, $"<color=#FFB366>You need a slotted table in your inventory first.</color> {InventoryHint}");
@@ -401,46 +430,234 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
             return;
         }
 
+        if (tableHeld || IsHeldByHand(table))
+        {
+            ASRS_Module1_UI.SetText(feedbackText, "<color=#FFB366>You're holding the slotted table — let go of it inside the cell instead.</color>");
+            return;
+        }
+
+        LoadInto(target, table, fromInventory: true);
+    }
+
+    // Seats 'table' in 'target' through the rack's own SlotInsert and finishes
+    // the step — shared by the pointer route (from the inventory) and the
+    // hand route (let go inside the cell).
+    private bool LoadInto(ASRS_Rack_Cell_Target target, Item_Slotted_Table table, bool fromInventory)
+    {
+        string home = table.TableID;
+
         table.transform.SetParent(null, true);
         table.gameObject.SetActive(true);
 
         if (!rack.NeedsRackReturn(table))
         {
             ASRS_Module1_UI.SetText(feedbackText, $"<color=#FFB366>Cell {home} is already occupied.</color>");
-            return;
+            return false;
         }
 
         rack.SlotInsert(table);
         if (!IsInRack(table))
         {
             ASRS_Module1_Log.Warn(LogTag, $"Load: SlotInsert didn't record table {table.TableID} in TableMap — step not completed.", this);
-            return;
+            return false;
         }
 
-        if (table.TryGetComponent(out Rigidbody body))
+        FreezeTable(table);
+
+        if (fromInventory)
         {
-            body.linearVelocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
-            body.isKinematic = true;
+            Inventory inventory = PlayerInventory();
+            if (inventory != null)
+                inventory.RemoveFromInventory(table.Name, 1);
         }
-
-        Inventory inventory = PlayerInventory();
-        inventory.RemoveFromInventory(tableName, 1);
         stowedTable = null;
+
+        OnTableLoaded(target, fromInventory ? "taken from the inventory" : "let go inside the cell by hand");
+        return true;
+    }
+
+    private void OnTableLoaded(ASRS_Rack_Cell_Target target, string how)
+    {
+        string home = lessonTable != null ? lessonTable.TableID : target != null ? target.TableId : "?";
+        tableHeld = false;
 
         ShowTableTarget(false);
         foreach (ASRS_Rack_Cell_Target cell in targets)
             cell.gameObject.SetActive(false);
-        ShowHighlight(target);
+        if (target != null)
+            ShowHighlight(target);
 
         ASRS_Module1_UI.SetText(feedbackText, $"<color=#66FF88>Loaded — the template is stored in cell {home}.</color>");
-        ASRS_Module1_Log.Info(LogTag, $"Load: table {home} taken from the inventory and confirmed in the rack.", this);
+        ASRS_Module1_Log.Info(LogTag, $"Load: table {home} {how} and confirmed in the rack.", this);
 
         if (!completionReported)
         {
             completionReported = true;
             CompleteStepAfterHold(loadActionId);
         }
+    }
+
+    // ------------------------------------------------ Load the ASRS (by hand)
+
+    // Watches the lesson table: picked up by a VR hand → point the trainee at
+    // the home cell; let go → load it if it's in that cell, else say where it is.
+    private void UpdateHandCarry()
+    {
+        if (!allowHandInsert || lessonTable == null || completionReported || stowedTable != null)
+            return;
+
+        // Already seated — e.g. by Item_ASRS_Manual_Slot_Insert's slot trigger.
+        if (IsInRack(lessonTable))
+        {
+            OnTableLoaded(TargetFor(lessonTable.TableID), "seated by the rack's slot trigger");
+            return;
+        }
+
+        bool held = IsHeldByHand(lessonTable);
+        if (held == tableHeld)
+            return;
+
+        tableHeld = held;
+        if (held)
+        {
+            ShowTableTarget(false);
+            ASRS_Rack_Cell_Target home = TargetFor(lessonTable.TableID);
+            if (home != null)
+                ShowHighlight(home);
+            ASRS_Module1_UI.SetText(promptText, $"Carry the slotted table to its home cell <b>{lessonTable.TableID}</b> (highlighted) and let go of the grip inside the cell.");
+            ASRS_Module1_UI.SetText(feedbackText, "");
+            ASRS_Module1_Log.Info(LogTag, $"Load: lesson table {lessonTable.TableID} picked up by hand.", this);
+        }
+        else
+        {
+            OnTableReleased();
+        }
+    }
+
+    private void OnTableReleased()
+    {
+        string home = lessonTable.TableID;
+
+        // GrabEnd leaves it non-kinematic with the hand's velocity and no
+        // gravity — it would drift away. Keep it where it was let go instead.
+        FreezeTable(lessonTable);
+
+        ASRS_Rack_Cell_Target cell = CellAtTable(lessonTable);
+        ASRS_Module1_Log.Info(LogTag, $"Load: lesson table let go {(cell != null ? $"at cell {cell.TableId}" : "outside every empty cell")}.", this);
+
+        if (cell != null && cell.TableId == home)
+        {
+            LoadInto(cell, lessonTable, fromInventory: false);
+            return;
+        }
+
+        ASRS_Module1_UI.SetText(feedbackText, cell != null
+            ? $"<color=#FFB366>That's cell {cell.TableId} — this template's home (its RFID/TableID) is {home}. Grab it again and move it there.</color>"
+            : $"<color=#FFB366>Not in a cell yet — let go of it inside the highlighted cell {home}.</color>");
+        ShowTableTarget(lessonTable.gameObject.activeInHierarchy);
+        RefreshLoadPrompt();
+    }
+
+    private static bool IsHeldByHand(Item_Slotted_Table table)
+    {
+        return table != null && table.transform.parent != null && table.transform.parent.GetComponentInParent<Entity_XR_Hand>() != null;
+    }
+
+    private static void FreezeTable(Item_Slotted_Table table)
+    {
+        if (!table.TryGetComponent(out Rigidbody body))
+            return;
+
+        if (!body.isKinematic)
+        {
+            body.linearVelocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+        }
+        body.isKinematic = true;
+    }
+
+    private ASRS_Rack_Cell_Target TargetFor(string tableId)
+    {
+        foreach (ASRS_Rack_Cell_Target cell in targets)
+            if (cell != null && cell.TableId == tableId)
+                return cell;
+        return null;
+    }
+
+    // The empty cell the table was let go in: its centre inside that cell's
+    // box (grown by Hand Drop Tolerance), nearest cell centre wins.
+    private ASRS_Rack_Cell_Target CellAtTable(Item_Slotted_Table table)
+    {
+        Vector3 centre = TableCentre(table);
+        ASRS_Rack_Cell_Target best = null;
+        float bestScore = float.MaxValue;
+
+        foreach (ASRS_Rack_Cell_Target cell in targets)
+        {
+            if (cell == null || GetCellInfo(cell.TableId).Occupied)
+                continue;
+
+            BoxCollider box = cell.GetComponent<BoxCollider>();
+            Vector3 local = cell.transform.InverseTransformPoint(centre) - box.center;
+            Vector3 half = box.size * (0.5f * handDropTolerance);
+
+            float score = 0f;
+            bool inside = true;
+            for (int axis = 0; axis < 3 && inside; axis++)
+            {
+                float reach = Mathf.Max(Mathf.Abs(half[axis]), 0.0001f);
+                float t = Mathf.Abs(local[axis]) / reach;
+                inside = t <= 1f;
+                score = Mathf.Max(score, t);
+            }
+
+            if (inside && score < bestScore)
+            {
+                best = cell;
+                bestScore = score;
+            }
+        }
+
+        return best;
+    }
+
+    // Centre of the table's own visible mesh (not the block standing on it,
+    // not the ID text).
+    private static Vector3 TableCentre(Item_Slotted_Table table)
+    {
+        bool any = false;
+        Bounds bounds = default;
+        foreach (Renderer r in table.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled || r is ParticleSystemRenderer || r.GetComponent<TMP_Text>() != null)
+                continue;
+            if (r.GetComponentInParent<Item_Parent>(true) != table)
+                continue;
+
+            if (!any) { bounds = r.bounds; any = true; }
+            else bounds.Encapsulate(r.bounds);
+        }
+
+        return any ? bounds.center : table.transform.position;
+    }
+
+    // A playing Animator (e.g. the TableToRack clip) rewrites the table's
+    // transform every frame — back to its first frame, then stopped, so the
+    // trainee starts from where the animation starts.
+    private void StopTableAnimator()
+    {
+        if (lessonTable == null || !lessonTable.TryGetComponent(out Animator animator) || !animator.enabled)
+            return;
+
+        if (animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
+        {
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            animator.Play(state.fullPathHash, 0, 0f);
+            animator.Update(0f);
+        }
+
+        animator.enabled = false;
+        ASRS_Module1_Log.Info(LogTag, $"Load: stopped the Animator on '{lessonTable.name}' (rewound to its first frame) so it can be carried.", this);
     }
 
     private void PickUpLessonTable()
@@ -481,7 +698,9 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         string home = lessonTable != null ? lessonTable.TableID : "?";
         int count = InventoryCount();
         ASRS_Module1_UI.SetText(promptText, count < 1
-            ? $"Slotted tables in inventory: 0.  {InventoryHint}"
+            ? (XRActive && allowHandInsert
+                ? $"Grab the slotted table with the grip and let go of it inside its home cell <b>{home}</b> — or point at it and pull the trigger to put it in your inventory."
+                : $"Slotted tables in inventory: 0.  {InventoryHint}")
             : $"Slotted tables in inventory: {count}.  Point at the template's home cell <b>{home}</b> (outlined) and pull the trigger to load it.");
     }
 
@@ -811,20 +1030,31 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         Vector3 size = fallbackCellSize;
         Vector3 scale = Vector3.one;
         Quaternion templateRotation = rack.transform.rotation;
-        foreach (Item_Slotted_Table table in rack.GetComponentsInChildren<Item_Slotted_Table>(true))
+
+        if (fitToSlottedTable && TryGetTableShape(out center, out size, out scale))
         {
-            if (!table.TryGetComponent(out BoxCollider box))
-                continue;
-
-            center = box.center;
-            size = box.size;
-            scale = table.transform.lossyScale;
-            templateRotation = table.transform.rotation;
-            break;
+            size *= tableFitPadding;
         }
+        else
+        {
+            center = Vector3.zero;
+            size = fallbackCellSize;
+            scale = Vector3.one;
+            foreach (Item_Slotted_Table table in rack.GetComponentsInChildren<Item_Slotted_Table>(true))
+            {
+                if (!table.TryGetComponent(out BoxCollider box))
+                    continue;
 
-        size *= targetPadding;
-        GrowToRowHeight(ref center, ref size, scale, templateRotation);
+                center = box.center;
+                size = box.size;
+                scale = table.transform.lossyScale;
+                templateRotation = table.transform.rotation;
+                break;
+            }
+
+            size *= targetPadding;
+            GrowToRowHeight(ref center, ref size, scale, templateRotation);
+        }
 
         targetContainer = new GameObject("RackCellTargets");
         targetContainer.transform.SetParent(transform, false);
@@ -868,6 +1098,55 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
         ASRS_Module1_Log.Info(LogTag, $"Built {targets.Count} cell target(s) on '{rack.name}'.", this);
         return targets.Count > 0;
+    }
+
+    // The visible shape of a slotted table in the rack, in the table's own
+    // local space: every mesh that belongs to the table itself — not a part
+    // standing on it (that's another Item_Parent). The anchors Item_ASRS
+    // saved are table positions/rotations, so this box drops onto every slot.
+    private bool TryGetTableShape(out Vector3 center, out Vector3 size, out Vector3 scale)
+    {
+        center = size = Vector3.zero;
+        scale = Vector3.one;
+
+        foreach (Item_Slotted_Table table in rack.GetComponentsInChildren<Item_Slotted_Table>(true))
+        {
+            Transform root = table.transform;
+            bool found = false;
+            Bounds local = default;
+
+            foreach (MeshFilter filter in table.GetComponentsInChildren<MeshFilter>(true))
+            {
+                // Skip the table's ID text (its mesh is a text rectangle that
+                // can overhang the table) and anything standing on the table.
+                if (filter.sharedMesh == null || filter.GetComponent<TMP_Text>() != null
+                    || filter.GetComponentInParent<Item_Parent>(true) != table)
+                    continue;
+
+                Bounds mesh = filter.sharedMesh.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 point = mesh.center + Vector3.Scale(mesh.extents, new Vector3(
+                        (corner & 1) == 0 ? -1f : 1f, (corner & 2) == 0 ? -1f : 1f, (corner & 4) == 0 ? -1f : 1f));
+                    Vector3 inTable = root.InverseTransformPoint(filter.transform.TransformPoint(point));
+
+                    if (found) local.Encapsulate(inTable);
+                    else { local = new Bounds(inTable, Vector3.zero); found = true; }
+                }
+            }
+
+            if (!found)
+                continue;
+
+            center = local.center;
+            size = local.size;
+            scale = root.lossyScale;
+            ASRS_Module1_Log.Info(LogTag, $"Cell boxes fitted to slotted table '{table.name}' ({Vector3.Scale(size, scale).ToString("F3")} m).", this);
+            return true;
+        }
+
+        ASRS_Module1_Log.Warn(LogTag, "No slotted table with a mesh found in the rack — cell boxes use the older collider-based size.", this);
+        return false;
     }
 
     // A template's own collider is thin; the part standing on it is taller,

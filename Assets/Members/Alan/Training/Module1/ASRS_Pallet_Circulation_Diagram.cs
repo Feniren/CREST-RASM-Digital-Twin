@@ -12,7 +12,8 @@ using UnityEngine.UI;
 // Two kinds of step use it (matched on the step's Required Action Id):
 //   Walkthrough steps "M1_Flow_1" … "M1_Flow_6" — info steps paged with the
 //     Lesson Panel's Next; the diagram just shows that stage (the pallet
-//     glides to it from the previous stage) with no controls.
+//     glides to it from the previous stage). From stage 2 on, a lone Replay
+//     button re-runs the route from stage 1 up to the current stage.
 //   Animation step "M1_PalletCirculation" — Play / Pause / Replay and ‹ ›
 //     stepping; the step completes once every stage has been shown.
 public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
@@ -43,7 +44,7 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
     [SerializeField] private TMP_Text stageTitleText;
     [SerializeField] private TMP_Text stageDescriptionText;
 
-    [Header("Controls (animation step only)")]
+    [Header("Controls (all on the animation step; only Replay on walkthrough steps 2-6)")]
     [SerializeField] private GameObject controlsRoot;
     [SerializeField] private Button playPauseButton;
     [SerializeField] private TMP_Text playPauseLabel;
@@ -56,6 +57,8 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
     [SerializeField, Min(1f)] private float travelSpeed = 25f;
     [Tooltip("Seconds the pallet waits at each stage during Play, so its explanation can be read.")]
     [SerializeField, Min(0f)] private float stageDwellSeconds = 3f;
+    [Tooltip("Seconds the pallet pauses at each earlier stage when Replay is pressed on a walkthrough step.")]
+    [SerializeField, Min(0f)] private float walkthroughReplayDwellSeconds = 0.6f;
 
     [Header("Lesson Panel embedding")]
     [Tooltip("Show the diagram inside the Lesson Panel's image/video box (instead of as its own floating panel) on its steps. The Lesson Panel's body text then carries the stage explanations.")]
@@ -86,6 +89,9 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
     private bool paused;
     private bool allStagesSeen;
     private bool completionReported;
+    private int walkthroughReplayTo = -1; // >= 0 while a walkthrough Replay is running up to this stage
+    private Vector2 replayButtonHome;
+    private bool replayButtonHomeSaved;
 
     protected override string LogTag => ASRS_Module1_Log.Flow;
 
@@ -145,13 +151,18 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
         if (visited.Length != StageCount)
             visited = new bool[StageCount];
 
+        bool isAnimation = actionId == animationActionId;
+        TryGetWalkthroughStage(actionId, out int stage);
+
+        // Controls are set before Embed() so the embedded size includes the
+        // Replay button when it shows.
+        ShowControls(isAnimation, !isAnimation && stage > 0);
         Embed();
 
-        if (actionId == animationActionId)
+        if (isAnimation)
         {
             completionReported = false;
             allStagesSeen = false;
-            if (controlsRoot != null) controlsRoot.SetActive(true);
             ASRS_Module1_Log.Info(LogTag, "Pallet circulation animation shown — playing from the start.", this);
             Replay();
             return;
@@ -159,10 +170,9 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
 
         // Walkthrough: show the matching stage, gliding over from the
         // previous one when the diagram was just showing it.
-        TryGetWalkthroughStage(actionId, out int stage);
-        if (controlsRoot != null) controlsRoot.SetActive(false);
         autoPlay = false;
         paused = false;
+        walkthroughReplayTo = -1;
 
         bool continuing = currentStage >= 0 && currentStage == stage - 1;
         if (continuing)
@@ -178,8 +188,11 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
         autoPlay = false;
         paused = false;
         travelling = false;
+        walkthroughReplayTo = -1;
         SetSceneHighlights(-1);
         Unembed();
+        ShowControls(true, false);                          // every button back in place…
+        if (controlsRoot != null) controlsRoot.SetActive(false); // …with the row itself hidden again
 
         // Leaving the diagram entirely (not just moving to the next flow
         // step) resets it, so a later visit starts clean.
@@ -211,7 +224,7 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
             }
 
             travelling = false;
-            dwellRemaining = stageDwellSeconds;
+            dwellRemaining = DwellSeconds;
             ArriveAt(currentStage);
             return;
         }
@@ -238,9 +251,16 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
             return;
         }
 
-        if (currentStage < StageCount - 1)
+        int lastStage = walkthroughReplayTo >= 0 ? walkthroughReplayTo : StageCount - 1;
+        if (currentStage < lastStage)
         {
             BeginTravel(currentStage + 1);
+        }
+        else if (walkthroughReplayTo >= 0)
+        {
+            autoPlay = false;
+            ASRS_Module1_Log.Info(LogTag, $"Walkthrough replay finished at stage {walkthroughReplayTo + 1}.", this);
+            walkthroughReplayTo = -1;
         }
         else
         {
@@ -283,6 +303,23 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
         if (!IsShowing || StageCount == 0)
             return;
 
+        // On a walkthrough step: re-run the route from stage 1 up to this
+        // step's stage, then stop there. Next still belongs to the Lesson Panel.
+        if (TryGetWalkthroughStage(ActiveActionId, out int walkthroughStage))
+        {
+            if (walkthroughStage <= 0)
+                return;
+
+            Array.Clear(visited, 0, visited.Length);
+            paused = false;
+            autoPlay = true;
+            walkthroughReplayTo = walkthroughStage;
+            SnapTo(0);
+            ASRS_Module1_Log.Info(LogTag, $"Walkthrough replay: stage 1 to {walkthroughStage + 1}.", this);
+            return;
+        }
+
+        walkthroughReplayTo = -1;
         Array.Clear(visited, 0, visited.Length);
         autoPlay = true;
         paused = false;
@@ -307,11 +344,43 @@ public class ASRS_Pallet_Circulation_Diagram : ASRS_Module1_Step_Feature
         RefreshPlayPauseLabel();
     }
 
+    private float DwellSeconds => walkthroughReplayTo >= 0 ? walkthroughReplayDwellSeconds : stageDwellSeconds;
+
+    // The animation step shows the whole row; walkthrough steps show only
+    // Replay, centred under the diagram (from stage 2 on), or nothing.
+    private void ShowControls(bool all, bool replayOnly)
+    {
+        if (controlsRoot != null)
+            controlsRoot.SetActive(all || replayOnly);
+
+        SetButtonVisible(playPauseButton, all);
+        SetButtonVisible(previousButton, all);
+        SetButtonVisible(nextButton, all);
+        SetButtonVisible(replayButton, all || replayOnly);
+
+        RectTransform replayRect = replayButton != null ? replayButton.transform as RectTransform : null;
+        if (replayRect == null)
+            return;
+
+        if (!replayButtonHomeSaved)
+        {
+            replayButtonHome = replayRect.anchoredPosition;
+            replayButtonHomeSaved = true;
+        }
+        replayRect.anchoredPosition = replayOnly ? new Vector2(0f, replayButtonHome.y) : replayButtonHome;
+    }
+
+    private static void SetButtonVisible(Button button, bool visible)
+    {
+        if (button != null)
+            button.gameObject.SetActive(visible);
+    }
+
     private void SnapTo(int stage)
     {
         currentStage = stage;
         travelling = false;
-        dwellRemaining = stageDwellSeconds;
+        dwellRemaining = DwellSeconds;
 
         if (pallet != null)
             pallet.anchoredPosition = PalletPositionFor(stage);

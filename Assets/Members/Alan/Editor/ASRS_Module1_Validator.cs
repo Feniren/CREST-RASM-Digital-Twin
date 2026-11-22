@@ -106,8 +106,16 @@ public static class ASRS_Module1_Validator
 
             if (s.targets != null)
                 foreach (GameObject t in s.targets)
-                    if (t != null && t.GetComponent<Marker_Interactable>() == null && t.GetComponent<Interactable_Select>() == null)
-                        r.Error($"{label} target '{t.name}' has neither a Marker_Interactable nor an Interactable_Select.", t);
+                {
+                    if (t == null || t.GetComponent<Marker_Interactable>() != null)
+                        continue; // legacy marker box — still supported
+
+                    // A real part, picked by pointing at its visible bounds.
+                    if (!t.activeInHierarchy)
+                        r.Warn($"{label} part '{t.name}' is inactive — it can't be pointed at unless something activates it first.", t);
+                    else if (!Lesson_Part_Pointer.TryGetBounds(t, out _))
+                        r.Error($"{label} part '{t.name}' has no visible renderer or collider — there's nothing to point at.", t);
+                }
 
             if (hasAction)
             {
@@ -120,6 +128,8 @@ public static class ASRS_Module1_Validator
             if (s.stationType != null)
             {
                 stationSteps++;
+                if (!string.IsNullOrWhiteSpace(s.infoText))
+                    r.Warn($"{label} has its own text AND a Station Type — the station's summary replaces that text, so it never shows. Run 'ASRS/Module 1/Fix Welcome, 72-Slot And Step Text' (moves the asset to Media).", sm);
                 if (string.IsNullOrEmpty(s.stationType.displayName) || string.IsNullOrEmpty(s.stationType.summary))
                     r.Error($"{label}: station type '{s.stationType.name}' has no name or summary.", s.stationType);
                 if (s.stationType.displayName == "Carousel" && s.stationType.video == null)
@@ -339,10 +349,20 @@ public static class ASRS_Module1_Validator
         CheckFeatureBasics(r, quiz);
 
         ASRS_Module1_Quiz.Question[] questions = quiz.Questions ?? new ASRS_Module1_Quiz.Question[0];
-        if (questions.Length != 3)
-            r.Error($"Quiz has {questions.Length} question(s); Module 1 requires exactly 3.", quiz);
-        if (quiz.PassMark != 2)
-            r.Warn($"Quiz pass mark is {quiz.PassMark}; the specification is 2 of 3.", quiz);
+        int choicePool = questions.Count(q => q != null && !q.rackCellQuestion);
+        int cellPool = questions.Count(q => q != null && q.rackCellQuestion);
+        int asked = Mathf.Min(quiz.MultipleChoicePerAttempt, choicePool) + Mathf.Min(quiz.CellQuestionsPerAttempt, cellPool);
+
+        if (choicePool < 6)
+            r.Warn($"Quiz pool has {choicePool} multiple-choice question(s); Module 1 uses 6 — run 'ASRS/Module 1/Update Quiz (6 Questions, Random 3 + Cell Question)'.", quiz);
+        if (choicePool < quiz.MultipleChoicePerAttempt)
+            r.Error($"Quiz asks {quiz.MultipleChoicePerAttempt} multiple-choice question(s) per attempt but the pool only has {choicePool} — nothing left to randomise.", quiz);
+        if (quiz.CellQuestionsPerAttempt > 0 && cellPool == 0)
+            r.Error("Quiz should ask a rack-cell question but the pool has none.", quiz);
+        if (quiz.PassMark > asked)
+            r.Error($"Quiz pass mark ({quiz.PassMark}) is more than the {asked} question(s) asked per attempt.", quiz);
+        else if (quiz.PassMark != 3 || asked != 4)
+            r.Warn($"Quiz asks {asked} question(s) with pass mark {quiz.PassMark}; the specification is 3 of 4.", quiz);
 
         int maxOptions = 0;
         for (int i = 0; i < questions.Length; i++)
@@ -378,7 +398,7 @@ public static class ASRS_Module1_Validator
         if (!ids.ContainsKey(quiz.QuizActionId))
             r.Error($"Quiz action '{quiz.QuizActionId}' isn't used by any step.", quiz);
         else
-            r.Ok("three-question quiz configured.", quiz);
+            r.Ok($"quiz configured — {asked} questions per attempt from a pool of {questions.Length}.", quiz);
     }
 
     private static void Button_Count(Report r, ASRS_Module1_Quiz quiz, int maxOptions)

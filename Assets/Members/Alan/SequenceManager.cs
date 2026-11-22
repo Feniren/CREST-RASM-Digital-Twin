@@ -15,7 +15,7 @@ public class SequenceManager : MonoBehaviour
         [Tooltip("Optional heading shown on panels with a title bar (Lesson Panel). Station-type steps use the station's name instead. Leave blank to use the panel's default title.")]
         public string title;
 
-        [Tooltip("The part GameObjects for this step. Each must have a Marker_Interactable on it. All become visible and clickable as soon as this step begins (alongside infoText) — the step advances once every one of them has been clicked.")]
+        [Tooltip("What the trainee must select on this step — the step advances once every one has been selected. Drag in the REAL part (slotted table, RFID tag, rack, door handle…): it's picked by pointing at it with the trigger / left-click, needs no collider, and is never hidden. A legacy Marker_Interactable box still works too (shown only on its step, hidden at start).")]
         public GameObject[] targets;
 
         [Tooltip("Shown as soon as this step begins, at the same time its targets become visible.")]
@@ -94,13 +94,17 @@ public class SequenceManager : MonoBehaviour
     public int CurrentStepIndex => currentIndex;
     public Step CurrentStep => steps != null && currentIndex >= 0 && currentIndex < steps.Length ? steps[currentIndex] : null;
 
+    [Header("Hint")]
+    [Tooltip("With no Hint Target set on a step, the Hint button showcases the step's own real part instead — but only if that part is at most this big (m), so the whole rack never flies at the trainee.")]
+    [SerializeField] private float autoHintMaxSize = 1f;
+
     private int currentIndex = -1;
     private readonly List<Marker_Interactable> pendingMarkers = new List<Marker_Interactable>();
 
-    // Targets that are real scene objects clicked through their own
-    // Interactable_Select (e.g. the rack's door handle, which also swings
-    // the door via Door_Handle_Toggle) rather than a green marker box.
-    private readonly Dictionary<Interactable_Select, UnityAction> pendingSelects = new Dictionary<Interactable_Select, UnityAction>();
+    // Targets that are real parts (no Marker_Interactable): picked by
+    // pointing at the part itself through Lesson_Part_Pointer.
+    private readonly List<GameObject> pendingParts = new List<GameObject>();
+    private Lesson_Part_Pointer partPointer;
     private bool waitingForTable;
     private bool shownInstructions;
     private bool interactionActive;
@@ -128,9 +132,8 @@ public class SequenceManager : MonoBehaviour
             return;
         }
 
-        // Hide every marker to start clean. Real scene objects used as
-        // targets (no Marker_Interactable, e.g. the door handle) stay put —
-        // hiding them would pull a piece off the machine until its step.
+        // Hide every marker to start clean. Real parts used as targets stay
+        // exactly as they are in the world.
         foreach (Step step in steps)
             foreach (GameObject target in step.targets)
                 if (IsMarker(target))
@@ -156,31 +159,6 @@ public class SequenceManager : MonoBehaviour
         foreach (Marker_Interactable marker in pendingMarkers)
             if (marker != null)
                 marker.Selected -= OnMarkerSelected;
-        ClearPendingSelects();
-    }
-
-    private static bool IsMarker(GameObject target)
-    {
-        return target != null && target.GetComponent<Marker_Interactable>() != null;
-    }
-
-    private void OnTargetSelected(Interactable_Select select)
-    {
-        if (!pendingSelects.TryGetValue(select, out UnityAction handler))
-            return;
-
-        select.OnInteractBegin.RemoveListener(handler);
-        pendingSelects.Remove(select);
-
-        TryCompleteStep();
-    }
-
-    private void ClearPendingSelects()
-    {
-        foreach (KeyValuePair<Interactable_Select, UnityAction> pending in pendingSelects)
-            if (pending.Key != null)
-                pending.Key.OnInteractBegin.RemoveListener(pending.Value);
-        pendingSelects.Clear();
     }
 
     private void OnMarkerSelected(Marker_Interactable marker, InteractionType interactionType)
@@ -194,14 +172,52 @@ public class SequenceManager : MonoBehaviour
         TryCompleteStep();
     }
 
+    private void OnPartPicked(GameObject part)
+    {
+        if (!pendingParts.Remove(part))
+            return; // not one of the current step's parts
+
+        Debug.Log($"{logTag} Part '{part.name}' selected on step {currentIndex + 1}.", part);
+
+        if (pendingParts.Count == 0)
+            PartPointer.Clear();
+        else
+            PartPointer.SetParts(pendingParts, OnPartPicked);
+
+        TryCompleteStep();
+    }
+
     private void TryCompleteStep()
     {
-        if (pendingMarkers.Count == 0 && pendingSelects.Count == 0 && !waitingForTable)
+        if (pendingMarkers.Count == 0 && pendingParts.Count == 0 && !waitingForTable)
             ActivateStep(currentIndex + 1);
+    }
+
+    private Lesson_Part_Pointer PartPointer
+    {
+        get
+        {
+            if (partPointer == null && !TryGetComponent(out partPointer))
+                partPointer = gameObject.AddComponent<Lesson_Part_Pointer>();
+            return partPointer;
+        }
+    }
+
+    private static bool IsMarker(GameObject target)
+    {
+        return target != null && target.GetComponent<Marker_Interactable>() != null;
+    }
+
+    private void ClearPendingParts()
+    {
+        pendingParts.Clear();
+        if (partPointer != null)
+            partPointer.Clear();
     }
 
     private void ActivateStep(int index)
     {
+        ClearPendingParts();
         currentIndex = index;
         shownInstructions = false;
         interactionActive = false;
@@ -238,6 +254,10 @@ public class SequenceManager : MonoBehaviour
         if (nextButton != null)
             nextButton.SetActive(!string.IsNullOrEmpty(GetInstructionsText(index)) || step.advanceOnNext);
 
+        // Hint only where there's something to showcase.
+        if (hintButton != null)
+            hintButton.SetActive(hintShowcase != null && GetHintTarget(index) != null);
+
         // The media box stays up for the whole lesson except part
         // identification (steps with marker targets), where the trainee's
         // attention belongs on the real object instead.
@@ -252,10 +272,6 @@ public class SequenceManager : MonoBehaviour
             else
                 stationCard.ShowEmpty();
         }
-
-        // Only offer Hint on steps that have something to showcase.
-        if (hintButton != null)
-            hintButton.SetActive(step.hintTarget != null);
 
         PlayNarration(step);
 
@@ -322,7 +338,7 @@ public class SequenceManager : MonoBehaviour
             if (marker != null)
                 marker.Selected -= OnMarkerSelected;
         pendingMarkers.Clear();
-        ClearPendingSelects();
+        ClearPendingParts();
         waitingForTable = false;
 
         if (currentIndex >= 0 && currentIndex < steps.Length && currentIndex != index)
@@ -397,7 +413,7 @@ public class SequenceManager : MonoBehaviour
         }
 
         // Every page of this step has been seen — an info step is done.
-        if (step.advanceOnNext && interactionActive && pendingMarkers.Count == 0 && pendingSelects.Count == 0 && !waitingForTable)
+        if (step.advanceOnNext && interactionActive && pendingMarkers.Count == 0 && pendingParts.Count == 0 && !waitingForTable)
             ActivateStep(currentIndex + 1);
     }
 
@@ -435,6 +451,43 @@ public class SequenceManager : MonoBehaviour
     {
         if (stationCard == null)
             stationCard = card;
+    }
+
+    // Same idea for the Hint button: a Lesson Panel with its own Hint button
+    // hooks itself up unless the scene already set these.
+    public void UseHintIfUnset(Hint_PartShowcase showcase, GameObject button)
+    {
+        if (hintShowcase == null)
+            hintShowcase = showcase;
+        if (hintButton == null)
+            hintButton = button;
+    }
+
+    // The step's Hint Target, or else its first real part if that's small
+    // enough to fly up in front of the trainee (Auto Hint Max Size).
+    private Transform GetHintTarget(int index)
+    {
+        if (steps == null || index < 0 || index >= steps.Length)
+            return null;
+
+        Step step = steps[index];
+        if (step.hintTarget != null)
+            return step.hintTarget;
+
+        if (step.targets == null)
+            return null;
+
+        foreach (GameObject target in step.targets)
+        {
+            if (target == null || IsMarker(target) || !Lesson_Part_Pointer.TryGetBounds(target, out Bounds bounds))
+                continue;
+
+            Vector3 size = bounds.size;
+            if (Mathf.Max(size.x, size.y, size.z) <= autoHintMaxSize)
+                return target.transform;
+        }
+
+        return null;
     }
 
     // A station-type step takes its text from the ASRS_Station_Type asset;
@@ -536,28 +589,14 @@ public class SequenceManager : MonoBehaviour
 
     // Hook this to the Hint button's OnClick(). Shows the current step's
     // hintTarget (if any) flying up in front of the trainee's face.
-    // Uses the shared hintShowcase (Module 2 style); if none is assigned,
-    // falls back to the Hint_PartShowcase on the hint target itself.
     public void OnHintPressed()
     {
-        if (currentIndex < 0 || currentIndex >= steps.Length)
+        if (currentIndex < 0 || currentIndex >= steps.Length || hintShowcase == null)
             return;
 
-        Transform hintTarget = steps[currentIndex].hintTarget;
-        if (hintTarget == null)
-            return;
-
-        Hint_PartShowcase showcase = hintShowcase != null ? hintShowcase : hintTarget.GetComponent<Hint_PartShowcase>();
-        if (showcase != null)
-            showcase.PlayHint(hintTarget);
-    }
-
-    // For a panel that brings its own Hint button (Lesson_Panel) — fills the
-    // slot only if the scene left it empty, like UseStationCardIfUnset.
-    public void UseHintButtonIfUnset(GameObject button)
-    {
-        if (hintButton == null)
-            hintButton = button;
+        Transform hintTarget = GetHintTarget(currentIndex);
+        if (hintTarget != null)
+            hintShowcase.PlayHint(hintTarget);
     }
 
     private void BeginStepInteraction(Step step)
@@ -568,28 +607,22 @@ public class SequenceManager : MonoBehaviour
         {
             if (target == null) continue;
 
-            target.SetActive(true);
-
             Marker_Interactable marker = target.GetComponent<Marker_Interactable>();
             if (marker == null)
             {
-                // A real object clicked directly — counts once its own
-                // Interactable_Select fires (alongside whatever else it does).
-                Interactable_Select select = target.GetComponent<Interactable_Select>();
-                if (select == null)
-                {
-                    Debug.LogError($"[SequenceManager] Step {currentIndex} target '{target.name}' has neither a Marker_Interactable nor an Interactable_Select, so clicking it can't complete the step.", target);
-                    continue;
-                }
+                // A real part: left exactly as it is in the world (not
+                // shown/hidden), and picked by pointing at it.
+                if (!target.activeInHierarchy)
+                    Debug.LogWarning($"{logTag} Step {currentIndex + 1} part '{target.name}' is inactive — it can't be pointed at until something activates it.", target);
+                else if (!Lesson_Part_Pointer.TryGetBounds(target, out _))
+                    Debug.LogWarning($"{logTag} Step {currentIndex + 1} part '{target.name}' has no visible renderer or collider to point at.", target);
 
-                if (!pendingSelects.ContainsKey(select))
-                {
-                    UnityAction handler = () => OnTargetSelected(select);
-                    select.OnInteractBegin.AddListener(handler);
-                    pendingSelects.Add(select, handler);
-                }
+                if (!pendingParts.Contains(target))
+                    pendingParts.Add(target);
                 continue;
             }
+
+            target.SetActive(true);
 
             // A marker clicked earlier hid itself; this step needs it shown
             // again (e.g. the same part on a later step, or a debug jump back).
@@ -598,6 +631,9 @@ public class SequenceManager : MonoBehaviour
             marker.Selected += OnMarkerSelected;
             pendingMarkers.Add(marker);
         }
+
+        if (pendingParts.Count > 0)
+            PartPointer.SetParts(pendingParts, OnPartPicked);
 
         waitingForTable = !AreTablesLoaded(step);
     }

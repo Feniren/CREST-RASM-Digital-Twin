@@ -180,6 +180,170 @@ public static class ASRS_Module1_Builder
         Selection.activeGameObject = sequenceManager.gameObject;
     }
 
+    // ------------------------------------------- real parts instead of markers
+
+    // Adds a Hint button (left of Next) to the Lesson Panel prefab, so the
+    // Hint part showcase can guide the trainee to each real part.
+    [MenuItem("ASRS/Module 1/Add Hint Button To Lesson Panel Prefab")]
+    public static void AddHintButtonToLessonPanelPrefab()
+    {
+        GameObject listItemButton = AssetDatabase.LoadAssetAtPath<GameObject>(ListItemButtonPath);
+        if (listItemButton == null || AssetDatabase.LoadAssetAtPath<GameObject>(LessonPanelPrefabPath) == null)
+        {
+            Debug.LogError($"[ASRS][Module1][Build] Need {LessonPanelPrefabPath} and {ListItemButtonPath}.");
+            return;
+        }
+
+        GameObject contents = PrefabUtility.LoadPrefabContents(LessonPanelPrefabPath);
+        try
+        {
+            Lesson_Panel panel = contents.GetComponent<Lesson_Panel>();
+            if (Lesson_Panel_Builder.AddHintButton(contents.GetComponent<RectTransform>(), panel, listItemButton))
+            {
+                PrefabUtility.SaveAsPrefabAsset(contents, LessonPanelPrefabPath);
+                Debug.Log($"[ASRS][Module1][Build] Added a Hint button to {LessonPanelPrefabPath}. It shows on steps whose part can be showcased.");
+            }
+            else
+            {
+                Debug.Log("[ASRS][Module1][Build] LessonPanel already has a Hint button (or has no Lesson_Panel) — nothing changed.");
+            }
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(contents);
+        }
+    }
+
+    // For every step whose target is a green Marker_Interactable box, finds
+    // the real scene object that box was drawn around (the one whose visible
+    // bounds match the box best) and puts THAT in the step's Targets. The
+    // old markers are switched off, not deleted. Undo (Ctrl+Z) reverts it all.
+    [MenuItem("ASRS/Module 1/Use Real Parts Instead Of Markers")]
+    public static void UseRealPartsInsteadOfMarkers()
+    {
+        SequenceManager sequenceManager = Object.FindFirstObjectByType<SequenceManager>();
+        if (sequenceManager == null)
+        {
+            Debug.LogError("[ASRS][Module1][Build] No SequenceManager in the open scene — open ASRSModule1 first.");
+            return;
+        }
+
+        Dictionary<Transform, Bounds> candidates = CollectPartBounds();
+        SerializedObject so = new SerializedObject(sequenceManager);
+        SerializedProperty stepsProp = so.FindProperty("steps");
+        List<GameObject> retired = new List<GameObject>();
+        int replaced = 0;
+
+        for (int i = 0; i < stepsProp.arraySize; i++)
+        {
+            SerializedProperty targets = stepsProp.GetArrayElementAtIndex(i).FindPropertyRelative("targets");
+            for (int t = 0; t < targets.arraySize; t++)
+            {
+                SerializedProperty element = targets.GetArrayElementAtIndex(t);
+                GameObject marker = element.objectReferenceValue as GameObject;
+                if (marker == null || marker.GetComponent<Marker_Interactable>() == null)
+                    continue;
+
+                Renderer markerRenderer = marker.GetComponent<Renderer>();
+                Transform part = markerRenderer != null ? BestMatch(markerRenderer.bounds, candidates) : null;
+                if (part == null)
+                {
+                    Debug.LogWarning($"[ASRS][Module1][Build] Step {i + 1}: found no real part under marker '{marker.name}' — drag the part into its Targets by hand.", marker);
+                    continue;
+                }
+
+                element.objectReferenceValue = part.gameObject;
+                retired.Add(marker);
+                replaced++;
+                Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: '{marker.name}' → '{PathOf(part)}'. Check it's the right object.", part);
+            }
+        }
+
+        so.ApplyModifiedProperties(); // records Undo
+
+        foreach (GameObject marker in retired)
+        {
+            Undo.RecordObject(marker, "Retire marker");
+            marker.SetActive(false);
+        }
+
+        EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
+        Selection.activeGameObject = sequenceManager.gameObject;
+        Debug.Log($"[ASRS][Module1][Build] {replaced} marker target(s) replaced by real parts; the markers are switched off, not deleted. Check each step's Targets, then save the scene (Ctrl+Z undoes this).");
+    }
+
+    // Visible bounds of every scene object (its renderers and its children's),
+    // skipping markers, UI, the player rig and the Module 1 helpers.
+    private static Dictionary<Transform, Bounds> CollectPartBounds()
+    {
+        Dictionary<Transform, Bounds> result = new Dictionary<Transform, Bounds>();
+
+        foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (!r.enabled || r is ParticleSystemRenderer || r.GetComponentInParent<Marker_Interactable>(true) != null
+                || r.GetComponentInParent<Canvas>(true) != null || r.GetComponentInParent<Entity_Player>(true) != null
+                || r.GetComponentInParent<ASRS_Module1_Step_Feature>(true) != null)
+                continue;
+
+            for (Transform t = r.transform; t != null; t = t.parent)
+            {
+                if (t.GetComponent<Marker_Interactable>() != null)
+                    break;
+                if (result.TryGetValue(t, out Bounds b))
+                {
+                    b.Encapsulate(r.bounds);
+                    result[t] = b;
+                }
+                else
+                {
+                    result[t] = r.bounds;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // The object whose bounds overlap the marker box best (intersection over
+    // union) — markers were drawn as boxes around their part.
+    private static Transform BestMatch(Bounds marker, Dictionary<Transform, Bounds> candidates)
+    {
+        Transform best = null;
+        float bestScore = 0.05f; // ignore near-misses
+
+        foreach (KeyValuePair<Transform, Bounds> pair in candidates)
+        {
+            Bounds b = pair.Value;
+            if (!marker.Intersects(b))
+                continue;
+
+            Vector3 min = Vector3.Max(marker.min, b.min);
+            Vector3 max = Vector3.Min(marker.max, b.max);
+            Vector3 overlap = Vector3.Max(max - min, Vector3.zero);
+            float inter = overlap.x * overlap.y * overlap.z;
+            float union = Volume(marker) + Volume(b) - inter;
+            float score = union > 0f ? inter / union : 0f;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = pair.Key;
+            }
+        }
+
+        return best;
+    }
+
+    private static float Volume(Bounds b) => b.size.x * b.size.y * b.size.z;
+
+    private static string PathOf(Transform t)
+    {
+        string path = t.name;
+        for (Transform p = t.parent; p != null; p = p.parent)
+            path = p.name + "/" + path;
+        return path;
+    }
+
     // ------------------------------------------- three-station intro + media
 
     private const string StationTypesFolder = "Assets/Members/Alan/Training/StationTypes/";
@@ -190,7 +354,8 @@ public static class ASRS_Module1_Builder
     private const string RemovedStation = "StationType_Rack";
 
     private const string OldIntroInstructionsStart = "There are four storage station types";
-    private const string LoadInstructions = "Point at the loaded slotted table and pull the trigger to put it in your inventory. Then point at its home cell (outlined in the rack) and pull the trigger to load it — you can only load it while a slotted table is in your inventory. Carrying it in by hand works too.";
+    private const string LoadInstructions = "Grab the loaded slotted table with the grip button, carry it to its home cell (highlighted in the rack) and let go of the grip inside the cell. Or point at the table and pull the trigger to put it in your inventory, then point at its home cell and pull the trigger to load it.";
+    private const string OldPointerLoadInstructions = "Point at the loaded slotted table and pull the trigger to put it in your inventory.";
     private const string OldInspectInstructions = "Point at any storage cell in the rack and press the trigger to inspect it.";
     private const string InspectInstructions = "Aim your hand's ray at any storage cell in the rack — it turns solid white over a cell — and pull the index-finger trigger (left hand recommended; on desktop, aim with the screen centre and left-click).";
     private const string NewIntroInstructions = "There are three storage station types: the ASRS-36x2u, the ASRS-36x2 and the Carousel. Press Next to review each one.";
@@ -256,6 +421,100 @@ public static class ASRS_Module1_Builder
         EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
         Debug.Log("[ASRS][Module1][Build] Intro and step media updated. Save the scene.", sequenceManager);
         ASRS_Module1_Validator.Validate();
+    }
+
+    private const string SeventyTwoSlotStart = "The physical SmartCIM ASRS-36u";
+    private const string SeventyTwoSlotTitle = "This Scene: 72 Slots";
+    private const string AsrsUnitStart = "This is the ASRS-36";
+    private const string OldLoadAsrsInfoStart = "Perform the following action of loading the loaded slotted table";
+    public const string LoadAsrsInfo = "Last hands-on task: load the loaded slotted table into its home cell in the ASRS rack.";
+
+    // Checklist BUG-1 / BUG-2 and two text glitches:
+    //  - a step with its own text AND a Station Type (the Welcome step with
+    //    SmartCIM, the 72-slot step with ASRS) never shows that text, because
+    //    SequenceManager uses the station's summary instead. The asset moves
+    //    to Media, so its picture still shows and the step's text comes back
+    //    (and the "station type n of N" count drops back to three);
+    //  - the ASRS step's text ended in a stray quote;
+    //  - the Load the ASRS step's text is reworded.
+    // Safe to re-run.
+    [MenuItem("ASRS/Module 1/Fix Welcome, 72-Slot And Step Text")]
+    public static void FixStepTextInScene()
+    {
+        SequenceManager sequenceManager = Object.FindFirstObjectByType<SequenceManager>();
+        if (sequenceManager == null)
+        {
+            Debug.LogError("[ASRS][Module1][Build] No SequenceManager in the open scene.");
+            return;
+        }
+
+        int changed = FixStepText(sequenceManager);
+        if (changed > 0)
+            EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
+        Debug.Log(changed > 0
+            ? $"[ASRS][Module1][Build] {changed} step text fix(es) applied. Save the scene."
+            : "[ASRS][Module1][Build] Step text already fixed — nothing to change.", sequenceManager);
+        ASRS_Module1_Validator.Validate();
+    }
+
+    private static int FixStepText(SequenceManager sequenceManager)
+    {
+        SerializedObject so = new SerializedObject(sequenceManager);
+        SerializedProperty steps = so.FindProperty("steps");
+        List<ASRS_Station_Type> introStations = IntroStationOrder.Select(LoadStation).Where(s => s != null).ToList();
+        int changed = 0;
+
+        for (int i = 0; i < steps.arraySize; i++)
+        {
+            SerializedProperty step = steps.GetArrayElementAtIndex(i);
+            SerializedProperty stationProp = step.FindPropertyRelative("stationType");
+            SerializedProperty mediaProp = step.FindPropertyRelative("media");
+            SerializedProperty title = step.FindPropertyRelative("title");
+            SerializedProperty info = step.FindPropertyRelative("infoText");
+
+            // 1 + 2. Station Type hiding the step's own text -> Media.
+            ASRS_Station_Type station = stationProp.objectReferenceValue as ASRS_Station_Type;
+            if (station != null && !introStations.Contains(station) && !string.IsNullOrWhiteSpace(info.stringValue))
+            {
+                if (mediaProp != null && mediaProp.objectReferenceValue == null)
+                    mediaProp.objectReferenceValue = station;
+                stationProp.objectReferenceValue = null;
+                changed++;
+                Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: '{station.name}' moved from Station Type to Media, so the step's own text shows.", sequenceManager);
+            }
+
+            if (info.stringValue.StartsWith(SeventyTwoSlotStart) && string.IsNullOrEmpty(title.stringValue))
+            {
+                title.stringValue = SeventyTwoSlotTitle;
+                changed++;
+                Debug.Log($"[ASRS][Module1][Build] Step {i + 1} titled '{SeventyTwoSlotTitle}'.", sequenceManager);
+            }
+
+            // 5a. Stray closing quote on the ASRS step.
+            if (info.stringValue.StartsWith(AsrsUnitStart))
+            {
+                string trimmed = info.stringValue.TrimEnd(' ', '\t', '\r', '\n');
+                if (trimmed.EndsWith("\""))
+                    trimmed = trimmed.Substring(0, trimmed.Length - 1).TrimEnd();
+                if (trimmed != info.stringValue)
+                {
+                    info.stringValue = trimmed;
+                    changed++;
+                    Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: removed the stray quote at the end of its text.", sequenceManager);
+                }
+            }
+
+            // 5b. Load the ASRS wording.
+            if (step.FindPropertyRelative("requiredActionId").stringValue == LoadAsrsId && info.stringValue.StartsWith(OldLoadAsrsInfoStart))
+            {
+                info.stringValue = LoadAsrsInfo;
+                changed++;
+                Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: Load the ASRS text reworded.", sequenceManager);
+            }
+        }
+
+        so.ApplyModifiedProperties();
+        return changed;
     }
 
     // Safe to re-run: every change checks whether it's already been made.
@@ -351,12 +610,14 @@ public static class ASRS_Module1_Builder
                 info.stringValue = InspectInstructions + info.stringValue.Substring(OldInspectInstructions.Length);
         }
 
-        // 5c. Load the ASRS step explains the pointer route as well.
+        // 5c. Load the ASRS step explains the hand (VR grip) route first, then
+        //     the pointer route.
         for (int i = 0; i < steps.arraySize; i++)
         {
             SerializedProperty step = steps.GetArrayElementAtIndex(i);
             SerializedProperty instructions = step.FindPropertyRelative("instructionsText");
-            if (step.FindPropertyRelative("requiredActionId").stringValue == LoadAsrsId && instructions.stringValue.StartsWith("Carry the slotted table to its empty slot"))
+            if (step.FindPropertyRelative("requiredActionId").stringValue == LoadAsrsId
+                && (instructions.stringValue.StartsWith("Carry the slotted table to its empty slot") || instructions.stringValue.StartsWith(OldPointerLoadInstructions)))
                 instructions.stringValue = LoadInstructions;
         }
 
@@ -512,7 +773,7 @@ public static class ASRS_Module1_Builder
         {
             new StepDef(WelcomeId, "Welcome: What Is an ASRS?",
                 "Welcome to Module 1. An Automated Storage and Retrieval System (ASRS) stores parts in numbered, addressable cells and uses a robot to put them away and bring them back on demand — so the manufacturing cell always knows exactly where every part is.",
-                "In this module you'll meet the three storage station types, follow a pallet around the SmartCIM cell, inspect the rack's storage cells, load a template into the ASRS and finish with a three-question check. Press Next to begin.",
+                "In this module you'll meet the three storage station types, follow a pallet around the SmartCIM cell, inspect the rack's storage cells, load a template into the ASRS and finish with a four-question check. Press Next to begin.",
                 true),
         });
 
@@ -552,9 +813,7 @@ public static class ASRS_Module1_Builder
         // 4. Assessment — last, so it can't stand in for the loading tasks.
         added += InsertGroup(steps, steps.arraySize, new[]
         {
-            new StepDef(QuizId, "Module 1 Check",
-                "Answer the three questions on the quiz panel. You need at least two correct to pass, and you can retry as often as you like.",
-                "", false),
+            new StepDef(QuizId, "Module 1 Check", QuizStepText, "", false),
         });
 
         so.ApplyModifiedProperties();
@@ -881,7 +1140,7 @@ public static class ASRS_Module1_Builder
         RectTransform canvas = ui.MakeCanvas("QuizPanel", host.transform, new Vector2(120f, 84f));
         ui.MakeTitle(canvas, "Module 1 Check", 37f);
 
-        TMP_Text counter = ui.MakeText("Counter", canvas, "Question 1 of 3", 2.8f, Cyan, TextAlignmentOptions.MidlineRight);
+        TMP_Text counter = ui.MakeText("Counter", canvas, "Question 1 of 4", 2.8f, Cyan, TextAlignmentOptions.MidlineRight);
         Place(counter.rectTransform, new Vector2(30f, 37f), new Vector2(50f, 5f));
 
         TMP_Text question = ui.MakeText("Question", canvas, "", 3.8f, Color.white, TextAlignmentOptions.TopLeft);
@@ -933,8 +1192,29 @@ public static class ASRS_Module1_Builder
             labelProps.GetArrayElementAtIndex(i).objectReferenceValue = labels[i];
         }
 
-        SerializedProperty questions = so.FindProperty("questions");
-        questions.arraySize = 3;
+        WriteQuestionPool(so);
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return quiz;
+    }
+
+    // ------------------------------------------------------- quiz pool
+
+    private const int QuizMultipleChoicePerAttempt = 3;
+    private const int QuizCellQuestionsPerAttempt = 1;
+    private const int QuizPassMark = 3; // of 4
+
+    private const string QuizStepText = "Answer the four questions on the quiz panel: three picked at random, then one on the real rack using what you learned with the cell inspector. You need at least three correct to pass, and Retry asks a new set of questions.";
+    private const string OldQuizStepText = "Answer the three questions on the quiz panel. You need at least two correct to pass, and you can retry as often as you like.";
+
+    // Six multiple-choice questions (each attempt asks 3 at random, answers
+    // shuffled — so every correct answer is written first here) plus the
+    // rack-cell question, asked last every time.
+    private static void WriteQuestionPool(SerializedObject quizSo)
+    {
+        SerializedProperty questions = quizSo.FindProperty("questions");
+        questions.arraySize = 7;
+
         WriteQuestion(questions.GetArrayElementAtIndex(0),
             "Which storage station rotates its storage positions to bring the requested part to one fixed load/unload point, instead of a robot travelling to the part?",
             QuizStationOptions, 0,
@@ -952,13 +1232,105 @@ public static class ASRS_Module1_Builder
             "Processed parts return on the conveyor and the completed product is stored back in the ASRS — the ASRS holds raw material, work-in-process and finished goods.",
             false, "");
         WriteQuestion(questions.GetArrayElementAtIndex(2),
-            "A job needs a {material}. Using the rack's inventory, select a storage cell that holds one.",
+            "Once a template rides a pallet onto the conveyor, what sends it to the station that needs it?",
+            new[]
+            {
+                "PLC-controlled logic routes the pallet",
+                "The ASRS robot carries it along the conveyor",
+                "An operator pushes it there by hand",
+                "The carousel rotates it to the station",
+            }, 0,
+            "The conveyor is run by a PLC: its logic routes each pallet to whichever station needs it.",
+            false, "");
+        WriteQuestion(questions.GetArrayElementAtIndex(3),
+            "What is the slotted table buffer for?",
+            new[]
+            {
+                "It holds pallets for a while when the next station isn't ready, so the line doesn't back up",
+                "It machines raw material into finished parts",
+                "It permanently stores finished goods",
+                "It rotates to bring parts to a fixed point",
+            }, 0,
+            "The buffer is a short-term holding spot: a pallet waits there until the next station can take it, instead of blocking the conveyor.",
+            false, "");
+        WriteQuestion(questions.GetArrayElementAtIndex(4),
+            "What reads the RFID tag on the slotted table, and why?",
+            new[]
+            {
+                "The RFID sensor — to identify the pallet as it passes and track where it's stored",
+                "The CNC machine — to choose which program to cut",
+                "The operator — by scanning it with a handheld reader before every move",
+                "Nothing reads it; it's only a label for people",
+            }, 0,
+            "The RFID sensor reads the tag to identify each pallet as it passes — that's also how the ASRS keeps track of what's stored in which cell.",
+            false, "");
+        WriteQuestion(questions.GetArrayElementAtIndex(5),
+            "Why is each template shaped the way it is?",
+            new[]
+            {
+                "It's made to hold one specific part, such as the epoxy block, and no other",
+                "So that any part fits in any template",
+                "To make it lighter for the ASRS robot to lift",
+                "So the conveyor can sort templates by their shape",
+            }, 0,
+            "A template is shaped specifically for its part — the epoxy block's template holds the epoxy block and nothing else.",
+            false, "");
+        WriteQuestion(questions.GetArrayElementAtIndex(6),
+            "Rack check: a job needs a {material}. Using what you learned with the cell inspector, point at the rack and select a storage cell that holds one.",
             new string[0], 0,
             "Every cell has an address and the rack's inventory records what each one holds — that's how the ASRS finds a part without searching.",
             true, "020001");
 
-        so.ApplyModifiedPropertiesWithoutUndo();
-        return quiz;
+        quizSo.FindProperty("passMark").intValue = QuizPassMark;
+        quizSo.FindProperty("multipleChoicePerAttempt").intValue = QuizMultipleChoicePerAttempt;
+        quizSo.FindProperty("cellQuestionsPerAttempt").intValue = QuizCellQuestionsPerAttempt;
+        quizSo.FindProperty("shuffleOptions").boolValue = true;
+        quizSo.FindProperty("randomCellMaterial").boolValue = true;
+    }
+
+    // Replaces the scene's quiz questions with the 6 + 1 pool and switches on
+    // randomising (3 random multiple-choice + the cell question, 3 of 4 to
+    // pass), and updates the step text that describes the quiz. Overwrites
+    // any question text edited by hand — Ctrl+Z undoes it.
+    [MenuItem("ASRS/Module 1/Update Quiz (6 Questions, Random 3 + Cell Question)")]
+    public static void UpdateQuiz()
+    {
+        ASRS_Module1_Quiz quiz = Object.FindFirstObjectByType<ASRS_Module1_Quiz>(FindObjectsInactive.Include);
+        if (quiz == null)
+        {
+            Debug.LogError("[ASRS][Module1][Build] No ASRS_Module1_Quiz in the open scene — run 'Build Module 1 In Current Scene' first.");
+            return;
+        }
+
+        SerializedObject quizSo = new SerializedObject(quiz);
+        WriteQuestionPool(quizSo);
+        quizSo.ApplyModifiedProperties();
+
+        SequenceManager sequenceManager = Object.FindFirstObjectByType<SequenceManager>();
+        if (sequenceManager != null)
+        {
+            SerializedObject so = new SerializedObject(sequenceManager);
+            SerializedProperty steps = so.FindProperty("steps");
+            for (int i = 0; i < steps.arraySize; i++)
+            {
+                SerializedProperty step = steps.GetArrayElementAtIndex(i);
+                SerializedProperty info = step.FindPropertyRelative("infoText");
+                SerializedProperty instructions = step.FindPropertyRelative("instructionsText");
+
+                if (step.FindPropertyRelative("requiredActionId").stringValue == QuizId
+                    && (info.stringValue == OldQuizStepText || string.IsNullOrWhiteSpace(info.stringValue)))
+                    info.stringValue = QuizStepText;
+
+                foreach (SerializedProperty text in new[] { info, instructions })
+                    if (text.stringValue.Contains("three-question check"))
+                        text.stringValue = text.stringValue.Replace("three-question check", "four-question check");
+            }
+            so.ApplyModifiedProperties();
+            EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
+        }
+
+        Selection.activeGameObject = quiz.gameObject;
+        Debug.Log("[ASRS][Module1][Build] Quiz updated: 6 multiple-choice questions (3 asked at random, answers shuffled) + 1 rack-cell question asked last; pass mark 3 of 4. Save the scene.", quiz);
     }
 
     private static void WriteQuestion(SerializedProperty q, string prompt, string[] options, int correct, string explanation, bool cellQuestion, string cellTableId)
