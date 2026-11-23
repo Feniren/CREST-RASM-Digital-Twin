@@ -15,4 +15,12 @@ public static class GlobalVariables
     public static readonly Vector3 posLimit = new Vector3(0,0,0), negLimit = new Vector3(-0.08509f, 0, -0.31115f);
     
     // error state
+
+    // UI sprite organization
+    public const string UI_class_global = "Global";
+    public const string UI_class_top = "Top Bar";
+    public const string UI_class_bottom = "Bottom Bar";
+    public const string UI_class_control = "Control Windows";
+    public const string UI_class_location = "Location Windows"; // unused currently: 10/21/26
+    public const string UI_class_frame = "Static Frame";
 }
