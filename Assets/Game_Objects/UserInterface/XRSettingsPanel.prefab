@@ -984,6 +984,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3265590346476001483, guid: 52713b43a4e4a9d4f9a945f27d3346e9, type: 3}
+      propertyPath: Toggle
+      value: 
+      objectReference: {fileID: 8659823072645251846}
+    - target: {fileID: 3265590346476001483, guid: 52713b43a4e4a9d4f9a945f27d3346e9, type: 3}
+      propertyPath: ToggleName
+      value: 
+      objectReference: {fileID: 4101581291654849913}
     - target: {fileID: 3465155116644774766, guid: 52713b43a4e4a9d4f9a945f27d3346e9, type: 3}
       propertyPath: m_Name
       value: RayEndpointInterpolation
@@ -1045,6 +1053,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cccc2f18ea75e649933e6bd3d808f6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Widget_Labeled_Toggle
+--- !u!114 &4101581291654849913 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4452144057203594853, guid: 52713b43a4e4a9d4f9a945f27d3346e9, type: 3}
+  m_PrefabInstance: {fileID: 370015462706459420}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &8659823072645251846 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9011509519481942042, guid: 52713b43a4e4a9d4f9a945f27d3346e9, type: 3}
+  m_PrefabInstance: {fileID: 370015462706459420}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1001 &1753577075939156048
 PrefabInstance:
   m_ObjectHideFlags: 0

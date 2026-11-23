@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eb98e80d12691444a91ade8c94fa3bc, type: 3}
+  m_Name: Quest_Input_Tutorial
+  m_EditorClassIdentifier: Assembly-CSharp::Quest_Parent
+  Name: Input Tutorial
+  Description: Tutorial for learning Input controls for the application
+  QuestManager: {fileID: 8294895389305914564, guid: 47ca11c7d16156448ae93c47d8b50b8f, type: 3}
+  QuestSteps:
+  - {fileID: 11400000, guid: 6fdbd5c0eaa78d0458bc1ad44c85d2f9, type: 2}
+  - {fileID: 11400000, guid: 85cd99aa1bb1fe04aa2f364e149a8f51, type: 2}
+  - {fileID: 11400000, guid: 69c9770150758a54699501333ee5879f, type: 2}
+  QuestText: {fileID: 11400000, guid: 86c9cb5877b1e224a84ade68a199bd79, type: 2}

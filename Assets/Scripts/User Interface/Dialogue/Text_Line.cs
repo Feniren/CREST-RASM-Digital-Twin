@@ -6,16 +6,20 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Text/Text Line")]
 public class Text_Line : ScriptableObject{
 	[SerializeField]
-	[TextArea]
-	private string TextLine;
+	GameObject TextLineManager;
 
 	[SerializeField]
-	private List<string> Responses = new List<string>();
+	List<Text_Data> TextLines = new List<Text_Data>();
 
-	[SerializeField]
-	private List<ScriptableObject> NextLines = new List<ScriptableObject>();
+	public GameObject CreateTextLineManager(){
+		GameObject TextLineManagerInstance = Instantiate(TextLineManager);
 
-	public string GetTextLine(){
-		return TextLine;
+		TextLineManagerInstance.GetComponent<Text_Line_Manager>().SetTextLines(TextLines);
+
+		return TextLineManagerInstance;
+	}
+
+	public List<Text_Data> GetTextLines(){
+		return TextLines;
 	}
 }

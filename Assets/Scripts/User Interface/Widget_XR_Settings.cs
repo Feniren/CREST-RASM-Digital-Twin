@@ -15,25 +15,25 @@ public class Widget_XR_Settings : Widget_Parent{
 	}
 
 	public void Awake(){
-		RayThicknessSlider.SliderNameText.text = "Ray Thickness";
-		RayEndpointInterpolationSpeedSlider.SliderNameText.text = "Ray Endpoint Interpolation Speed";
-		RayEndpointInterpolationToggle.ToggleNameText.text = "Ray Endpoint Interpolation";
+		RayThicknessSlider.SliderName.text = "Ray Thickness";
+		RayEndpointInterpolationSpeedSlider.SliderName.text = "Ray Endpoint Interpolation Speed";
+		RayEndpointInterpolationToggle.ToggleName.text = "Ray Endpoint Interpolation";
 	}
 
 	public override void OnDisable(){
 		base.OnDisable();
 
-		RayThicknessSlider.SliderReference.onValueChanged.RemoveListener(OnRayThicknessValueChanged);
-		RayEndpointInterpolationSpeedSlider.SliderReference.onValueChanged.RemoveListener(OnRayEndpointInterpolationSpeedValueChanged);
-		RayEndpointInterpolationToggle.ToggleReference.onValueChanged.RemoveListener(OnRayEndpointInterpolationValueChanged);
+		RayThicknessSlider.Slider.onValueChanged.RemoveListener(OnRayThicknessValueChanged);
+		RayEndpointInterpolationSpeedSlider.Slider.onValueChanged.RemoveListener(OnRayEndpointInterpolationSpeedValueChanged);
+		RayEndpointInterpolationToggle.Toggle.onValueChanged.RemoveListener(OnRayEndpointInterpolationValueChanged);
 	}
 
 	public override void OnEnable(){
 		base.OnEnable();
 
-		RayThicknessSlider.SliderReference.onValueChanged.AddListener(OnRayThicknessValueChanged);
-		RayEndpointInterpolationSpeedSlider.SliderReference.onValueChanged.AddListener(OnRayEndpointInterpolationSpeedValueChanged);
-		RayEndpointInterpolationToggle.ToggleReference.onValueChanged.AddListener(OnRayEndpointInterpolationValueChanged);
+		RayThicknessSlider.Slider.onValueChanged.AddListener(OnRayThicknessValueChanged);
+		RayEndpointInterpolationSpeedSlider.Slider.onValueChanged.AddListener(OnRayEndpointInterpolationSpeedValueChanged);
+		RayEndpointInterpolationToggle.Toggle.onValueChanged.AddListener(OnRayEndpointInterpolationValueChanged);
 	}
 
 	public override void Start(){
@@ -41,15 +41,15 @@ public class Widget_XR_Settings : Widget_Parent{
 
 		PlayerSettings = Entity_Player.GetLocalPlayer().PlayerSettings;
 
-		RayThicknessSlider.SliderReference.value = PlayerSettings.XRRayThickness;
-		RayThicknessSlider.SliderReference.minValue = 0.01f;
-		RayThicknessSlider.SliderReference.maxValue = 0.1f;
+		RayThicknessSlider.Slider.value = PlayerSettings.XRRayThickness;
+		RayThicknessSlider.Slider.minValue = 0.01f;
+		RayThicknessSlider.Slider.maxValue = 0.1f;
 
-		RayEndpointInterpolationSpeedSlider.SliderReference.value = PlayerSettings.XRRayEndpointInterpolationSpeed;
-		RayEndpointInterpolationSpeedSlider.SliderReference.minValue = 0.01f;
-		RayEndpointInterpolationSpeedSlider.SliderReference.maxValue = 1.0f;
+		RayEndpointInterpolationSpeedSlider.Slider.value = PlayerSettings.XRRayEndpointInterpolationSpeed;
+		RayEndpointInterpolationSpeedSlider.Slider.minValue = 0.01f;
+		RayEndpointInterpolationSpeedSlider.Slider.maxValue = 1.0f;
 
-		RayEndpointInterpolationToggle.ToggleReference.isOn = PlayerSettings.XRRayEndpointInterpolation;
+		RayEndpointInterpolationToggle.Toggle.isOn = PlayerSettings.XRRayEndpointInterpolation;
 	}
 
 	public void OnRayThicknessValueChanged(float Value){

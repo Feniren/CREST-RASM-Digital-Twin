@@ -26,7 +26,7 @@ public class Widget_Job_Details : Widget_Parent{
 		Job = JobManagerReference.JobQueue[JobIndex];
 
 		JobName.text = Job.Name;
-		JobDescription.text = Job.Description.GetTextLine();
+		JobDescription.text = Job.Description.GetTextLines()[0].Text;
 		Job.OnJobComplete.AddListener(OnCancelPressed);
 	}
 

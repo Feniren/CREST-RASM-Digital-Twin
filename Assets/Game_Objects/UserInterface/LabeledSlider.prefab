@@ -424,9 +424,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Widget_Labeled_Slider
   Name: Labaled Slider
-  SliderReference: {fileID: 4629627429885383814}
-  SliderNameText: {fileID: 2745352795846942452}
-  SliderValueText: {fileID: 5571968184970031476}
+  Slider: {fileID: 4629627429885383814}
+  SliderHandle: {fileID: 1063159274350335528}
+  SliderName: {fileID: 2745352795846942452}
+  SliderValue: {fileID: 5571968184970031476}
 --- !u!1 &3998106363136257256
 GameObject:
   m_ObjectHideFlags: 0
