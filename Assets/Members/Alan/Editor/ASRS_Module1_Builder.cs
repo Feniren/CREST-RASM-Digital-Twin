@@ -1154,8 +1154,35 @@ public static class ASRS_Module1_Builder
 
     private static ASRS_Module1_Quiz BuildQuiz(GameObject host, UI ui)
     {
+        ASRS_Module1_Quiz quiz = BuildQuizPanel(host, ui, "Module 1 Check");
+
+        SerializedObject so = new SerializedObject(quiz);
+        WriteQuestionPool(so);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return quiz;
+    }
+
+    // The quiz panel and its ASRS_Module1_Quiz with no questions yet — shared
+    // with other modules (ASRS_Module2_Builder), which write their own pool.
+    // Null if the widget assets are missing.
+    public static ASRS_Module1_Quiz BuildQuizPanel(GameObject host, string title)
+    {
+        Material background = AssetDatabase.LoadAssetAtPath<Material>(BackgroundMaterialPath);
+        Sprite gradient = AssetDatabase.LoadAssetAtPath<Sprite>(GradientSpritePath);
+        GameObject listItemButton = AssetDatabase.LoadAssetAtPath<GameObject>(ListItemButtonPath);
+        if (background == null || listItemButton == null)
+        {
+            Debug.LogError($"[ASRS][Build] Missing widget assets — need {BackgroundMaterialPath} and {ListItemButtonPath}.");
+            return null;
+        }
+
+        return BuildQuizPanel(host, new UI(background, gradient, listItemButton), title);
+    }
+
+    private static ASRS_Module1_Quiz BuildQuizPanel(GameObject host, UI ui, string title)
+    {
         RectTransform canvas = ui.MakeCanvas("QuizPanel", host.transform, new Vector2(120f, 84f));
-        ui.MakeTitle(canvas, "Module 1 Check", 37f);
+        ui.MakeTitle(canvas, title, 37f);
 
         TMP_Text counter = ui.MakeText("Counter", canvas, "Question 1 of 4", 2.8f, Cyan, TextAlignmentOptions.MidlineRight);
         Place(counter.rectTransform, new Vector2(30f, 37f), new Vector2(50f, 5f));
@@ -1208,8 +1235,6 @@ public static class ASRS_Module1_Builder
             buttons.GetArrayElementAtIndex(i).objectReferenceValue = options[i];
             labelProps.GetArrayElementAtIndex(i).objectReferenceValue = labels[i];
         }
-
-        WriteQuestionPool(so);
 
         so.ApplyModifiedPropertiesWithoutUndo();
         return quiz;
@@ -1350,7 +1375,7 @@ public static class ASRS_Module1_Builder
         Debug.Log("[ASRS][Module1][Build] Quiz updated: 6 multiple-choice questions (3 asked at random, answers shuffled) + 1 rack-cell question asked last; pass mark 3 of 4. Save the scene.", quiz);
     }
 
-    private static void WriteQuestion(SerializedProperty q, string prompt, string[] options, int correct, string explanation, bool cellQuestion, string cellTableId)
+    public static void WriteQuestion(SerializedProperty q, string prompt, string[] options, int correct, string explanation, bool cellQuestion, string cellTableId)
     {
         q.FindPropertyRelative("prompt").stringValue = prompt;
         SerializedProperty opts = q.FindPropertyRelative("options");

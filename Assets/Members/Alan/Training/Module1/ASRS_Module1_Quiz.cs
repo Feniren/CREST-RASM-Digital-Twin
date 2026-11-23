@@ -22,8 +22,10 @@ using UnityEngine.UI;
 // from what the rack actually stores, or the one in Cell Table Id — and
 // accepts any cell holding that same material.
 //
-// Separate from Quiz_Manager (the "replay the steps in order" quiz used by
-// Module 2), which this neither uses nor changes.
+// Module 2 uses this same quiz (built by ASRS_Module2_Builder) with its own
+// question pool and no rack-cell questions. Separate from Quiz_Manager (the
+// older "replay the steps in order" quiz), which this neither uses nor
+// changes.
 public class ASRS_Module1_Quiz : ASRS_Module1_Step_Feature
 {
     [Serializable]
@@ -43,6 +45,8 @@ public class ASRS_Module1_Quiz : ASRS_Module1_Step_Feature
 
     [Header("Step")]
     [SerializeField] private string quizActionId = "M1_QuizPassed";
+    [Tooltip("Named in the pass message: \"Press Continue to finish <this>.\"")]
+    [SerializeField] private string moduleName = "Module 1";
 
     [Header("Questions (pool)")]
     [SerializeField] private Question[] questions = new Question[0];
@@ -327,7 +331,7 @@ public class ASRS_Module1_Quiz : ASRS_Module1_Step_Feature
         ASRS_Module1_UI.SetText(counterText, "Result");
         ASRS_Module1_UI.SetText(questionText, $"You scored {session.Score} out of {AskedCount}.");
         ASRS_Module1_UI.SetText(feedbackText, passed
-            ? $"<color=#66FF88>Passed</color> — {EffectivePassMark} or more correct. Press Continue to finish Module 1."
+            ? $"<color=#66FF88>Passed</color> — {EffectivePassMark} or more correct. Press Continue to finish {moduleName}."
             : $"<color=#FF8866>Not passed</color> — you need at least {EffectivePassMark} correct. Review the lesson panel and try again — Retry asks a new set of questions.");
 
         ASRS_Module1_UI.SetVisible(continueButton, passed);
