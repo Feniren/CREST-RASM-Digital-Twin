@@ -354,7 +354,8 @@ public static class ASRS_Module1_Builder
     private const string RemovedStation = "StationType_Rack";
 
     private const string OldIntroInstructionsStart = "There are four storage station types";
-    private const string LoadInstructions = "Grab the loaded slotted table with the grip button, carry it to its home cell (highlighted in the rack) and let go of the grip inside the cell. Or point at the table and pull the trigger to put it in your inventory, then point at its home cell and pull the trigger to load it.";
+    // The project's Interact keys (Player_Input → Player/Interact): E on desktop, right trigger in VR.
+    private const string LoadInstructions = "Look at the loaded slotted table and press E to put it in your inventory (VR: pull the right trigger). Then look at its home cell, outlined in the rack, and press E again to load it — only while a slotted table is in your inventory. In VR you can also grab it with the grip and let go of it inside the cell.";
     private const string OldPointerLoadInstructions = "Point at the loaded slotted table and pull the trigger to put it in your inventory.";
     private const string OldInspectInstructions = "Point at any storage cell in the rack and press the trigger to inspect it.";
     private const string InspectInstructions = "Aim your hand's ray at any storage cell in the rack — it turns solid white over a cell — and pull the index-finger trigger (left hand recommended; on desktop, aim with the screen centre and left-click).";
@@ -436,7 +437,8 @@ public static class ASRS_Module1_Builder
     //    to Media, so its picture still shows and the step's text comes back
     //    (and the "station type n of N" count drops back to three);
     //  - the ASRS step's text ended in a stray quote;
-    //  - the Load the ASRS step's text is reworded.
+    //  - the Load the ASRS step's text is reworded, and its instructions
+    //    name the project's Interact keys (E / right trigger).
     // Safe to re-run.
     [MenuItem("ASRS/Module 1/Fix Welcome, 72-Slot And Step Text")]
     public static void FixStepTextInScene()
@@ -510,6 +512,18 @@ public static class ASRS_Module1_Builder
                 info.stringValue = LoadAsrsInfo;
                 changed++;
                 Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: Load the ASRS text reworded.", sequenceManager);
+            }
+
+            // 5c. Load the ASRS instructions name the project's Interact keys
+            //     (E / right trigger) instead of the old trigger pointer.
+            SerializedProperty loadInstructions = step.FindPropertyRelative("instructionsText");
+            if (step.FindPropertyRelative("requiredActionId").stringValue == LoadAsrsId
+                && loadInstructions.stringValue != LoadInstructions
+                && loadInstructions.stringValue.Contains("pull the trigger"))
+            {
+                loadInstructions.stringValue = LoadInstructions;
+                changed++;
+                Debug.Log($"[ASRS][Module1][Build] Step {i + 1}: Load the ASRS instructions now use E (VR: right trigger).", sequenceManager);
             }
         }
 
@@ -852,6 +866,9 @@ public static class ASRS_Module1_Builder
     {
         step.FindPropertyRelative("title").stringValue = def.Title;
         step.FindPropertyRelative("targets").arraySize = 0;
+        SerializedProperty anyTarget = step.FindPropertyRelative("anyTargetCompletes");
+        if (anyTarget != null)
+            anyTarget.boolValue = false;
         step.FindPropertyRelative("infoText").stringValue = def.Info;
         step.FindPropertyRelative("instructionsText").stringValue = def.Instructions;
         step.FindPropertyRelative("RequiredOccupiedTable").objectReferenceValue = null;

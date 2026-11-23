@@ -2,8 +2,8 @@
 
 **Project:** Unity SmartCIM 4.0 ASRS
 **Module:** M1, What Is ASRS? (Conceptual Overview)
-**Review date:** 2026-11-21 (re-review; first review 2026-10-30 at `bf5b17d`)
-**Unity scene / branch / commit:** `Assets/Scenes/ASRSModule1.unity` / `Station1Rack` / `8c98d33` plus uncommitted working-tree changes
+**Review date:** 2026-11-22 (third pass; earlier reviews 2026-10-30 at `bf5b17d` and 2026-11-21)
+**Unity scene / branch / commit:** `Assets/Scenes/ASRSModule1.unity` / `Station1Rack` / after the `main` merge `04d3e31`
 **Reviewer:** Claude (file review of scripts, prefabs, assets and the serialized scene; compile-checked outside Unity)
 
 > **How this was answered:** this is a file review. A box is **checked** when the functionality exists in the scripts and
@@ -14,12 +14,13 @@
 > - **CHANGED BY DESIGN**: the build deliberately differs from the original requirement. The item is reworded to match
 >   the decision and then checked, with the original requirement noted.
 
-> **One editor step before sign-off.** The scene-data fixes for BUG-1, BUG-2 and the text fixes ship as a builder
-> command, so the scene file isn't hand-edited. Open `ASRSModule1.unity`, run
-> **ASRS → Module 1 → Fix Welcome, 72-Slot And Step Text**, then save the scene. The command is safe to re-run, and
-> **Validate Scene** now warns if any step still has its own text hidden by a Station Type.
+> **Scene data comes from builder commands**, so the scene file is never hand-edited. Both commands are safe to re-run:
+> - **ASRS → Module 1 → Fix Welcome, 72-Slot And Step Text** fixes the step text and the Load step's E-key instructions.
+> - **ASRS → Wire All Door Handles (Prefab + Module 1 Door Step)** wires the prefab's four door handles and step 16.
+>
+> **Validate Scene** warns if a step's own text is hidden by a Station Type.
 
-### Step sequence (after the fix command)
+### Step sequence
 
 | # | Step | Action ID | Advances on |
 |---|---|---|---|
@@ -29,14 +30,35 @@
 | 4 | Carousel (video) | — | Next |
 | 5–10 | Material Flow 1–6 (diagram in the media box) | `M1_Flow_1`…`M1_Flow_6` | Next |
 | 11 | This Scene: 72 Slots (ASRS picture in the media box) | — | Next |
-| 12–16 | Real parts: slotted table → RFID tag → epoxy block → ASRS unit → door handle | — | Part pointed at and selected |
+| 12–15 | Real parts: slotted table → RFID tag → epoxy block → ASRS unit | — | Part pointed at and selected |
+| 16 | Open a rack door: any of the 4 door handles | — | Any handle used; its door opens |
 | 17 | Inspect the Storage Cells | `M1_InspectCells` | 3 distinct cells |
 | 18 | Find the Material | `M1_IdentifyMaterial` | Correct material picked |
-| 19 | Load the slotted table into the ASRS (kept by design) | `LoadASRS` | Table loaded into its home cell |
+| 19 | Load the slotted table into the ASRS (kept by design) | `LoadASRS` | E on the table, then E on its home cell (or VR grip-carry) |
 | 20 | Module 1 Check (quiz) | `M1_QuizPassed` | Pass, then Continue |
 
-**Score:** 57 of 62 items checked. Of the 5 unchecked: 2 are TODO (no menu entry; work not committed) and 3 are NOT
-FILE-VERIFIABLE (video on the headset, runtime Console, Quest 3 interaction).
+**Score:** 58 of 63 items checked. Of the 5 unchecked: 2 are TODO (step images still missing from the scene; no menu
+entry) and 3 are NOT FILE-VERIFIABLE (video on the headset, runtime Console, Quest 3 interaction). All other functionality
+has been play-tested in the editor by the module owner.
+
+### What changed on 2026-11-22
+
+- **Epoxy hint fixed.** The `(D)` epoxy block's Animator (`Item_Epoxy_Block.controller`, Write Defaults on) pinned the
+  block in place, so the hint couldn't fly it up. `Hint_PartShowcase` now pauses the part's Animators while it's shown.
+- **Load step uses the project's Interact key.** Pressing E (VR: right trigger) on the slotted table puts it in the
+  inventory, and E on its home cell loads it. This is the same `Player_Input → Player/Interact` binding the project uses
+  to pick up an epoxy block. Aiming matches `Player_Controller.Interact` (straight ahead from the camera). VR grip-carry
+  still works.
+- **All four door handles work.** In `ASRS Variant 1.prefab`, each handle opens its own door:
+  - 36 side: the existing `LeftDoorHinge` / `RightDoorHinge` animations.
+  - U side: new `LeftDoorHingeU` / `RightDoorHingeU` animations in `Assets/Members/Alan/DoorAnimations`, with the same
+    timing as the 36 doors.
+  - The U handles' unused drag script was replaced by the click select the 36 handles use.
+  - `RightHingeJointU` no longer rides on the left U door.
+  - Applies to ASRSModule1, ASRSModule2 and RackmovementTest.
+- **Door step accepts any handle.** Step 16 targets all four handles, and using any one completes it (new per-step
+  option **Any Target Completes**). The project's own click on a handle also counts.
+- **`LeftDoorClose.anim` fixed.** A stray keyframe at 1.07 s swung the left 36 door to the wrong side while closing.
 
 ### What changed since the 2026-10-30 review
 
@@ -109,8 +131,9 @@ FILE-VERIFIABLE (video on the headset, runtime Console, Quest 3 interaction).
 
 - [x] Physical rack loading. **CHANGED BY DESIGN** (was: "removed from the Module 1 sequence"). The product owner chose
   to keep `LoadASRS` as step 19. There are two ways to complete it:
-  - **Pointer:** point at `SlottedTableSingleBuffer (U)` (TableID 050001) to put it in the inventory, then point at
-    cell 050001. Loading is only allowed while a slotted table is in the inventory.
+  - **Project Interact key:** look at `SlottedTableSingleBuffer (U)` (TableID 050001) and press E (VR: right trigger)
+    to put it in the inventory, then look at cell 050001 and press E again. Loading is only allowed while a slotted
+    table is in the inventory.
   - **VR hand:** grip-grab the table, then let go inside the cell.
 
   The old `LoadSlottedTable` (load epoxy block) step stays removed.
@@ -183,12 +206,13 @@ FILE-VERIFIABLE (video on the headset, runtime Console, Quest 3 interaction).
 - [ ] VR ray interactions and world-space UI work on Quest 3. **NOT FILE-VERIFIABLE.**
 - [x] Other ASRS controls and modules still work. The `SequenceManager` changes are additive, marker steps still work for
   Module 2, and the shared scripts are untouched.
-- [x] Desktop-only changes are reconciled with the laptop/GitHub branch. Work is on `Station1Rack`. Before committing,
-  review the unrelated working-tree changes (`Mat_MachinedAluminum.mat`, `OpenXRPackageSettings.asset`,
-  `CREST-RASM-Digital-Twin.slnx`) and decide whether they belong in the commit.
-- [ ] Final scene, prefab and required asset changes are committed and backed up. **TODO.** Roughly 1,100 lines of
-  Module 1 work plus three new scripts (`Lesson_Part_Pointer`, `ASRS_Quiz_Draw`, `XR_Right_Grip_Release`) are
-  uncommitted. Commit them after running the fix command and saving the scene.
+- [x] Desktop-only changes are reconciled with the laptop/GitHub branch. Work is on `Station1Rack`, with `main` merged
+  in (`04d3e31`). Unity's automatic changes (`Mat_MachinedAluminum.mat`, `OpenXRPackageSettings.asset`,
+  `CREST-RASM-Digital-Twin.slnx`) and another member's `Bootstrap.unity` are left out of the Module 1 commits.
+- [x] Final scene, prefab and required asset changes are committed and backed up (pushed to `Station1Rack`).
+- [ ] Every lesson step that should show a picture has one in the scene. **TODO.** The pictures that exist are tracked
+  in git (`Training/StationTypes/Images`). `StationType_DoorHandle` (step 16) has no image yet, and the remaining step
+  images still need to be added to the scene. The Carousel uses its video instead.
 
 ## D. Verification notes / bugs / changes needed
 
@@ -200,12 +224,14 @@ FILE-VERIFIABLE (video on the headset, runtime Console, Quest 3 interaction).
 | Material flow | Yes | Six conceptual steps | Steps[4–9] `M1_Flow_1…6` |
 | Slot selection | Yes | Read-only in Inspect / Identify. Desktop aims from the screen centre | `Module1_Features/RackCellInspector` |
 | Part identification | Yes | Runtime material, wrong-pick feedback, single completion | RackCellInspector `identifyReferenceTableId: 010001` |
-| Rack loading | Yes (by design) | `LoadASRS` kept: pointer and VR-hand routes, home cell 050001 | Steps[18] `LoadASRS`; `ASRS_Rack_Cell_Inspector` |
+| Rack loading | Yes (by design) | `LoadASRS` kept: E / right-trigger (project Interact) and VR grip routes, home cell 050001 | Steps[18] `LoadASRS`; `ASRS_Rack_Cell_Inspector` |
+| Rack doors | Yes | All 4 handles open their own door. Step 16 completes on any handle | `ASRS Variant 1.prefab`; `DoorAnimations/`; Steps[15] |
+| Step images | **No (TODO)** | Pictures not all in the scene yet. Door Handle has no image | `Training/StationTypes/*.asset` → Image |
 | Pallet animation | Yes | Glides one stage per Next. Replay on flow steps 2–6 | `ASRS_Pallet_Circulation_Diagram` |
 | Quiz | Yes | 3 random of 6 plus 1 rack-cell question, pass 3/4, shuffled answers | `Module1_Features/Module1Quiz` |
 | End-to-end / Quest 3 | Partly | Desktop flow complete in the files. Quest behaviour NOT FILE-VERIFIABLE | — |
 
-\* After running **ASRS → Module 1 → Fix Welcome, 72-Slot And Step Text** and saving the scene.
+\* Scene data applied through the builder commands listed at the top.
 
 ## E. Program summary prerequisites
 

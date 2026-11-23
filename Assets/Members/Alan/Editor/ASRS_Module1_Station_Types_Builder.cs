@@ -126,6 +126,9 @@ public static class ASRS_Module1_Station_Types_Builder
     private static void SetIntroStep(SerializedProperty step, ASRS_Station_Type station, string infoText, string instructionsText)
     {
         step.FindPropertyRelative("targets").arraySize = 0;
+        SerializedProperty anyTarget = step.FindPropertyRelative("anyTargetCompletes");
+        if (anyTarget != null)
+            anyTarget.boolValue = false;
         step.FindPropertyRelative("infoText").stringValue = infoText;
         step.FindPropertyRelative("instructionsText").stringValue = instructionsText;
         step.FindPropertyRelative("RequiredOccupiedTable").objectReferenceValue = null;

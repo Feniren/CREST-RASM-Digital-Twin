@@ -61,6 +61,8 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     [Tooltip("The loose lesson table. Empty = the table on the step that waits for 'LoadSlottedTable' (Required Loaded Slotted Table).")]
     [SerializeField] private Item_Slotted_Table lessonTable;
     [SerializeField] private string loadTableStepActionId = "LoadSlottedTable";
+    [Tooltip("On = the Load step uses the project's own Interact action (Player_Input → Player/Interact: E on desktop, the right trigger in VR), aimed like Player_Controller.Interact — straight ahead from the camera. E on the table puts it in the inventory, E on its home cell loads it. Off = the inspector's own trigger / left-click pointer.")]
+    [SerializeField] private bool useProjectInteract = true;
 
     [Header("Load the ASRS (by hand, VR)")]
     [Tooltip("The trainee can grab the lesson table with the grip, carry it to its home cell and let go inside the cell to load it.")]
@@ -165,6 +167,16 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         leftTrigger.performed += _ => SelectAlong(HandRay(leftHand));
         rightTrigger.performed += _ => SelectAlong(HandRay(rightHand));
         mouseClick.performed += _ => { if (!XRActive) SelectAlong(ScreenCentreRay()); };
+
+        // The project's own key bindings (Assets/Input/Player_Input), as a
+        // separate instance: Player_Controller keeps its copy private, and a
+        // second instance reads the same keys without touching it.
+        if (useProjectInteract)
+        {
+            projectInput = new Player_Input();
+            projectInput.Player.Interact.performed += OnProjectInteract;
+            interactKey = KeyboardKeyOf(projectInput.Player.Interact);
+        }
     }
 
     protected override void OnDestroy()
@@ -173,6 +185,7 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         leftTrigger?.Dispose();
         rightTrigger?.Dispose();
         mouseClick?.Dispose();
+        projectInput?.Dispose();
         if (allCellsMaterial != null) Destroy(allCellsMaterial);
         if (pointingMaterial != null) Destroy(pointingMaterial);
     }
@@ -183,12 +196,22 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     private void Update()
     {
         if (mode == Mode.Load)
+        {
+            AdoptSnapshotIfTableDestroyed();
             UpdateHandCarry();
+        }
 
         if (targetContainer == null || !targetContainer.activeSelf)
             return;
 
-        if (XRActive)
+        if (UsesProjectInteract)
+        {
+            // Show what E / the right trigger will act on: straight ahead
+            // from the camera, the way Player_Controller.Interact aims.
+            hoveredByLeft = PointBox(leftPointBox, Pick(InteractRay()));
+            hoveredByRight = PointBox(rightPointBox, null);
+        }
+        else if (XRActive)
         {
             hoveredByLeft = PointBox(leftPointBox, Pick(HandRay(leftHand)));
             hoveredByRight = PointBox(rightPointBox, Pick(HandRay(rightHand)));
@@ -206,11 +229,11 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
             string text;
             if (mode == Mode.Load)
                 text = tableHeld ? $"Carrying the slotted table — let go of the grip inside cell <b>{(lessonTable != null ? lessonTable.TableID : "?")}</b>."
-                     : hovered == null ? "Aim at the slotted table or an outlined empty cell — what you point at lights up blue."
-                     : hovered == tableTarget ? (XRActive
-                         ? "Pointing at the loaded <b>slotted table</b> — pull the trigger to put it in your inventory, or reach out and grab it with the grip."
-                         : "Pointing at the loaded <b>slotted table</b> — pull the trigger to put it in your inventory.")
-                     : $"Pointing at empty cell <b>{hovered.TableId}</b> — pull the trigger to load the template here.";
+                     : hovered == null ? $"{AimVerb} the slotted table or an outlined empty cell — what you're aiming at lights up blue."
+                     : hovered == tableTarget ? (XRActive && allowHandInsert
+                         ? $"Aiming at the loaded <b>slotted table</b> — {InteractVerb} to put it in your inventory, or reach out and grab it with the grip."
+                         : $"Aiming at the loaded <b>slotted table</b> — {InteractVerb} to put it in your inventory.")
+                     : $"Aiming at empty cell <b>{hovered.TableId}</b> — {InteractVerb} to load the template here.";
             else
                 text = hovered != null
                     ? $"Pointing at cell <b>{hovered.TableId}</b> — pull the trigger to select it."
@@ -258,6 +281,10 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
     private void SelectAlong(Ray? ray)
     {
+        // The Load step listens to the project's Interact instead.
+        if (UsesProjectInteract)
+            return;
+
         ASRS_Rack_Cell_Target cell = Pick(ray);
         if (cell == null || !debouncer.Accept())
             return;
@@ -345,15 +372,97 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     private GameObject snapshotHolder;           // inactive copy, in case the table is destroyed some other way
     private Item_Slotted_Table snapshotTable;
 
-    private const string InventoryHint = "Point at the loaded slotted table and pull the trigger to put it in your inventory.";
+    private string InventoryHint => $"{AimVerb} the loaded slotted table and {InteractVerb} to put it in your inventory.";
 
     private bool tableHeld;                      // the lesson table is in a VR hand right now
+
+    // ------------------------------- project Interact (E / right trigger)
+
+    private Player_Input projectInput;
+    private string interactKey = "E";
+
+    private bool UsesProjectInteract => mode == Mode.Load && projectInput != null;
+    private string AimVerb => projectInput != null ? "Look at" : "Point at";
+    private string InteractVerb => projectInput == null ? "pull the trigger"
+                                 : XRActive ? "pull the right trigger"
+                                 : $"press <b>{interactKey}</b>";
+
+    // The keyboard key bound to an action, as shown to the player ("E").
+    private static string KeyboardKeyOf(InputAction action)
+    {
+        foreach (InputBinding binding in action.bindings)
+        {
+            string path = binding.effectivePath;
+            if (!string.IsNullOrEmpty(path) && path.StartsWith("<Keyboard>"))
+                return InputControlPath.ToHumanReadableString(path, InputControlPath.HumanReadableStringOptions.OmitDevice).ToUpperInvariant();
+        }
+        return "E";
+    }
+
+    // Same ray Player_Controller.Interact casts: from the player's camera,
+    // straight ahead (on desktop the screen centre, in VR where you look).
+    private Ray? InteractRay()
+    {
+        Entity_Player player = FindFirstObjectByType<Entity_Player>();
+        Camera viewer = player != null && player.CameraReference != null ? player.CameraReference : Camera.main;
+        return viewer != null ? new Ray(viewer.transform.position, viewer.transform.forward) : (Ray?)null;
+    }
+
+    private void OnProjectInteract(InputAction.CallbackContext context)
+    {
+        if (!UsesProjectInteract || completionReported)
+            return;
+
+        Ray? ray = InteractRay();
+        if (ray == null)
+            return;
+
+        // If Player_Controller.Interact's own raycast lands on the lesson
+        // table, the project picks it up itself (Item_Parent.Interact: into
+        // the inventory, object destroyed) — don't add it a second time;
+        // Update swaps in the snapshot copy.
+        if (ProjectInteractTakesLessonTable(ray.Value))
+            return;
+
+        ASRS_Rack_Cell_Target cell = Pick(ray);
+        if (cell == null || !debouncer.Accept())
+            return;
+
+        HandleLoadPick(cell);
+    }
+
+    private bool ProjectInteractTakesLessonTable(Ray ray)
+    {
+        if (lessonTable == null || !Physics.Raycast(ray, out RaycastHit hit, 10f, 1))
+            return false;
+
+        Item_Parent item = hit.collider.GetComponentInParent<Item_Parent>();
+        return item == lessonTable && item.Pickup;
+    }
+
+    // The lesson table was destroyed during the step — the project's
+    // Interact put it in the inventory. Carry on with the copy taken when
+    // the step began (same TableID, same block on it).
+    private void AdoptSnapshotIfTableDestroyed()
+    {
+        if (ReferenceEquals(lessonTable, null) || lessonTable != null || snapshotTable == null || completionReported)
+            return;
+
+        lessonTable = snapshotTable;
+        stowedTable = snapshotTable;
+        tableHeld = false;
+        ShowTableTarget(false);
+        RefreshLoadPrompt();
+        ASRS_Module1_UI.SetText(feedbackText, "<color=#66FF88>Slotted table added to your inventory.</color>");
+        ASRS_Module1_Log.Info(LogTag, $"Load: lesson table {lessonTable.TableID} picked up by the project's Interact — using the step's copy of it ({InventoryCount()} in inventory).", this);
+    }
 
     private void BeginLoad()
     {
         mode = Mode.Load;
         stowedTable = null;
         tableHeld = false;
+        projectInput?.Player.Interact.Enable();
 
         if (lessonTable == null)
             lessonTable = FindLessonTable();
@@ -383,6 +492,7 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
     private void EndLoad()
     {
         tableHeld = false;
+        projectInput?.Player.Interact.Disable();
         foreach (ASRS_Rack_Cell_Target cell in targets)
             cell.gameObject.SetActive(true);
 
@@ -390,8 +500,14 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
 
         // A table still "in the inventory" when the step ends (it shouldn't
         // be — the step only ends by loading it) comes back where it was.
+        // The snapshot copy is moved out of its holder first, which is
+        // destroyed below.
         if (stowedTable != null)
+        {
+            if (stowedTable == snapshotTable)
+                stowedTable.transform.SetParent(null, true);
             stowedTable.gameObject.SetActive(true);
+        }
         stowedTable = null;
 
         if (snapshotHolder != null)
@@ -699,9 +815,9 @@ public class ASRS_Rack_Cell_Inspector : ASRS_Module1_Step_Feature
         int count = InventoryCount();
         ASRS_Module1_UI.SetText(promptText, count < 1
             ? (XRActive && allowHandInsert
-                ? $"Grab the slotted table with the grip and let go of it inside its home cell <b>{home}</b> — or point at it and pull the trigger to put it in your inventory."
+                ? $"Grab the slotted table with the grip and let go of it inside its home cell <b>{home}</b> — or {AimVerb.ToLowerInvariant()} it and {InteractVerb} to put it in your inventory."
                 : $"Slotted tables in inventory: 0.  {InventoryHint}")
-            : $"Slotted tables in inventory: {count}.  Point at the template's home cell <b>{home}</b> (outlined) and pull the trigger to load it.");
+            : $"Slotted tables in inventory: {count}.  {AimVerb} the template's home cell <b>{home}</b> (outlined) and {InteractVerb} to load it.");
     }
 
     private void TakeSnapshot()

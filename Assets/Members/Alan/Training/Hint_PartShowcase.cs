@@ -111,6 +111,21 @@ public class Hint_PartShowcase : MonoBehaviour
             }
         }
 
+        // An Animator that animates the part's own transform pins it in place
+        // every frame — even idle: a "Write Defaults" state with no clip still
+        // writes the controller's default position (e.g. Item_Epoxy_Block (D)
+        // with Item_Epoxy_Block.controller). Paused for the round trip, state
+        // kept, so the part can actually fly up.
+        List<(Animator animator, bool keepState)> pausedAnimators = new List<(Animator, bool)>();
+        foreach (Animator animator in part.GetComponentsInChildren<Animator>(true))
+        {
+            if (!animator.enabled)
+                continue;
+            pausedAnimators.Add((animator, animator.keepAnimatorStateOnDisable));
+            animator.keepAnimatorStateOnDisable = true;
+            animator.enabled = false;
+        }
+
         // Detach so the flight math stays in plain world space, unaffected
         // by whatever the original parent is doing underneath it.
         part.SetParent(null, true);
@@ -160,6 +175,14 @@ public class Hint_PartShowcase : MonoBehaviour
         foreach (Rigidbody body in frozenBodies)
             if (body != null)
                 body.isKinematic = false;
+
+        foreach ((Animator animator, bool keepState) in pausedAnimators)
+        {
+            if (animator == null)
+                continue;
+            animator.enabled = true;
+            animator.keepAnimatorStateOnDisable = keepState;
+        }
 
         IsShowcasing = false;
         activeRoutine = null;

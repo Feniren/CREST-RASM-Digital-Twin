@@ -18,6 +18,9 @@ public class SequenceManager : MonoBehaviour
         [Tooltip("What the trainee must select on this step — the step advances once every one has been selected. Drag in the REAL part (slotted table, RFID tag, rack, door handle…): it's picked by pointing at it with the trigger / left-click, needs no collider, and is never hidden. A legacy Marker_Interactable box still works too (shown only on its step, hidden at start).")]
         public GameObject[] targets;
 
+        [Tooltip("Selecting ANY one of the targets completes the step, instead of every one of them — e.g. a door step whose targets are all of the rack's door handles.")]
+        public bool anyTargetCompletes;
+
         [Tooltip("Shown as soon as this step begins, at the same time its targets become visible.")]
         [TextArea(2, 4)]
         public string infoText;
@@ -104,6 +107,9 @@ public class SequenceManager : MonoBehaviour
     // Targets that are real parts (no Marker_Interactable): picked by
     // pointing at the part itself through Lesson_Part_Pointer.
     private readonly List<GameObject> pendingParts = new List<GameObject>();
+    // Door handles among the current step's parts — using one (the
+    // project's own select on it) counts as picking it.
+    private readonly List<Door_Handle_Toggle> watchedHandles = new List<Door_Handle_Toggle>();
     private Lesson_Part_Pointer partPointer;
     private bool waitingForTable;
     private bool shownInstructions;
@@ -159,6 +165,23 @@ public class SequenceManager : MonoBehaviour
         foreach (Marker_Interactable marker in pendingMarkers)
             if (marker != null)
                 marker.Selected -= OnMarkerSelected;
+        UnwatchHandles();
+    }
+
+    private void UnwatchHandles()
+    {
+        foreach (Door_Handle_Toggle handle in watchedHandles)
+            if (handle != null)
+                handle.Used -= OnHandleUsed;
+        watchedHandles.Clear();
+    }
+
+    // The trainee opened/closed a door with its handle (left-click,
+    // VR trigger — the project's Interactable_Select) — that's the
+    // interaction the step asks for, even if the lesson pointer missed.
+    private void OnHandleUsed(Door_Handle_Toggle handle)
+    {
+        PickPart(handle.gameObject, openDoor: false);
     }
 
     private void OnMarkerSelected(Marker_Interactable marker, InteractionType interactionType)
@@ -169,15 +192,46 @@ public class SequenceManager : MonoBehaviour
         pendingMarkers.Remove(marker);
         marker.Selected -= OnMarkerSelected;
 
+        if (CurrentStepAnyTarget)
+            ClearPendingTargets();
+
         TryCompleteStep();
     }
 
+    private bool CurrentStepAnyTarget => currentIndex >= 0 && currentIndex < steps.Length && steps[currentIndex].anyTargetCompletes;
+
+    // "Any one target completes the step": drop the rest.
+    private void ClearPendingTargets()
+    {
+        foreach (Marker_Interactable other in pendingMarkers)
+            if (other != null)
+                other.Selected -= OnMarkerSelected;
+        pendingMarkers.Clear();
+        pendingParts.Clear();
+    }
+
     private void OnPartPicked(GameObject part)
+    {
+        PickPart(part, openDoor: true);
+    }
+
+    private void PickPart(GameObject part, bool openDoor)
     {
         if (!pendingParts.Remove(part))
             return; // not one of the current step's parts
 
         Debug.Log($"{logTag} Part '{part.name}' selected on step {currentIndex + 1}.", part);
+
+        // Picked with the lesson pointer: a door handle opens its door too.
+        // The project's own select (Player_Controller.LeftClick →
+        // Interactable_Select) usually toggles it on this same press, so it's
+        // checked a frame later and only opened if nothing else moved it.
+        Door_Handle_Toggle door = openDoor ? part.GetComponent<Door_Handle_Toggle>() : null;
+        if (door != null)
+            StartCoroutine(OpenDoorNextFrame(door, door.IsOpen));
+
+        if (CurrentStepAnyTarget)
+            ClearPendingTargets();
 
         if (pendingParts.Count == 0)
             PartPointer.Clear();
@@ -185,6 +239,16 @@ public class SequenceManager : MonoBehaviour
             PartPointer.SetParts(pendingParts, OnPartPicked);
 
         TryCompleteStep();
+    }
+
+    private System.Collections.IEnumerator OpenDoorNextFrame(Door_Handle_Toggle door, bool wasOpen)
+    {
+        yield return null;
+        if (door != null && door.IsOpen == wasOpen && !door.IsOpen)
+        {
+            door.Open();
+            Debug.Log($"{logTag} Opened the door for handle '{door.name}'.", door);
+        }
     }
 
     private void TryCompleteStep()
@@ -210,6 +274,7 @@ public class SequenceManager : MonoBehaviour
 
     private void ClearPendingParts()
     {
+        UnwatchHandles();
         pendingParts.Clear();
         if (partPointer != null)
             partPointer.Clear();
@@ -619,6 +684,13 @@ public class SequenceManager : MonoBehaviour
 
                 if (!pendingParts.Contains(target))
                     pendingParts.Add(target);
+
+                Door_Handle_Toggle handle = target.GetComponent<Door_Handle_Toggle>();
+                if (handle != null && !watchedHandles.Contains(handle))
+                {
+                    handle.Used += OnHandleUsed;
+                    watchedHandles.Add(handle);
+                }
                 continue;
             }
 

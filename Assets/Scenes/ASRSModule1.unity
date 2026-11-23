@@ -2419,6 +2419,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 108, y: 6.5, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &610904180 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1561671272768535886, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+  m_PrefabInstance: {fileID: 387784165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &610904181 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4518274079982231464, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+  m_PrefabInstance: {fileID: 387784165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &610904182 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 887474425059621587, guid: a5d7900fa1ef34641921012402e8c6ce, type: 3}
+  m_PrefabInstance: {fileID: 387784165}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &666719870 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5848687157432659005, guid: 04c3eef80f6aea94ab5bb5168f878ed2, type: 3}
@@ -5183,6 +5198,11 @@ MonoBehaviour:
   loadActionId: LoadASRS
   lessonTable: {fileID: 2134840782}
   loadTableStepActionId: LoadSlottedTable
+  useProjectInteract: 1
+  allowHandInsert: 1
+  handDropTolerance: 1.6
+  stopTableAnimatorOnLoad: 1
+  fixRightGripRelease: 1
   materialNotes:
   - materialName: Epoxy Block
     description: "Raw epoxy stock \u2014 the standard part loaded onto templates
@@ -5203,6 +5223,8 @@ MonoBehaviour:
     description: 
   - materialName: Stout Gold Tube
     description: 
+  fitToSlottedTable: 1
+  tableFitPadding: 1.03
   fallbackCellSize: {x: 0.2, y: 0.06, z: 0.2}
   targetPadding: 1.15
   highlightMaterial: {fileID: 2100000, guid: 073e58a762f985047a1f1ae6d13df576, type: 2}
@@ -5282,6 +5304,7 @@ MonoBehaviour:
   steps:
   - title: 'Welcome: What Is an ASRS?'
     targets: []
+    anyTargetCompletes: 0
     infoText: "Welcome to Module 1. An Automated Storage and Retrieval System (ASRS)
       stores parts in numbered, addressable cells and uses a robot to put them away
       and bring them back on demand \u2014 so the manufacturing cell always knows
@@ -5296,12 +5319,13 @@ MonoBehaviour:
     passiveAction: 0
     hintTarget: {fileID: 0}
     advanceOnNext: 1
-    stationType: {fileID: 11400000, guid: dea76babc55540e994c3ac7fed8a0568, type: 2}
+    stationType: {fileID: 0}
     narration: {fileID: 0}
-    media: {fileID: 0}
+    media: {fileID: 11400000, guid: dea76babc55540e994c3ac7fed8a0568, type: 2}
     largeText: 0
   - title: 
     targets: []
+    anyTargetCompletes: 0
     infoText: 
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
@@ -5316,6 +5340,7 @@ MonoBehaviour:
     largeText: 0
   - title: 
     targets: []
+    anyTargetCompletes: 0
     infoText: 
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
@@ -5330,6 +5355,7 @@ MonoBehaviour:
     largeText: 0
   - title: 
     targets: []
+    anyTargetCompletes: 0
     infoText: 
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
@@ -5344,6 +5370,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 1 of 6: Raw material into storage'
     targets: []
+    anyTargetCompletes: 0
     infoText: "Let's follow one part through the SmartCIM cell. This is a concept
       walkthrough \u2014 the diagram beside you illustrates it; nothing in the real
       rack moves.\n\nRaw materials are loaded into templates, and the loaded templates
@@ -5361,6 +5388,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 2 of 6: Robot retrieval'
     targets: []
+    anyTargetCompletes: 0
     infoText: When a job needs a part, the ASRS robot retrieves the requested template
       from its cell.
     instructionsText: 
@@ -5376,6 +5404,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 3 of 6: Conveyor & PLC routing'
     targets: []
+    anyTargetCompletes: 0
     infoText: The template rides a pallet onto the conveyor. PLC-controlled logic
       routes the pallet to the station that needs it.
     instructionsText: 
@@ -5391,6 +5420,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 4 of 6: Processing stations'
     targets: []
+    anyTargetCompletes: 0
     infoText: "CNC and assembly stations machine and assemble the parts. (Shown as
       a concept \u2014 those stations aren't modelled in this scene.)"
     instructionsText: 
@@ -5406,6 +5436,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 5 of 6: Return conveyor'
     targets: []
+    anyTargetCompletes: 0
     infoText: Processed parts go back onto the conveyor, which carries the pallet
       back toward the ASRS.
     instructionsText: 
@@ -5421,6 +5452,7 @@ MonoBehaviour:
     largeText: 0
   - title: 'Material Flow 6 of 6: Finished goods stored'
     targets: []
+    anyTargetCompletes: 0
     infoText: The completed product is stored back in the ASRS as a finished good,
       ready for the next request.
     instructionsText: 
@@ -5434,8 +5466,9 @@ MonoBehaviour:
     narration: {fileID: 0}
     media: {fileID: 0}
     largeText: 0
-  - title: 
+  - title: 'This Scene: 72 Slots'
     targets: []
+    anyTargetCompletes: 0
     infoText: "The physical SmartCIM ASRS-36u stores 36 templates per unit (6 levels
       \xD7 6 cells). This Unity scene models the larger 72-slot arrangement: two
       36-slot racks, one on each side of the rotating arm."
@@ -5447,13 +5480,14 @@ MonoBehaviour:
     passiveAction: 0
     hintTarget: {fileID: 0}
     advanceOnNext: 1
-    stationType: {fileID: 11400000, guid: 5e3ff94a78cf4e7698391eea6759619f, type: 2}
+    stationType: {fileID: 0}
     narration: {fileID: 0}
-    media: {fileID: 0}
+    media: {fileID: 11400000, guid: 5e3ff94a78cf4e7698391eea6759619f, type: 2}
     largeText: 1
   - title: 
     targets:
     - {fileID: 1204986777}
+    anyTargetCompletes: 0
     infoText: This is the slotted table buffer. It holds pallets temporarily when
       a station isn't ready to receive them yet, preventing a backup in the line.
     instructionsText: 'Please interact with the slotted table shown in front of you
@@ -5471,6 +5505,7 @@ MonoBehaviour:
   - title: 
     targets:
     - {fileID: 254648658}
+    anyTargetCompletes: 0
     infoText: This is the RFID tag on the slotted table. It's what the RFID sensor
       reads to identify this pallet as it passes by. This also helps for indexing
       its position in the storage unit.
@@ -5489,6 +5524,7 @@ MonoBehaviour:
   - title: 
     targets:
     - {fileID: 510069656}
+    anyTargetCompletes: 0
     infoText: "This is the epoxy block \u2014 one of the standard parts used in this
       CIM cell. Its template is shaped specifically to hold this part and no other."
     instructionsText: 'Please interact with the Epoxy Block shown in front of you
@@ -5506,9 +5542,10 @@ MonoBehaviour:
   - title: 
     targets:
     - {fileID: 13218355}
+    anyTargetCompletes: 0
     infoText: "This is the ASRS-36 \u2014 the Automated Storage and Retrieval System.
       It stores loaded templates in a grid of numbered cells and retrieves them again
-      on demand, using the RFID tag to track what's stored where.\"\r\n "
+      on demand, using the RFID tag to track what's stored where."
     instructionsText: Interact with the ASRS unit to continue before you open it
     RequiredOccupiedTable: {fileID: 0}
     RequiredLoadedSlottedTable: {fileID: 0}
@@ -5523,6 +5560,10 @@ MonoBehaviour:
   - title: 
     targets:
     - {fileID: 2089806239}
+    - {fileID: 610904182}
+    - {fileID: 610904181}
+    - {fileID: 610904180}
+    anyTargetCompletes: 1
     infoText: 'Please walk over to the rack, and interact with the door handle. '
     instructionsText: 
     RequiredOccupiedTable: {fileID: 0}
@@ -5537,6 +5578,7 @@ MonoBehaviour:
     largeText: 1
   - title: Inspect the Storage Cells
     targets: []
+    anyTargetCompletes: 0
     infoText: "Aim your hand's ray at any storage cell in the rack \u2014 it turns
       solid white over a cell \u2014 and pull the index-finger trigger (left hand
       recommended; on desktop, aim with the screen centre and left-click). The cell
@@ -5555,6 +5597,7 @@ MonoBehaviour:
     largeText: 0
   - title: Find the Material
     targets: []
+    anyTargetCompletes: 0
     infoText: "Now use the rack's inventory to find a part: select a cell that stores
       the material named on the cell panel. A wrong pick just tells you what that
       cell holds \u2014 nothing in the rack changes."
@@ -5571,14 +5614,14 @@ MonoBehaviour:
     largeText: 0
   - title: 
     targets: []
-    infoText: 'Perform the following action of loading the loaded slotted table into
-      the asrs
-
-'
-    instructionsText: "Point at the loaded slotted table and pull the trigger to
-      put it in your inventory. Then point at its home cell (outlined in the rack)
-      and pull the trigger to load it \u2014 you can only load it while a slotted
-      table is in your inventory. Carrying it in by hand works too."
+    anyTargetCompletes: 0
+    infoText: 'Last hands-on task: load the loaded slotted table into its home cell
+      in the ASRS rack.'
+    instructionsText: "Look at the loaded slotted table and press E to put it in
+      your inventory (VR: pull the right trigger). Then look at its home cell, outlined
+      in the rack, and press E again to load it \u2014 only while a slotted table
+      is in your inventory. In VR you can also grab it with the grip and let go of
+      it inside the cell."
     RequiredOccupiedTable: {fileID: 0}
     RequiredLoadedSlottedTable: {fileID: 0}
     requiredActionId: LoadASRS
@@ -5591,6 +5634,7 @@ MonoBehaviour:
     largeText: 1
   - title: Module 1 Check
     targets: []
+    anyTargetCompletes: 0
     infoText: 'Answer the four questions on the quiz panel: three picked at random,
       then one on the real rack using what you learned with the cell inspector. You
       need at least three correct to pass, and Retry asks a new set of questions.'
@@ -7233,47 +7277,47 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalScale.x
-      value: 109.840034
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalScale.y
-      value: 178.62135
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalScale.z
-      value: 226.9482
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.57860005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.95799994
+      value: 0.972
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.8879
+      value: 0.884
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.49695954
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.49695966
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5030221
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.5030221
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -7281,7 +7325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4023227236405009823, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 90.695
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4368086432513296165, guid: a31d4f28da4e01a4fb2b061c9399a455, type: 3}
       propertyPath: m_Name

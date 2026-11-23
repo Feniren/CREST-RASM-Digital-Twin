@@ -31,12 +31,34 @@ public class Door_Handle_Toggle : MonoBehaviour
 
     private bool isOpen;
 
+    public bool IsOpen => isOpen;
+    public Animator DoorAnimator => doorAnimator;
+
+    // Raised every time the trainee uses this handle (the project's select
+    // on it), e.g. so a lesson step on the handle can complete.
+    public event System.Action<Door_Handle_Toggle> Used;
+
     private void Awake()
     {
         GetComponent<Interactable_Select>().OnInteractBegin.AddListener(Toggle);
     }
 
+    // Opens the door unless it's already open (or opening) — e.g. when a
+    // lesson step completes on this handle.
+    public void Open()
+    {
+        if (!isOpen)
+            Swing();
+    }
+
+    // The handle was selected by the trainee.
     private void Toggle()
+    {
+        Used?.Invoke(this);
+        Swing();
+    }
+
+    private void Swing()
     {
         if (doorAnimator == null)
         {
