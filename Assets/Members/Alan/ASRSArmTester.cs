@@ -56,7 +56,7 @@ public class ASRSArmTester : MonoBehaviour
     [SerializeField] private float searchHomeCornerDelay = 0.3f;
 
     [Header("Manual Travel Bounds (optional)")]
-    [Tooltip("If enabled, this single Z/Y range is used directly for BOTH sides instead of computing limits from the rack's corner slot transforms — simpler and more reliable if you've already measured the real safe travel range yourself (e.g. by jogging to each corner and reading the position off the panel).")]
+    [Tooltip("If enabled, this single Z/Y range is used for BOTH sides instead of each side's fixed range from ASRSLimits — e.g. to try out a different safe travel range without changing the constants.")]
     [SerializeField] private bool useManualTravelBounds = false;
     [SerializeField] private float manualMinZ = 0f;
     [SerializeField] private float manualMaxZ = 0f;
@@ -136,30 +136,15 @@ public class ASRSArmTester : MonoBehaviour
             ApplyTravelLimitsForCurrentSide();
     }
 
-    // Derives the arm's safe Z/Y travel range from the rack's own corner
-    // slots instead of a hand-guessed number — and, critically, recomputes
-    // it fresh for WHICHEVER side is currently faced, rather than measuring
-    // once (at Awake, on SlotsB/U) and reusing a single symmetric ±guess
-    // for both sides forever after.
+    // Gives the arm the Z/Y travel range of WHICHEVER side it currently
+    // faces, every time the side changes (subscribed to AxisArrived above).
+    // The two racks aren't exact mirror images, so each side has its own Z
+    // range; using one side's range for both clipped moves short at the
+    // rack's ends.
     //
-    // That symmetric-guess approach was a deliberate workaround for a real
-    // constraint — at Awake() the rig is still facing U, so SlotsA's own
-    // corners can't be measured through the correct (NonU) rotation frame
-    // yet — but it silently assumed both sides' corners sit at the same
-    // distance from center. If they don't (the rack's real anchor
-    // positions were hand-tuned, not perfectly symmetric), the resulting
-    // clamp is tighter than SlotsA's real extent on at least one axis —
-    // and since MoveZ/MoveY silently clamp, that clips Search Home's
-    // corner-sweep targets short of the actual corner by a fixed amount:
-    // exactly the "constant offset at the boundaries" symptom. Manual
-    // moves toward the middle of the range never hit that ceiling, so they
-    // looked correct.
-    //
-    // Fix: recompute exact (non-symmetric) limits for the CURRENT side
-    // every time the side actually changes (subscribed to AxisArrived
-    // below), so whichever side Search Home/a GP move is about to use
-    // always has its own real measured bounds, not a guess mirrored from
-    // the other side.
+    // The ranges are fixed numbers in ASRSLimits, measured once from every
+    // slot in the prefab (not just the four corners — a few middle slots
+    // sit up to 2 mm further out than the corners).
     private void ApplyTravelLimitsForCurrentSide()
     {
         if (armController == null)
@@ -178,47 +163,17 @@ public class ASRSArmTester : MonoBehaviour
             return;
         }
 
-        // Only U/NonU have their own rack corners to measure against — Safe
-        // Position isn't a rack-facing side, so there's nothing to
-        // recompute for it (the limits from whichever real side was last
-        // faced stay in effect).
-        if (armController.CurrentSide != ASRSArmController.Side.U && armController.CurrentSide != ASRSArmController.Side.NonU)
+        // Only U/NonU are rack sides. Safe Position isn't, so the limits
+        // from whichever real side was last faced stay in effect.
+        ASRSArmController.Side side = armController.CurrentSide;
+        if (side != ASRSArmController.Side.U && side != ASRSArmController.Side.NonU)
             return;
 
-        bool wantsB = armController.CurrentSide == ASRSArmController.Side.U;
-
-        int[] cornerIndices =
-        {
-            0,                                    // col 1, row nearest home
-            Cols - 1,                             // col 6, row nearest home
-            (Rows - 1) * Cols,                     // col 1, row farthest
-            (Rows - 1) * Cols + (Cols - 1)         // col 6, row farthest
-        };
-
-        float minZ = float.MaxValue, maxZ = float.MinValue;
-        float minY = float.MaxValue, maxY = float.MinValue;
-        bool any = false;
-
-        foreach (int index in cornerIndices)
-        {
-            if (!TryComputeSlotDelta(wantsB, index, out float z, out float y))
-                continue;
-
-            any = true;
-            minZ = Mathf.Min(minZ, z);
-            maxZ = Mathf.Max(maxZ, z);
-            minY = Mathf.Min(minY, y);
-            maxY = Mathf.Max(maxY, y);
-        }
-
-        if (!any)
-        {
-            Debug.LogWarning("[ASRS] Could not compute corner travel limits — corner slot transforms not ready.", this);
-            return;
-        }
-
-        armController.SetZYLimits(minZ, maxZ, minY, maxY);
-        Debug.Log($"[ASRS] Travel limits set from {(wantsB ? "SlotsB" : "SlotsA")}'s own corners: Z [{minZ:F2}, {maxZ:F2}]  Y [{minY:F2}, {maxY:F2}]");
+        float minZ = ASRSLimits.MinZFor(side);
+        float maxZ = ASRSLimits.MaxZFor(side);
+        armController.SetZYLimits(minZ, maxZ, ASRSLimits.MinY, ASRSLimits.MaxY);
+        Debug.Log($"[ASRS] Travel limits for the {(side == ASRSArmController.Side.U ? "U side (SlotsB)" : "non-U side (SlotsA)")}: " +
+                  $"Z [{minZ:F4}, {maxZ:F4}]  Y [{ASRSLimits.MinY:F4}, {ASRSLimits.MaxY:F4}]");
     }
 
     private Transform[] LoadSlots(Transform container)

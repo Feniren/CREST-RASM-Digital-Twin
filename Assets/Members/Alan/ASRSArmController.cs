@@ -23,14 +23,16 @@ public class ASRSArmController : MonoBehaviour
     [Header("Rotation (separate from Arm Y — Rotatation's own Animator, plays ArmRotation / ArmRotationBack)")]
     [SerializeField] private Animator rotationAnimator;
 
-    [Header("Manual-move travel limits (offset from home)")]
-    [Tooltip("Z/Y are overwritten automatically at startup by ASRSArmTester.SetZYLimits(), derived from the rack's own corner slots (010001/010006/060001/060006) — these starting values only matter if that hookup is missing. X (depth) isn't part of the slot grid, so it's always manual — tune it to how far the arm can safely extend into a slot.")]
-    [SerializeField] private float minZ = -5f;
-    [SerializeField] private float maxZ = 5f;
-    [SerializeField] private float minY = -5f;
-    [SerializeField] private float maxY = 5f;
-    [SerializeField] private float minX = -2f;
-    [SerializeField] private float maxX = 2f;
+    // Travel limits (offsets from home), from the fixed numbers in
+    // ASRSLimits. The rig starts facing the U side, so Z starts on its
+    // range; ASRSArmTester switches Z to the other side's range after each
+    // rotation (SetZYLimits).
+    private float minZ = ASRSLimits.UMinZ;
+    private float maxZ = ASRSLimits.UMaxZ;
+    private float minY = ASRSLimits.MinY;
+    private float maxY = ASRSLimits.MaxY;
+    private float minX = ASRSLimits.MinX;
+    private float maxX = ASRSLimits.MaxX;
 
     private float? targetZ;
     private float? targetY;
@@ -60,6 +62,15 @@ public class ASRSArmController : MonoBehaviour
     public float OffsetZ => armZ != null ? armZ.localPosition.z - homeZ : 0f;
     public float OffsetY => armY != null ? armY.localPosition.y - homeY : 0f;
     public float OffsetX => armX != null ? armX.localPosition.x - homeX : 0f;
+
+    // Current travel limits (offsets from home), read by DragChainController
+    // to check its chain is long enough for the arm's full travel.
+    public float MinZ => minZ;
+    public float MaxZ => maxZ;
+    public float MinY => minY;
+    public float MaxY => maxY;
+    public float MinX => minX;
+    public float MaxX => maxX;
 
     // The rig starts facing the U side at rest — not NonU — so RotateY(0) is
     // needed before reaching non-U slots, not the other way around.
@@ -159,9 +170,8 @@ public class ASRSArmController : MonoBehaviour
         MoveAxis(armX, ref targetX, Axis.X);
     }
 
-    // Called once by ASRSArmTester at startup, after it loads the rack's slot
-    // grid — derives the safe Z/Y travel range from the rack's own corner
-    // slots instead of a hand-guessed number.
+    // Called by ASRSArmTester at startup and after every rotation, with the
+    // faced side's range from ASRSLimits (or its manual bounds, if set).
     public void SetZYLimits(float newMinZ, float newMaxZ, float newMinY, float newMaxY)
     {
         minZ = newMinZ;
