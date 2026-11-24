@@ -133,7 +133,7 @@ public static class ASRS_Module1_Validator
                 if (string.IsNullOrEmpty(s.stationType.displayName) || string.IsNullOrEmpty(s.stationType.summary))
                     r.Error($"{label}: station type '{s.stationType.name}' has no name or summary.", s.stationType);
                 if (s.stationType.displayName == "Carousel" && s.stationType.video == null)
-                    r.Warn($"{label}: the Carousel has no video assigned — restore Carousel_Overview.mp4 (the card shows its placeholder meanwhile).", s.stationType);
+                    r.Warn($"{label}: the Carousel has no video assigned — restore Carousel_Overview.mp4 (the media box stays hidden meanwhile).", s.stationType);
             }
         }
 

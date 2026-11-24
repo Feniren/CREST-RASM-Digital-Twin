@@ -244,9 +244,55 @@ public class ASRSArmController : MonoBehaviour
         // targets NonU — mapped to "ArmRotation" here (not "ArmRotationBack")
         // so that's the clip that plays first.
         string stateName = targetSide == Side.U ? "ArmRotationBack" : "ArmRotation";
+
+        // Each side clip starts at the OTHER side's pose, so playing it from
+        // Safe Position (-90, between the sides) would snap the arm to that
+        // side on its first frame before swinging back. From Safe, blend
+        // from wherever the arm actually is straight into the clip's final
+        // pose instead — a 90° turn, so half the clip's 180° duration.
+        if (CurrentSide == Side.Safe)
+        {
+            float clipLength = ClipLength(stateName);
+            rotationAnimator.CrossFadeInFixedTime(stateName, clipLength * 0.5f, 0, clipLength);
+            CurrentSide = targetSide;
+            StartCoroutine(LockDuringBlend(clipLength * 0.5f));
+            return;
+        }
+
         rotationAnimator.Play(stateName, 0, 0f);
         CurrentSide = targetSide;
         StartCoroutine(LockDuringRotation(stateName));
+    }
+
+    // Length of the rotation clip played by this state (state and clip share
+    // a name); falls back to the authored 6 s if it can't be found.
+    private float ClipLength(string clipName)
+    {
+        RuntimeAnimatorController controller = rotationAnimator.runtimeAnimatorController;
+        if (controller != null)
+            foreach (AnimationClip clip in controller.animationClips)
+                if (clip != null && clip.name == clipName)
+                    return clip.length;
+
+        return 6f;
+    }
+
+    private IEnumerator LockDuringBlend(float seconds)
+    {
+        isRotating = true;
+
+        // The cross-fade starts on the Animator's next update.
+        yield return null;
+
+        float elapsed = 0f;
+        while (elapsed < seconds || rotationAnimator.IsInTransition(0))
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        isRotating = false;
+        AxisArrived?.Invoke("Rotate");
     }
 
     // Waits on the Animator's own reported progress rather than a fixed

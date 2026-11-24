@@ -56,7 +56,7 @@ public static class ASRS_Module2_Builder
         ("scorbase_home", "", "Search Home"),
         ("manual_movement_used", "", "Manual Movement"),
         ("test_move", "", "Pick and Place: This Side"),
-        ("test_move", "", "Pick and Place: Far Side"),
+        ("test_move_other_side", "", "Pick and Place: Far Side"),
         ("conveyor_returned", "", "Conveyor Round Trip"),
         (QuizId, "", QuizTitle),
     };
@@ -77,7 +77,9 @@ public static class ASRS_Module2_Builder
         Undo.RegisterCompleteObjectUndo(sequenceManager, "Build Module 2");
 
         bool addedQuizStep = EnsureQuizStep(sequenceManager);
+        int pickTexts = UpdatePickAndPlaceSteps(sequenceManager);
         int titled = FillStepTitles(sequenceManager);
+        int realParts = UseRealParts(sequenceManager);
 
         // The Module 1 Lesson Panel in place of the AboutCanvas.
         Lesson_Panel_Builder.BuildInScene();
@@ -98,12 +100,131 @@ public static class ASRS_Module2_Builder
                 panel.SetPositionAndRotation(lessonPanel.transform.position + lessonPanel.transform.right * 1.45f, lessonPanel.transform.rotation);
         }
 
+        // Switched back on in case it was unticked while testing.
+        GameObject features = FindFeaturesRoot();
+        if (features != null && !features.activeSelf)
+        {
+            Undo.RecordObject(features, "Build Module 2");
+            features.SetActive(true);
+        }
+
         ConfigureSequence(sequenceManager);
 
         EditorSceneManager.MarkSceneDirty(sequenceManager.gameObject.scene);
-        Selection.activeGameObject = quiz.gameObject;
-        Debug.Log($"{LogTag} Done — Lesson Panel wired, quiz step {(addedQuizStep ? "added" : "already there")}, quiz panel {(builtQuiz ? "built" : "re-wired")}, {titled} step title(s) filled. Save the scene.", quiz);
+        // Not the quiz: leaving it selected keeps its large question list in
+        // the Inspector going into Play mode.
+        Selection.activeGameObject = sequenceManager.gameObject;
+        Debug.Log($"{LogTag} Done — Lesson Panel wired, quiz step {(addedQuizStep ? "added" : "already there")}, quiz panel {(builtQuiz ? "built" : "re-wired")}, {titled} step title(s) filled, {realParts} step(s) switched to real parts, {pickTexts} Pick and Place step(s) updated. Save the scene.", sequenceManager);
     }
+
+    // ------------------------------------------------------------ real parts
+
+    // The gripper and RFID sensor steps are picked on the real part (no
+    // marker highlight) — the step's Hint Target, which is already that
+    // part. The marker is switched off, not deleted. The Emergency Stop
+    // steps keep their markers.
+    private static readonly string[] RealPartStepStarts =
+    {
+        "This is the pneumatic gripper",
+        "This is the RFID sensor",
+    };
+
+    private static int UseRealParts(SequenceManager sequenceManager)
+    {
+        SerializedObject so = new SerializedObject(sequenceManager);
+        SerializedProperty steps = so.FindProperty("steps");
+        int switched = 0;
+
+        for (int i = 0; i < steps.arraySize; i++)
+        {
+            SerializedProperty step = steps.GetArrayElementAtIndex(i);
+            string infoText = step.FindPropertyRelative("infoText").stringValue;
+            if (!RealPartStepStarts.Any(infoText.StartsWith))
+                continue;
+
+            Transform part = step.FindPropertyRelative("hintTarget").objectReferenceValue as Transform;
+            if (part == null)
+            {
+                Debug.LogWarning($"{LogTag} Step {i + 1} has no Hint Target to use as its real part — left on its marker.", sequenceManager);
+                continue;
+            }
+
+            SerializedProperty targets = step.FindPropertyRelative("targets");
+            bool alreadyReal = targets.arraySize == 1 && targets.GetArrayElementAtIndex(0).objectReferenceValue == part.gameObject;
+            if (alreadyReal)
+                continue;
+
+            for (int t = 0; t < targets.arraySize; t++)
+            {
+                GameObject old = targets.GetArrayElementAtIndex(t).objectReferenceValue as GameObject;
+                if (old != null && old.GetComponent<Marker_Interactable>() != null && old.activeSelf)
+                {
+                    Undo.RecordObject(old, "Build Module 2");
+                    old.SetActive(false);
+                }
+            }
+
+            targets.arraySize = 1;
+            targets.GetArrayElementAtIndex(0).objectReferenceValue = part.gameObject;
+            switched++;
+            Debug.Log($"{LogTag} Step {i + 1} now picks the real '{part.name}' (marker switched off).", part);
+        }
+
+        so.ApplyModifiedProperties();
+        return switched;
+    }
+
+    // ------------------------------------------------------------ pick and place
+
+    public const string OtherSideActionId = "test_move_other_side";
+
+    private const string PickNearInfo = "Per the manual's Testing the ASRS procedure (p.16): with SCORBASE online and the arm homed, Pick and Place moves a stored table from one place to another. Each place is a location (the dropdown) plus a slot number from 1 to 72 (the Index box). Slots 1–36 are rows 1–6 (010001–060006), the side the arm faces after Search Home; slots 37–72 are rows 7–12 (070001–120006), on the far side. Row 5 (slots 25–30) starts empty.";
+    private const string PickNearInstructions = "In Pick and Place, leave Source and Target on ASRS Slot. Click Source Index and enter 1 (table 010001, on the side the arm faces), click Target Index and enter 25 (empty slot 050001), then press OK. In VR, click a box and type with the keypad — its Enter presses OK. Watch the arm fetch the table and store it in slot 25.";
+    private const string PickFarInfo = "A full test also proves the arm can reach the far side of the rack. SCORBASE turns the arm by itself whenever the slot it needs is on the other side — exactly like the real ASRS-36x2 switching sides.";
+    private const string PickFarInstructions = "Now take a table from the far side: Source Index 37 (table 070001), Target Index 26 (empty slot 050002), then press OK. The arm turns to the far side to grab the table, then turns back to store it.";
+
+    // Steps 10 and 11 told the trainee to type a Table ID into Source ID
+    // (a read-out) and to rotate the arm by hand; SCORBASE actually reads
+    // the slot numbers in Source/Target Index and turns the arm itself.
+    // Rewrites only that old wording, and makes the second pick step wait
+    // for a pick from the other side of the rack.
+    private static int UpdatePickAndPlaceSteps(SequenceManager sequenceManager)
+    {
+        SerializedObject so = new SerializedObject(sequenceManager);
+        SerializedProperty steps = so.FindProperty("steps");
+        int pickStep = 0, updated = 0;
+
+        for (int i = 0; i < steps.arraySize; i++)
+        {
+            SerializedProperty step = steps.GetArrayElementAtIndex(i);
+            SerializedProperty actionId = step.FindPropertyRelative("requiredActionId");
+            if (actionId.stringValue != "test_move" && actionId.stringValue != OtherSideActionId)
+                continue;
+
+            pickStep++;
+            bool far = pickStep == 2;
+            if (far && actionId.stringValue != OtherSideActionId)
+            {
+                actionId.stringValue = OtherSideActionId;
+                updated++;
+            }
+
+            SerializedProperty info = step.FindPropertyRelative("infoText");
+            SerializedProperty instructions = step.FindPropertyRelative("instructionsText");
+            if (IsOldPickText(instructions.stringValue))
+            {
+                info.stringValue = far ? PickFarInfo : PickNearInfo;
+                instructions.stringValue = far ? PickFarInstructions : PickNearInstructions;
+                updated++;
+            }
+        }
+
+        so.ApplyModifiedProperties();
+        return updated;
+    }
+
+    private static bool IsOldPickText(string text) =>
+        string.IsNullOrWhiteSpace(text) || text.Contains("Source ID and press OK") || text.Contains("as the Source") || text.Contains("Rotate the Side");
 
     // Rewrites the quiz's question pool and settings (overwrites hand-edited
     // questions — Ctrl+Z undoes it).
@@ -121,7 +242,6 @@ public static class ASRS_Module2_Builder
         WriteQuestionPool(so);
         so.ApplyModifiedProperties();
         EditorSceneManager.MarkSceneDirty(quiz.gameObject.scene);
-        Selection.activeGameObject = quiz.gameObject;
         Debug.Log($"{LogTag} Quiz updated: {QuizQuestionsPerAttempt} questions asked at random per attempt, pass mark {QuizPassMark}. Save the scene.", quiz);
     }
 

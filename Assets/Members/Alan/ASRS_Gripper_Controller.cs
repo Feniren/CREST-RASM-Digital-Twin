@@ -45,6 +45,10 @@ public class ASRS_Gripper_Controller : MonoBehaviour
 
     public bool IsBusy { get; private set; }
 
+    // Why the last ManualPickAndPlace call was refused (empty when it was
+    // accepted) — shown on the SCORBASE panel's error line.
+    public string LastError { get; private set; } = string.Empty;
+
     // Separate from IsBusy (which only covers the physical carry motion
     // inside RetrieveRoutine) — this also covers the pallet-presence wait
     // and rack lookup that happen before the carry even starts, so a second
@@ -61,33 +65,36 @@ public class ASRS_Gripper_Controller : MonoBehaviour
         PickPlaceLocation sourceLocation = PickPlaceLocation.ASRSSlot,
         PickPlaceLocation targetLocation = PickPlaceLocation.ConveyorBelt)
     {
+        LastError = string.Empty;
+
         if (pickAndPlaceRunning || IsBusy)
-            return false;
+            return Refuse("The arm is still busy with the last pick and place — wait for it to finish.");
 
         if (sourceLocation != PickPlaceLocation.ASRSSlot)
-        {
-            Debug.LogWarning($"[ASRS_Gripper_Controller] {sourceLocation} -> {targetLocation} isn't implemented yet — only ASRSSlot is currently supported as a source.", this);
-            return false;
-        }
+            return Refuse($"Source '{sourceLocation}' isn't supported yet — set Source to ASRS Slot.");
 
         if (rack == null)
         {
             Debug.LogError("[ASRS_Gripper_Controller] Rack reference is not assigned — can't run pick and place.", this);
-            return false;
+            return Refuse("The rack isn't connected (see the Console).");
         }
 
         string sourceTableId = ASRSArmTester.IndexToTableId(sourceIndex);
+
+        // Checked now, not halfway through the routine, so an empty slot is
+        // refused on the panel instead of the OK silently doing nothing.
+        if (int.TryParse(sourceTableId, out int sourceId) && !rack.IsSlotOccupied(sourceId))
+            return Refuse($"Source slot {sourceIndex} ({sourceTableId}) is empty — pick a slot that holds a table.");
 
         if (targetLocation == PickPlaceLocation.ConveyorBelt)
         {
             if (conveyorBelt == null)
             {
                 Debug.LogError("[ASRS_Gripper_Controller] Conveyor Belt reference is not assigned — can't run pick and place.", this);
-                return false;
+                return Refuse("The conveyor isn't connected (see the Console).");
             }
 
             pickAndPlaceRunning = true;
-            conveyorBelt.PauseMovement();
             StartCoroutine(ManualPickAndPlaceRoutine(sourceTableId));
             return true;
         }
@@ -97,23 +104,23 @@ public class ASRS_Gripper_Controller : MonoBehaviour
             string targetTableId = ASRSArmTester.IndexToTableId(targetIndex);
 
             if (!int.TryParse(targetTableId, out int targetId))
-            {
-                Debug.LogWarning($"[ASRS_Gripper_Controller] '{targetTableId}' is not a valid destination Table ID.", this);
-                return false;
-            }
+                return Refuse($"Target Index {targetIndex} isn't a valid rack slot.");
 
             if (rack.IsSlotOccupied(targetId))
-            {
-                Debug.LogWarning($"[ASRS_Gripper_Controller] Target slot {targetTableId} is already occupied — pick a different Target Index.", this);
-                return false;
-            }
+                return Refuse($"Target slot {targetIndex} ({targetTableId}) already holds a table — pick an empty slot (row 5, slots 25-30, starts empty).");
 
             pickAndPlaceRunning = true;
             StartCoroutine(ManualSlotToSlotRoutine(sourceTableId, targetId));
             return true;
         }
 
-        Debug.LogWarning($"[ASRS_Gripper_Controller] {sourceLocation} -> {targetLocation} isn't implemented yet — only ASRSSlot -> ConveyorBelt or ASRSSlot -> ASRSSlot are currently supported.", this);
+        return Refuse($"Target '{targetLocation}' isn't supported yet — set Target to ASRS Slot or Conveyor Belt.");
+    }
+
+    private bool Refuse(string reason)
+    {
+        LastError = reason;
+        Debug.LogWarning($"[ASRS_Gripper_Controller] {reason}", this);
         return false;
     }
 
@@ -144,15 +151,19 @@ public class ASRS_Gripper_Controller : MonoBehaviour
             yield break;
         }
 
-        CarryAndHandOff(retrieved, dropPosition, dropRotation, () => rack.PlaceAtSlot(retrieved, targetTableId));
+        CarryAndHandOff(retrieved, dropPosition, dropRotation, () => rack.PlaceAtSlot(retrieved, targetTableId), targetTableId);
     }
 
     private IEnumerator ManualPickAndPlaceRoutine(string tableId)
     {
         // Pallet-presence check — don't deliver into the scanner/conveyor
-        // zone while another table is already sitting there.
+        // zone while another table is already sitting there. The belt keeps
+        // running while we wait (pausing it first would leave that table
+        // stuck in the zone forever), and is paused only once it's clear.
         if (rfidSensor != null)
             yield return new WaitUntil(() => !rfidSensor.HasPalletPresent);
+
+        conveyorBelt.PauseMovement();
 
         Item_Slotted_Table retrieved = rack.RetrieveByID(tableId);
 
@@ -178,7 +189,7 @@ public class ASRS_Gripper_Controller : MonoBehaviour
     // movement from its spline to the gripper, carries it to the drop
     // point, then runs 'handOff' (re-seat in the rack, or give it to the
     // belt) and ends the pick-and-place.
-    private void CarryAndHandOff(Item_Slotted_Table table, Vector3 dropPosition, Quaternion dropRotation, Action handOff)
+    private void CarryAndHandOff(Item_Slotted_Table table, Vector3 dropPosition, Quaternion dropRotation, Action handOff, int dropTableId = 0)
     {
         Spline_Animate spline = Item_ASRS.GetSplineAnimate(table);
         if (spline != null)
@@ -194,7 +205,7 @@ public class ASRS_Gripper_Controller : MonoBehaviour
             pickAndPlaceRunning = false;
         }
 
-        if (!RetrieveToPoint(table, dropPosition, dropRotation, OnArrived))
+        if (!RetrieveToPoint(table, dropPosition, dropRotation, OnArrived, dropTableId))
         {
             // Shouldn't normally happen — pickAndPlaceRunning/IsBusy were
             // already checked before the routine started — but fall back
@@ -209,7 +220,10 @@ public class ASRS_Gripper_Controller : MonoBehaviour
     // placed there (e.g. to hand it off to the conveyor), then returns to a
     // parked pose. Returns false immediately — does nothing — if already
     // busy or a required reference is missing.
-    public bool RetrieveToPoint(Item_Slotted_Table table, Vector3 dropWorldPosition, Quaternion dropWorldRotation, Action onArrived)
+    // dropTableId: when the drop point is a rack slot (row*10000+col), the
+    // arm turns to face that slot's side before placing — needed when the
+    // table is carried from one side of the rack to the other.
+    public bool RetrieveToPoint(Item_Slotted_Table table, Vector3 dropWorldPosition, Quaternion dropWorldRotation, Action onArrived, int dropTableId = 0)
     {
         if (IsBusy || table == null)
             return false;
@@ -220,29 +234,21 @@ public class ASRS_Gripper_Controller : MonoBehaviour
             return false;
         }
 
-        StartCoroutine(RetrieveRoutine(table, dropWorldPosition, dropWorldRotation, onArrived));
+        StartCoroutine(RetrieveRoutine(table, dropWorldPosition, dropWorldRotation, onArrived, dropTableId));
         return true;
     }
 
-    private IEnumerator RetrieveRoutine(Item_Slotted_Table table, Vector3 dropWorldPosition, Quaternion dropWorldRotation, Action onArrived)
+    private IEnumerator RetrieveRoutine(Item_Slotted_Table table, Vector3 dropWorldPosition, Quaternion dropWorldRotation, Action onArrived, int dropTableId)
     {
         IsBusy = true;
 
         float originalSpeed = armController.MoveSpeed;
         armController.MoveSpeed = carrySpeed;
 
-        // 0. Rotate to face this slot's side first — nothing else is
-        // driving this automatically the way a human pressing a panel
-        // button would.
-        if (int.TryParse(table.TableID, out int id) && !armController.IsReachable(id))
-        {
-            int row = id / 10000;
-            armController.RotateY(row >= 7 ? 180f : 0f);
-            yield return WaitUntilIdle();
-        }
-
         // 1. Align Z/Y with the table's rack slot, parked (not reaching in
-        // yet) — reuses the exact math the Go-to-slot panel command uses.
+        // yet) — reuses the exact math the Go-to-slot panel command uses,
+        // which also turns the arm to face the slot's side (via Safe
+        // Position), so no separate turn is needed first.
         armTester.TryMoveToTableId(table.TableID);
         yield return WaitUntilIdle();
 
@@ -256,6 +262,18 @@ public class ASRS_Gripper_Controller : MonoBehaviour
         // RackHand now, which is a child of ArmX.
         armController.MoveX(armTester.ParkedX);
         yield return WaitUntilIdle();
+
+        // 3b. Dropping into a slot on the other side of the rack: back to
+        // center, then turn (carrying the table) to face that side.
+        if (dropTableId > 0 && !armController.IsReachable(dropTableId))
+        {
+            armController.MoveZ(0f);
+            armController.MoveY(0f);
+            yield return WaitUntilIdle();
+
+            armController.RotateY(dropTableId / 10000 >= 7 ? 180f : 0f);
+            yield return WaitUntilIdle();
+        }
 
         // 4. Move Z/Y to the drop point — via center, per the center-crossing
         // movement rule (every commanded position change passes through
@@ -292,7 +310,10 @@ public class ASRS_Gripper_Controller : MonoBehaviour
 
     private IEnumerator WaitUntilIdle()
     {
-        yield return new WaitUntil(() => !armController.IsMoving);
+        // Wait a frame first so a move issued just now has registered, then
+        // until the arm is still AND no multi-leg command is between legs.
+        yield return null;
+        yield return new WaitUntil(() => !armController.IsMoving && !armTester.IsCommandRunning);
     }
 
     private void AttachToGripper(Item_Slotted_Table table)

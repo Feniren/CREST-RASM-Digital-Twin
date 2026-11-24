@@ -8,15 +8,20 @@ using UnityEngine.Video;
 // Hide() on any other step. The text itself still goes through the existing
 // info panel; this only handles the optional extras (video or picture,
 // preview prefab). With a Media Root assigned (the Lesson Panel's media
-// box), station steps always show the box — the video if there is one,
-// else the image, else the "coming soon" placeholder.
+// box), a step with media shows the box — the video if there is one, else
+// the image. A step with neither hides the box entirely (Hide Box When No
+// Media), so the instruction text widens to fill the panel instead of
+// sitting next to a "coming soon" placeholder.
 public class Station_Type_Card : MonoBehaviour
 {
     [Tooltip("Optional: the whole media box. Shown on station steps (even with no media yet, so the placeholder appears) and hidden on every other step — on the Lesson Panel this lets the body text widen to fill the space.")]
     [SerializeField] private GameObject mediaRoot;
 
-    [Tooltip("Optional: shown inside the media box when the station has neither an image nor a video yet.")]
+    [Tooltip("Optional: shown inside the media box when the station has neither an image nor a video yet — only used when Hide Box When No Media is off.")]
     [SerializeField] private GameObject placeholder;
+
+    [Tooltip("When a step has no image or video, hide the whole media box so the instruction text uses the full panel. Turn off to show the \"coming soon\" placeholder instead.")]
+    [SerializeField] private bool hideBoxWhenNoMedia = true;
 
     [Tooltip("Optional: the Image that displays ASRS_Station_Type.image. Hidden when the station has no image, or when its video is playing instead.")]
     [SerializeField] private Image image;
@@ -153,7 +158,12 @@ public class Station_Type_Card : MonoBehaviour
         if (videoControls != null) videoControls.SetActive(false);
 
         bool showingImage = image != null && image.gameObject.activeSelf;
-        if (!showingImage)
+        if (showingImage)
+            return;
+
+        if (hideBoxWhenNoMedia && mediaRoot != null)
+            mediaRoot.SetActive(false);
+        else
             ShowPlaceholder($"The {currentStationName} video couldn't be played.\nSee the Console for details.");
     }
 
@@ -196,17 +206,28 @@ public class Station_Type_Card : MonoBehaviour
         }
 
         if (!showingMedia)
-            ShowPlaceholder(null);
+            ShowNoMedia();
 
         if (previewAnchor != null && stationType.previewPrefab != null)
             spawnedPreview = Instantiate(stationType.previewPrefab, previewAnchor, false);
     }
 
-    // The media box with just its placeholder — for steps that keep the box
-    // on screen but have no station media of their own.
+    // A step with no media of its own: no box at all (the default), or the
+    // box with its placeholder when Hide Box When No Media is off.
     public void ShowEmpty()
     {
         Hide();
+        ShowNoMedia();
+    }
+
+    private void ShowNoMedia()
+    {
+        if (hideBoxWhenNoMedia)
+        {
+            if (mediaRoot != null)
+                mediaRoot.SetActive(false);
+            return;
+        }
 
         if (mediaRoot != null)
             mediaRoot.SetActive(true);

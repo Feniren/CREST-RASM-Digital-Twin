@@ -39,6 +39,14 @@ public class ASRS_Power_Interactable : MonoBehaviour{
 		SetRevealedActive(IsPoweredOn);
 	}
 
+	// Being powered on is a state: if the trainee switched this on before
+	// the lesson reached its step, complete that step as soon as it comes up
+	// instead of making them switch it off and on again.
+	private void Update(){
+		if (IsPoweredOn && Sequence_Manager != null && Sequence_Manager.IsOnStep(PowerOnActionId))
+			Sequence_Manager.NotifyAction(PowerOnActionId);
+	}
+
 	public void TogglePower(){
 		IsPoweredOn = !IsPoweredOn;
 

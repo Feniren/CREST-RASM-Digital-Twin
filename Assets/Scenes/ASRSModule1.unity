@@ -4838,6 +4838,7 @@ MonoBehaviour:
   root: {fileID: 1996102243}
   completionHoldSeconds: 2
   quizActionId: M1_QuizPassed
+  moduleName: Module 1
   questions:
   - prompt: Which storage station rotates its storage positions to bring the requested
       part to one fixed load/unload point, instead of a robot travelling to the part?
@@ -5783,7 +5784,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1628413925}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb7f78a6fee92824bae2d58023dbd59a, type: 3}
   m_Name: 
@@ -7219,7 +7220,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 10
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1996102248
 Canvas:
   m_ObjectHideFlags: 0

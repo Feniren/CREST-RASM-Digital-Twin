@@ -7,6 +7,10 @@ public class ASRSArmTester : MonoBehaviour
 {
     [SerializeField] private ASRSArmController armController;
 
+    [Header("Debug Keys")]
+    [Tooltip("Keyboard shortcuts for testing the arm (1-4, R, Space, arrows, H, T). Off for lessons: Space is also a player movement key and would stop the arm mid-move, and the rest move the arm without going through SCORBASE.")]
+    [SerializeField] private bool enableDebugKeys = false;
+
     [Header("Manual Axis Targets")]
     [SerializeField] private float zTarget = 2f;
     [SerializeField] private float yTarget = 1f;
@@ -64,6 +68,13 @@ public class ASRSArmTester : MonoBehaviour
     // needing a second field that could silently drift out of sync with it.
     public float ParkedX => parkedX;
 
+    // True while a commanded move (TryMoveToTableId / MoveToZYViaCenter) is
+    // between legs — e.g. Safe Position reached but the next leg not issued
+    // yet. ASRSArmController.IsMoving is briefly false in those gaps, so
+    // anything waiting for the arm to finish must check this too.
+    public bool IsCommandRunning => commandsRunning > 0;
+    private int commandsRunning;
+
     private Transform[] slotsA;
     private Transform[] slotsB;
 
@@ -99,6 +110,13 @@ public class ASRSArmTester : MonoBehaviour
             armController.AxisArrived += OnArmAxisArrived;
 
         Debug.Log($"[ASRS] Loaded {slotsA.Length} SlotsA + {slotsB.Length} SlotsB slots. Tracking starts at index {currentSlotIndex}.");
+    }
+
+    // Coroutines stop when this is disabled without running their cleanup,
+    // so an in-flight command must not be left counted forever.
+    private void OnDisable()
+    {
+        commandsRunning = 0;
     }
 
     private void OnDestroy()
@@ -213,7 +231,7 @@ public class ASRSArmTester : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current == null || armController == null)
+        if (!enableDebugKeys || Keyboard.current == null || armController == null)
             return;
 
         // Skip every debug keybind below while any UI element is focused —
@@ -605,6 +623,7 @@ public class ASRSArmTester : MonoBehaviour
         // — before proceeding with the actual requested move, rather than
         // jumping straight there from wherever the arm happens to be
         // sitting.
+        commandsRunning++;
         armController.ReturnToSafePosition(() =>
         {
             if (armController.CurrentSide != targetSide)
@@ -612,6 +631,7 @@ public class ASRSArmTester : MonoBehaviour
 
             MoveToZYViaCenter(targetZ, targetY);
             armController.MoveX(parkedX);
+            commandsRunning--;
         });
 
         return true;
@@ -631,12 +651,20 @@ public class ASRSArmTester : MonoBehaviour
 
     private IEnumerator MoveToZYViaCenterRoutine(float targetZ, float targetY)
     {
-        armController.MoveZ(0f);
-        armController.MoveY(0f);
-        yield return new WaitUntil(() => !armController.IsMoving);
+        commandsRunning++;
+        try
+        {
+            armController.MoveZ(0f);
+            armController.MoveY(0f);
+            yield return new WaitUntil(() => !armController.IsMoving);
 
-        armController.MoveZ(targetZ);
-        armController.MoveY(targetY);
+            armController.MoveZ(targetZ);
+            armController.MoveY(targetY);
+        }
+        finally
+        {
+            commandsRunning--;
+        }
     }
 
     private void StartAutoTraverse()

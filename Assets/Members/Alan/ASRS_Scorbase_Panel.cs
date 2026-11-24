@@ -74,8 +74,10 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     [SerializeField] private string goOnlineActionId = "scorbase_online";
     [SerializeField] private string searchHomeActionId = "scorbase_home";
     [SerializeField] private string goActionId = "test_move";
-    [Tooltip("Fired the first time any jog button is used while online — the digital-twin stand-in for 'navigated to View > Manual Movement and used it'.")]
+    [Tooltip("Fired every time a jog button is used while online — the digital-twin stand-in for 'navigated to View > Manual Movement and used it'.")]
     [SerializeField] private string manualMovementActionId = "manual_movement_used";
+    [Tooltip("Fired (as well as the Go action) when a pick and place takes its table from the other side of the rack than the previous one did — proves the arm turned to reach it.")]
+    [SerializeField] private string otherSideActionId = "test_move_other_side";
 
     // Matches the classic-industrial light-gray panel background — the old
     // translucent-white/neon-green pair was tuned for a dark panel and was
@@ -83,15 +85,18 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
     private static readonly Color PendingColor = new Color(0.4f, 0.4f, 0.4f, 1f);
     private static readonly Color ArrivedColor = new Color(0f, 0.35f, 0f, 1f);
 
-    private bool manualMovementNotified;
+    // Which side (true = rows 7-12) the last successful pick took its table
+    // from; null before the first one.
+    private bool? lastPickFromU;
 
-    // Read-only access so a companion tool (e.g. a VR-friendly numeric
-    // keypad) can find and type into these without needing its own
-    // duplicate reference wired up separately. Points at the Pick and
-    // Place section's Source ID field / OK button — the numeric keypad's
-    // job (type an ID, confirm) maps directly onto typing a Source ID and
-    // pressing OK.
-    public TMP_InputField TableIdField => sourceIdField;
+    // Read-only access so a companion tool (the VR numeric keypad) can find
+    // and type into these without its own duplicate references. The keypad
+    // types into Source Index by default — the field OK actually reads
+    // (Source ID is only a read-out) — and OK is its Enter.
+    public TMP_InputField TableIdField => sourceIndexField;
+    public TMP_InputField SourceIndexField => sourceIndexField;
+    public TMP_InputField TargetIndexField => targetIndexField;
+    public TMP_InputField SpeedField => speedField;
     public Button GoButton => okButton;
 
     // Matches real SCORBASE: nothing else works until you've gone online.
@@ -156,6 +161,8 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
 
     private void Update()
     {
+        ReportStateToLesson();
+
         if (statusText == null || armController == null)
             return;
 
@@ -165,6 +172,21 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
             $"X:  {armController.OffsetX:F2}\n" +
             $"Side:  {armController.CurrentSide}\n" +
             $"State:  {(armController.IsMoving ? "Moving" : "Idle")}";
+    }
+
+    // Going online and homing are states, not one-off events: if the
+    // trainee did either before the lesson reached its step (the Go Online
+    // button hides itself once pressed), the step is completed as soon as
+    // it comes up instead of waiting forever for a press that can't happen.
+    private void ReportStateToLesson()
+    {
+        if (sequenceManager == null)
+            return;
+
+        if (IsOnline && sequenceManager.IsOnStep(goOnlineActionId))
+            sequenceManager.NotifyAction(goOnlineActionId);
+        else if (armController != null && armController.IsHomed && sequenceManager.IsOnStep(searchHomeActionId))
+            sequenceManager.NotifyAction(searchHomeActionId);
     }
 
     // ------------------------------------------------------------------
@@ -229,15 +251,12 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
 
         SetError(withinLimits ? string.Empty : $"{axis} axis is at its travel limit — can't move further.");
 
-        // Fired once, the first time any jog control is actually used while
-        // online — the digital-twin stand-in for "navigated to View >
-        // Manual Movement and used it".
-        if (!manualMovementNotified)
-        {
-            manualMovementNotified = true;
-            if (sequenceManager != null)
-                sequenceManager.NotifyAction(manualMovementActionId);
-        }
+        // Every jog while online — the digital-twin stand-in for "navigated
+        // to View > Manual Movement and used it". Reported each time (the
+        // lesson ignores it unless it's on that step), so jogging early
+        // can't leave the Manual Movement step unable to complete.
+        if (sequenceManager != null)
+            sequenceManager.NotifyAction(manualMovementActionId);
     }
 
     private void OnSpeedEdited(string text)
@@ -343,29 +362,51 @@ public class ASRS_Scorbase_Panel : MonoBehaviour
         if (!TryValidateIndex(sourceIndexField, "Source Index", out int sourceIndex))
             return;
 
-        if (!TryValidateIndex(targetIndexField, "Target Index", out int targetIndex))
-            return;
-
         ASRS_Gripper_Controller.PickPlaceLocation sourceLocation =
             ParseLocation(sourceDropdown, ASRS_Gripper_Controller.PickPlaceLocation.ASRSSlot);
         ASRS_Gripper_Controller.PickPlaceLocation targetLocation =
             ParseLocation(targetDropdown, ASRS_Gripper_Controller.PickPlaceLocation.ConveyorBelt);
 
+        // Target Index only addresses something when the target is a rack
+        // slot — the conveyor has a single drop point, so it isn't asked for.
+        int targetIndex = 0;
+        if (targetLocation == ASRS_Gripper_Controller.PickPlaceLocation.ASRSSlot
+            && !TryValidateIndex(targetIndexField, "Target Index", out targetIndex))
+            return;
+
         if (gripper.ManualPickAndPlace(sourceIndex, targetIndex, sourceLocation, targetLocation))
         {
             SetError(string.Empty);
 
-            // Reflects the resolved rack address back for the trainee to
-            // see — Source ID is a read-out, not typed independently.
+            // Reflects the resolved rack addresses back for the trainee to
+            // see — the ID boxes are read-outs, not typed independently.
             if (sourceIdField != null)
                 sourceIdField.text = ASRSArmTester.IndexToTableId(sourceIndex);
+            if (targetIdField != null)
+                targetIdField.text = targetLocation == ASRS_Gripper_Controller.PickPlaceLocation.ASRSSlot
+                    ? ASRSArmTester.IndexToTableId(targetIndex)
+                    : string.Empty;
+
+            bool fromU = sourceIndex > ASRSArmTester.TotalSlots / 2;
+            bool otherSide = lastPickFromU.HasValue && lastPickFromU.Value != fromU;
+            lastPickFromU = fromU;
 
             if (sequenceManager != null)
+            {
+                // One press completes one step: a pick that finishes the
+                // "any pick" step mustn't also finish the "other side" step
+                // right after it.
+                bool completesGoStep = sequenceManager.IsOnStep(goActionId);
                 sequenceManager.NotifyAction(goActionId);
+                if (otherSide && !completesGoStep)
+                    sequenceManager.NotifyAction(otherSideActionId);
+            }
         }
         else
         {
-            SetError($"Can't run {sourceLocation} → {targetLocation} — check the dropdowns/indexes, and that the arm isn't already busy.");
+            SetError(string.IsNullOrEmpty(gripper.LastError)
+                ? $"Can't run {sourceLocation} → {targetLocation} — check the dropdowns and indexes."
+                : gripper.LastError);
         }
     }
 

@@ -113,7 +113,7 @@ has been play-tested in the editor by the module owner.
 - [x] Video screen appears on the correct step (step 4 only).
 - [x] Play, pause, replay and audio work (`Station_Type_Card.TogglePause` / `Replay`, wired in `LessonPanel.prefab`).
 - [x] Video stops or hides on lesson transition (every step re-sets the card, and `OnDisable` stops playback).
-- [x] A missing video does not block the module (falls back to the station image or a placeholder; Next is never gated
+- [x] A missing video does not block the module (falls back to the station image, or hides the media box when there is no image; Next is never gated
   on the video).
 - [ ] Video is legible and performs acceptably in the target VR configuration. **NOT FILE-VERIFIABLE.**
 
